@@ -14,11 +14,12 @@ export default new Vuex.Store({
   // data의 집합(중앙 관리할 모든 데이터 === 상태)
   state: {
     theme: "",
-    authorization: "",
-    accesstokenexpiraiondate: "",
-    refreshtoken: "",
-    refreshtokenexpiraiondate: "",
-    isLogin: false,
+    authorization: localStorage.getItem('authorization'),
+    accesstokenexpiraiondate: localStorage.getItem('accesstokenexpiraiondate'),
+    refreshtoken: localStorage.getItem('refreshtoken'),
+    refreshtokenexpiraiondate: localStorage.getItem('refreshtokenexpiraiondate'),
+
+    isLogin: !!localStorage.getItem('authorization'),
     userEmail: "",
 
     emailResult: false,
