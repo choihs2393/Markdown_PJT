@@ -38,7 +38,7 @@ import sampleData from "../sampleData.js";
 
 var data = sampleData;
 
-require('electron').ipcRenderer.on('ping', (event, message) => {
+window.require('electron').ipcRenderer.on('ping', (event, message) => {
   console.log(message);
   data.input = message;
 });
