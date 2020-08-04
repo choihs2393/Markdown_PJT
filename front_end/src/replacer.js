@@ -8,11 +8,11 @@ export default class Replacer {
     }
     static unorderList(fullMatch, group1, group2, group3) {
         if(group1 == "  " || group1 == "   "){
-            return '\n<ul><ul><li>' + group3 + '</li></ul></ul>';
+            return '<ul><ul><li>' + group3 + '</li></ul></ul>';
         } else if (group1 == "    ") {
-            return '\n<ul><ul><ul><li>' + group3 + '</li></ul></ul></ul>';
+            return '<ul><ul><ul><li>' + group3 + '</li></ul></ul></ul>';
         }
-        return '\n<ul><li>' + group3 + '</li></ul>';
+        return '<ul><li>' + group3 + '</li></ul>';
     }
     static orderList(fullMatch, group1, group2, group3, group4) {
         const tempRegex = /(\n){1}/g;
@@ -37,26 +37,26 @@ export default class Replacer {
         return '<ol><li>' + tmp.replace(exitRegex,'</li></ol><li>') + '</li></ol>';
     }
     static heading(fullMatch, tagStart, tagContents){
-        return '\n<h' + tagStart.trim().length + '>' + tagContents + '</h' + tagStart.trim().length + '>\n';
+        return '<h' + tagStart.trim().length + '>' + tagContents + '</h' + tagStart.trim().length + '>\n';
     }
     static horizontal() {
-        return '\n<hr />';
+        return '<hr />';
     }
     static blockquoteDepth1(fullMatch, tagStart, tagContents) {
-        return '\n<blockquote><p>' + tagContents + '</p></blockquote>\n';
+        return '<blockquote><p>' + tagContents + '</p></blockquote>\n';
     }
     static blockquoteDepth2(fullMatch, tagStart, tagContents) {
-        return '\n<blockquote><blockquote><p>' + tagContents + '</p></blockquote></blockquote>\n';
+        return '<blockquote><blockquote><p>' + tagContents + '</p></blockquote></blockquote>\n';
     }
     static blockquoteDepth3(fullMatch, tagStart, tagContents) {
-        return '\n<blockquote><blockquote><blockquote><p>' + tagContents + '</p></blockquote></blockquote></blockquote>\n';
+        return '<blockquote><blockquote><blockquote><p>' + tagContents + '</p></blockquote></blockquote></blockquote>\n';
     }
     static codeblock(fullMatch, group1, group2) {
 
         if(typeof group2 == 'undefined')
-            return '\n<pre><code>' + '</code></pre>';
+            return '<pre><code>' + '</code></pre>';
         else
-            return '\n<pre><code>' + group2 + '</code></pre>';
+            return '<pre><code>' + group2 + '</code></pre>';
     }
     static inlineCodeblock(fullMatch, group1, group2) {
         return '<code>' + group2 + '</code>';
@@ -79,21 +79,21 @@ export default class Replacer {
         return '<p>' + fullMatch + '</p>\n';
     }
     static img(fullMatch, tagStart, tagContents) {
-        return '\n<img src="' + tagContents.substring(1,tagContents.length-1) + '">';
+        return '<img src="' + tagContents.substring(1,tagContents.length-1) + '">';
     }
     static externalLink(fullMatch, tagContents, link, linkTitle) {
         if(typeof linkTitle == 'undefined')
-            return '\n<a href="' + link + '" target="_blank">' + tagContents + '</a>'; 
-        return '\n<a href="' + link + '" title="' + linkTitle + '" target="_blank">' + tagContents + '</a>';
+            return '<a href="' + link + '" target="_blank">' + tagContents + '</a>'; 
+        return '<a href="' + link + '" title="' + linkTitle + '" target="_blank">' + tagContents + '</a>';
     }
     static autoLink(fullMatch, group1) {
-        return '\n<a href="' + group1 +'" target="_blank">' + group1 + '</a>';
+        return '<a href="' + group1 +'" target="_blank">' + group1 + '</a>';
     }
     static autoLinkWithTag(fullMatch, group1) {
         return group1;
     }
     static emailLink(fullMatch, group1) {
-        return '\n<a href="' + group1 +'" target="_blank">' + group1 + '</a>';
+        return '<a href="' + group1 +'" target="_blank">' + group1 + '</a>';
     }
     static addReferenceLink(fullMatch, group1, group2, group3) {
         for (const i in referenceLinkArray){
@@ -109,7 +109,7 @@ export default class Replacer {
     static referenceLink(fullMatch, group1, group2) {
         for (const i in referenceLinkArray){
             if(referenceLinkArray[i].id == group2)
-                return '\n<a href="' + referenceLinkArray[i].link + '" title="' + referenceLinkArray[i].linkTitle + '" target="_blank">' + group1 + '</a>';
+                return '<a href="' + referenceLinkArray[i].link + '" title="' + referenceLinkArray[i].linkTitle + '" target="_blank">' + group1 + '</a>';
         }
         return fullMatch;
     }
