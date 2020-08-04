@@ -117,6 +117,13 @@ const template = [
       role: 'help',
       submenu: [
         {
+            label: 'Markdown Help',
+        accelerator: 'F1',
+        click() {
+            createHelpWindow();
+            }
+        },
+        {
           label: 'Learn More',
           click () { require('electron').shell.openExternal('https://electronjs.org') }
         }
@@ -225,5 +232,22 @@ function openFile() {
         });
     });
 }
+
+function createHelpWindow() {
+    console.log(`file://${__dirname}/app/help.html`)
+    // Create the browser window.
+    let win = new BrowserWindow({
+      width: 600,
+      height: 400,
+      webPreferences: {
+        nodeIntegration: true
+      }
+    });
+    win.loadURL(`file://${__dirname}/../src/help.html`)
+    win.setTitle("도움말");
+    win.on('page-title-updated', function(e) {
+    e.preventDefault()
+  });
+  }
 
 export default template
