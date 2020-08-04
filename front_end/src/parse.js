@@ -12,7 +12,7 @@ hljs.initHighlightingOnLoad();
 // 정규식 표현.
 const Regex = {
 	heading : /\n{0,3}(#{1,6}) +([^\n]*)(?: +#+)? *(?:\n+|$)/g,
-	horizontal : /((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})(?:\n+|$)/g,
+	horizontal : /((?:- *){3,}|(?:_ *){3,}|(?:\* *){3,})/g,
 	blockquoteDepth1 : /^(>{1}) +([^\n]*)(?: +>+)? *(?:\n+|$)/gm,
 	blockquoteDepth2 : /^(>{2}) +([^\n]*)(?: +>+)? *(?:\n+|$)/gm,
 	blockquoteDepth3 : /^(>{3}) +([^\n]*)(?: +>+)? *(?:\n+|$)/gm,
