@@ -118,7 +118,7 @@ setInteractionMode('eager')
 // })
 
 export default {
-  name: "SignupModal",
+  name: 'SignupModal',
 
   components: {
     ValidationProvider,
@@ -126,7 +126,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["isEmailChecked"])
+    ...mapGetters(['isEmailChecked'])
   },
 
   data() {
@@ -136,11 +136,11 @@ export default {
       emailCheckColor: '',
 
       signupData: {
-        email: "",
-        authNum: "",
-        name: "",
-        password: "",
-        passwordConfirm: "",
+        email: '',
+        authNum: '',
+        name: '',
+        password: '',
+        passwordConfirm: '',
       },
     }
   },
@@ -154,11 +154,11 @@ export default {
     },
     close() {
       this.signupData = {
-        email: "",
-        authNum: "",
-        name: "",
-        password: "",
-        passwordConfirm: "",
+        email: '',
+        authNum: '',
+        name: '',
+        password: '',
+        passwordConfirm: '',
       }
       this.$store.state.emailResult = false
       this.$refs.observer.reset()

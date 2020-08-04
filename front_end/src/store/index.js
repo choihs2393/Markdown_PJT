@@ -1,32 +1,32 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import Vue from 'vue'
+import Vuex from 'vuex'
 
-import axios from "axios"
-// import cookies  from "vue-cookies"
-// import qs from "qs"
-
-// import router from "@/router"
-import SERVER from "@/api/spring"
+import axios from 'axios'
+import SERVER from '@/api/spring'
+// import router from '@/router'
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   // data의 집합(중앙 관리할 모든 데이터 === 상태)
   state: {
-    theme: "",
     authorization: localStorage.getItem('authorization'),
     accesstokenexpiraiondate: localStorage.getItem('accesstokenexpiraiondate'),
     refreshtoken: localStorage.getItem('refreshtoken'),
     refreshtokenexpiraiondate: localStorage.getItem('refreshtokenexpiraiondate'),
+    userEmail: '',
 
-    isLogin: !!localStorage.getItem('authorization'),
-    userEmail: "",
+    theme: '',
+
+    // isLogin: !!localStorage.getItem('authorization'),
 
     emailResult: false,
   },
 
   // state를 (가공해서)가져올 함수들. === computed
   getters: {
+    isLoggedIn: state => !!state.authorization,
+
     isEmailChecked: state => !!state.emailResult,
   },
 
@@ -37,37 +37,51 @@ export default new Vuex.Store({
   mutations: {
     //auth
     SET_TOKEN(state, token) {
-      console.log("SET_TOKEN entered...");
-      console.log(token);
+      // console.log("SET_TOKEN entered...");
+      // console.log(token);
 
-      console.log(token.authorization);
-      console.log(token.accesstokenexpiraiondate);
-      console.log(token.refreshtoken);
-      console.log(token.refreshtokenexpiraiondate);
-      console.log(token.useremail);
-
+      // console.log(token.authorization);
+      // console.log(token.accesstokenexpiraiondate);
+      // console.log(token.refreshtoken);
+      // console.log(token.refreshtokenexpiraiondate);
+      // console.log(token.useremail);
+      
       state.authorization = token.authorization;
       state.accesstokenexpiraiondate = token.accesstokenexpiraiondate;
       state.refreshtoken = token.refreshtoken;
       state.refreshtokenexpiraiondate = token.refreshtokenexpiraiondate;
       state.userEmail = token.useremail;
 
-      console.log("state.authorization : " + state.authorization);
-      console.log("state.accesstokenexpiraiondate : " + state.accesstokenexpiraiondate);
-      console.log("state.refreshtoken : " + state.refreshtoken);
-      console.log("state.refreshtokenexpiraiondate : " + state.refreshtokenexpiraiondate);
-      console.log("state.userEmail : " + state.userEmail);
+      // state.authorization = token.get('authorization', null)
+      // state.accesstokenexpiraiondate = token.get('accesstokenexpiraiondate', null)
+      // state.refreshtoken = token.get('refreshtoken', null)
+      // state.refreshtokenexpiraiondate = token.get('refreshtokenexpiraiondate', null)
+      // state.userEmail = token.get('useremail', null)
+
+      // console.log("state.authorization : " + state.authorization);
+      // console.log("state.accesstokenexpiraiondate : " + state.accesstokenexpiraiondate);
+      // console.log("state.refreshtoken : " + state.refreshtoken);
+      // console.log("state.refreshtokenexpiraiondate : " + state.refreshtokenexpiraiondate);
+      // console.log("state.userEmail : " + state.userEmail);
 
       localStorage.setItem("authorization", state.authorization);
       localStorage.setItem("accesstokenexpiraiondate", state.accesstokenexpiraiondate);
       localStorage.setItem("refreshtoken", state.refreshtoken);
       localStorage.setItem("refreshtokenexpiraiondate", state.refreshtokenexpiraiondate);
-      state.isLogin = true;
+      // state.isLogin = true;
     },
 
     // for logout
-    toggleIsLogin(state) {
-      state.isLogin = false;
+    // toggleIsLogin(state) {
+    //   state.isLogin = false;
+    // },
+
+    DELETE_TOKEN(state) {
+      state.authorization = null
+      state.accesstokenexpiraiondate = null
+      state.refreshtoken = null
+      state.refreshtokenexpiraiondate = null
+      state.userEmail = null
     },
 
     setEmailResult(state, emailResult) {
@@ -84,40 +98,14 @@ export default new Vuex.Store({
   // dispatch를 통해 실행함.
   actions: {
     // auth
-    postAuthData({ commit, dispatch }, info) {
-        axios.post(SERVER.URL + info.location, info.data)
+    postAuthData({ commit }, info) {
+      axios.post(SERVER.URL + info.location, info.data)
         .then(res => {
-          if (info.location === SERVER.ROUTES.signup) {
-            console.log(res.data["result"])
-            commit("setEmailResult", res.data["result"])
-          }
-          else if(info.location === SERVER.ROUTES.login) {
-            console.log(res);
-            commit('SET_TOKEN', res.headers);
-          }
-          else if(info.location === SERVER.ROUTES.email) {
-            console.log(res.data["result"])
-            commit("setEmailResult", res.data["result"])
-            info.location = SERVER.ROUTES.authSend
-            dispatch('postAuthData', info)
-          }
-          else if(info.location === SERVER.ROUTES.authSend) {
-            console.log(res.data)
-          }
-          else if(info.location === SERVER.ROUTES.authCheck) {
-            console.log(res.data)
-          }
+          commit('SET_TOKEN', res.headers);
         })
         .catch(err => console.error(err.response.data));
     },
 
-    login({ dispatch }, loginData) {
-      const info = {
-        data: loginData,
-        location: SERVER.ROUTES.login
-      }
-      dispatch('postAuthData', info)
-    },
     signup({ dispatch }, signupData) {
       const info = {
         data: signupData,
@@ -125,30 +113,49 @@ export default new Vuex.Store({
       }
       dispatch("postAuthData", info);
       
-      const loginData = {
-        data: {
-          email: info.data.email,
-          password: info.data.password
-        },
+      // commit("setEmailResult", res.data["result"])
+      // const loginData = {
+      //   data: {
+      //     email: info.data.email,
+      //     password: info.data.password
+      //   },
+      //   location: SERVER.ROUTES.login
+      // }
+      // dispatch("postAuthData", loginData);
+    },
+    
+    login({ dispatch }, loginData) {
+      const info = {
+        data: loginData,
         location: SERVER.ROUTES.login
       }
-      dispatch("postAuthData", loginData);
+      dispatch('postAuthData', info)
     },
+
     logout({ commit }) {
+      
       localStorage.removeItem("authorization");
       localStorage.removeItem("accesstokenexpiraiondate");
       localStorage.removeItem("refreshtoken");
       localStorage.removeItem("refreshtokenexpiraiondate");
 
-      commit("toggleIsLogin");
+      commit('DELETE_TOKEN')
+      // commit('SET_TOKEN', null)  // state 에서도 삭제
+        // commit("toggleIsLogin");
     },
+
     checkEmail({ dispatch }, signupData) {
       const info = {
         data: signupData,
         location: SERVER.ROUTES.email
       }
+      
       dispatch("postAuthData", info)
+      commit("setEmailResult", res.data["result"])
+      info.location = SERVER.ROUTES.authSend
+      dispatch('postAuthData', info)
     },
+
     sendEmail({ dispatch }, signupData) {
       const info = {
         data: signupData,
@@ -156,6 +163,7 @@ export default new Vuex.Store({
       }
       dispatch("postAuthData", info)
     },
+
     confirmAuthNum({ dispatch }, signupData) {
       const info = {
         data: signupData,

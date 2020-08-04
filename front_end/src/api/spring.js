@@ -7,7 +7,5 @@ export default {
         authSend: '/nonmember/email/authSend',
         authCheck: '/nonmember/email/authCheck',
         logout: '/account/logout',
-        // createArticle: '/articles/create/',
-        // articleList: '/articles/'   
     }
 }
