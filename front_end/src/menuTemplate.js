@@ -134,6 +134,7 @@ function saveFile() {
     BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
     .then(result => {
         fileData = result;
+        console.log(fileData);
     });
 
     var fileName = dialog.showSaveDialog(BrowserWindow.getFocusedWindow(),
@@ -155,28 +156,72 @@ function saveFile() {
 
 function openFile() {
     var fileData = '';
-
-    dialog.showOpenDialog(BrowserWindow.getFocusedWindow(),
-        {
-            filters: [
-                { name: 'Markdown', extensions: ['md'] }
-            ]
-        }
-    )
+    
+    BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
     .then(result => {
-        let absoluteFilePath = JSON.stringify(result.filePaths[0]);
-        absoluteFilePath = absoluteFilePath.substr(1, absoluteFilePath.length-2)
+        fileData = result;
 
-        fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
-            // console.log(absoluteFilePath);
-            if(err) throw err;
-            // console.log(data);
-            // fileData = data;
-            openedFileData = data;
-            console.log(openedFileData);
+        console.log(typeof fileData);
+        console.log(fileData);
 
-            let win = BrowserWindow.getFocusedWindow();
-            win.webContents.send("ping", openedFileData);
+        // 작성중인 텍스트가 있다면, 저장할건지 먼저 물어본 뒤 파일을 열기.
+        if(fileData.length > 0) {
+            const options = {
+                type: "question",
+                title: "Question",
+                message: "Are you sure you want to quit without saving?",
+                detail: "Click the save button if you want to save this text to your md file",
+                buttons: ["Cancel", "Save"],
+                defaultId: 1
+            };
+      
+            if(dialog.showMessageBoxSync(options) == 1) {
+                // 1 : Save
+                if (result.response == 1) {
+                    var fileData = '';
+                    dialog.showSaveDialog(
+                        {
+                            title: "파일 저장하기!!!",
+                            filters: [
+                                { name: 'Markdown', extensions: ['md'] },
+                            ],
+                            message: "TEST"
+                        }
+                    )
+                    .then(result => {
+                        console.log(result.filePath);
+            
+                        var fileName = result.filePath;
+                        fs.writeFile(fileName, fileData, (err) => {
+        
+                        })
+                    });
+                }
+            }
+        }
+        
+        dialog.showOpenDialog(BrowserWindow.getFocusedWindow(),
+            {
+                filters: [
+                    { name: 'Markdown', extensions: ['md'] }
+                ]
+            }
+        )
+        .then(result => {
+            let absoluteFilePath = JSON.stringify(result.filePaths[0]);
+            absoluteFilePath = absoluteFilePath.substr(1, absoluteFilePath.length - 2)
+
+            fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
+                // console.log(absoluteFilePath);
+                if (err) throw err;
+                // console.log(data);
+                // fileData = data;
+                openedFileData = data;
+                console.log(openedFileData);
+
+                let win = BrowserWindow.getFocusedWindow();
+                win.webContents.send("ping", openedFileData);
+            });
         });
     });
 }
