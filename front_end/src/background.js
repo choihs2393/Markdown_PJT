@@ -1,9 +1,10 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, Menu } from "electron";
+import { app, protocol, BrowserWindow, Menu, dialog } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 import menuTemplate from './menuTemplate.js';
+import fs from "fs";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
 
@@ -24,7 +25,7 @@ protocol.registerSchemesAsPrivileged([
 function createWindow() {
   // Create the browser window.
   win = new BrowserWindow({
-    width: 800,
+    width: 1000,
     height: 600,
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
@@ -45,6 +46,60 @@ function createWindow() {
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
   }
+
+  win.on("close", (event) => {
+    console.log("win.on(close) 호출됨.");
+
+    event.preventDefault();
+    
+    const options = {
+      type: "question",
+      title: "Question",
+      message: "Are you sure you want to quit without saving?",
+      detail: "Click the save button if you want to save this text to your md file",
+      buttons: ["Cancel", "Save"],
+      defaultId: 1
+    };
+
+    dialog.showMessageBox(options)
+    .then(result => {
+
+      // 1 : Save
+      if(result.response == 1) {
+        var fileData = '';
+
+        BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
+        .then(result => {
+            fileData = result;
+        });
+
+        dialog.showSaveDialog(
+            {
+                title: "파일 저장하기!!!",
+                filters: [
+                    { name: 'Markdown', extensions: ['md'] },
+                ],
+                message: "TEST"
+            }
+        )
+        .then(result => {
+          console.log(result.filePath);
+
+            var fileName = result.filePath;
+            fs.writeFile(fileName, fileData, (err) => {
+
+            })
+            
+            BrowserWindow.getFocusedWindow().destroy();
+        });
+      }
+
+      // 2 : Exit window without save
+      else if(result.response == 0) {
+        BrowserWindow.getFocusedWindow().destroy();
+      }
+    });
+  });
 
   win.on("closed", () => {
     win = null;
