@@ -109,7 +109,7 @@ export default new Vuex.Store({
       dispatch('postAuthData', info)
     },
 
-    logout({ state, getters, commit }) {
+    logout({ getters, commit }) {
       axios.post(SERVER.URL + SERVER.ROUTES.logout, null, getters.config)
         .then(() => {
           commit('DELETE_TOKEN')
