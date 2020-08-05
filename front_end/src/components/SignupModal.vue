@@ -20,20 +20,20 @@
                   required
                   type="email">
                   <template v-slot:append-outer>
-                    <v-btn outlined small rounded @click="checkEmail(signupData)">Check</v-btn>  
+                    <v-btn outlined small rounded @click="checkEmailDuplicate(signupData)">Check</v-btn>  
                   </template>
                 </v-text-field>
               </ValidationProvider>
 
-              <ValidationProvider v-show="isEmailChecked" mode="eager" v-slot="{ errors }" name="CodeNumber" rules="required">
+              <ValidationProvider v-show="$store.state.isDuplicateChecked" mode="eager" v-slot="{ errors }" name="CodeNumber" rules="required">
                 <v-text-field
                   v-model="signupData.authNum"
                   :error-messages="errors"
                   label="CodeNumber"
                   required>
                   <template v-slot:append-outer>
-                    <v-btn outlined small rounded class="mr-1" @click="confirmAuthNum(signupData)">Confirm</v-btn>  
-                    <v-btn outlined small rounded @click="sendEmail(signupData)">Re-Send</v-btn>
+                    <v-btn outlined small rounded class="mr-1" @click="checkAuthNum(signupData)">Confirm</v-btn>  
+                    <v-btn outlined small rounded @click="sendAuthNum(signupData)">Re-Send</v-btn>
                   </template>
                 </v-text-field>
               </ValidationProvider>
@@ -83,7 +83,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapActions } from 'vuex';
 
 // import { required, email, max } from 'vee-validate/dist/rules';
 import { ValidationObserver, setInteractionMode } from 'vee-validate'
@@ -126,14 +126,13 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['isEmailChecked'])
   },
 
   data() {
     return {
       isSignupModal: false,
       show1: false,
-      emailCheckColor: '',
+      // emailCheckColor: '',
 
       signupData: {
         email: '',
@@ -146,7 +145,12 @@ export default {
   },
 
   methods: {
-    ...mapActions(['signup', 'checkEmail', 'sendEmail', 'confirmAuthNum']),
+    ...mapActions([
+      'signup',
+      'checkEmailDuplicate',
+      'sendAuthNum',
+      'checkAuthNum',
+    ]),
 
     submit() {
       this.$refs.observer.validate()
@@ -160,7 +164,7 @@ export default {
         password: '',
         passwordConfirm: '',
       }
-      this.$store.state.emailResult = false
+      // this.$store.state.emailResult = false
       this.$refs.observer.reset()
       this.isSignupModal = false
     },
