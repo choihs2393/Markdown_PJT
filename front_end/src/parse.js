@@ -61,11 +61,11 @@ const replaceMarkdown = function(str) {
 	.replace(Regex.blockquoteDepth3, Replacer.blockquoteDepth3)
 	.replace(Regex.blockquoteDepth2, Replacer.blockquoteDepth2)
 	.replace(Regex.blockquoteDepth1, Replacer.blockquoteDepth1)
+	.replace(Regex.horizontal, Replacer.horizontal)
 	.replace(Regex.boldAsterisk, Replacer.boldAsterisk)
 	.replace(Regex.boldUnderbar, Replacer.boldUnderbar)
 	.replace(Regex.italicAsterisk, Replacer.italicAsterisk)
 	.replace(Regex.italicUnderbar, Replacer.italicUnderbar)
-	.replace(Regex.horizontal, Replacer.horizontal)
 	.replace(Regex.orderList, Replacer.orderList)
 	.replace(Regex.unorderList, Replacer.unorderList)
 	.replace(Regex.paragraph, Replacer.paragraph);
