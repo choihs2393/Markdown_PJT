@@ -33,10 +33,13 @@
       app>
       <v-card>
         <v-toolbar
-            color="light-blue"
-            dark>
+            prominent
+            src="https://images.unsplash.com/photo-1489781879256-fa824b56f24f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"
+            >
             <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
-            <v-toolbar-title>My files</v-toolbar-title>
+            <v-subheader class="sidesubheader">
+            <v-toolbar-title>MY FILES</v-toolbar-title>
+            </v-subheader>
             <v-spacer></v-spacer>
             <!-- <v-btn icon
               @click="dialog = !dialog"
@@ -49,14 +52,16 @@
             </v-btn>
         </v-toolbar>
 
-        <v-list two-line subheader>
-            <v-subheader inset>Folders</v-subheader>
+        <v-list subheader flat>
+          <v-subheader :inset="inset">FOLDERS</v-subheader>
 
-            <v-list-item v-for="folder in folders" :key="folder.title" link>
-              <v-list-item-avatar>
+            <v-list-item 
+              v-for="folder in folders" 
+              :key="folder.title" 
+              link>
+              <!-- <v-list-item-avatar>
                 <v-icon :class="[folder.iconClass]">{{ folder.icon }}</v-icon>
-              </v-list-item-avatar>
-
+              </v-list-item-avatar> -->
               <v-list-item-content>
                 <v-list-item-title>{{ folder.title }}</v-list-item-title>
 
@@ -70,15 +75,14 @@
               </v-list-item-action>
             </v-list-item>
 
-            <v-divider inset></v-divider>
+            <v-divider :inset="inset"></v-divider>
 
-            <v-subheader inset>Files</v-subheader>
+            <v-subheader :inset="inset">FILES</v-subheader>
 
             <v-list-item v-for="file in files" :key="file.title" link>
-              <v-list-item-avatar>
+                <!-- <v-list-item-avatar>
                 <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
-              </v-list-item-avatar>
-
+              </v-list-item-avatar> -->
               <v-list-item-content>
                 <v-list-item-title>{{ file.title }}</v-list-item-title>
 
@@ -223,5 +227,34 @@ html, body {
   font-family: 'Helvetica Neue', Arial, sans-serif;
   color: #333;
 }
-
+.sidesubheader {
+    border-bottom: solid 3px rgb(100, 93, 102);
+    display: inline-block;
+    margin: 2.5em 0 0 0;
+    padding: 0 0.75em 0.5em 0;
+}
+.theme--light.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled) {
+    color: #615f75 !important;
+    font-size:0.5em;
+}
+.theme--light.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled):hover {
+    color: rgb(214, 198, 219) !important;
+}
+.v-list-item {
+    margin: 0.5em 2em 0;
+    padding: 1em 0;
+    height: 1em;
+}
+.v-list-item:not(:last-child) {
+    font-family: 'Roboto Slab', sans-serif;
+    border-bottom: solid 1px rgba(210, 215, 217, 0.75);
+}
+.v-subheader:not(.sidesubheader) {
+    font-size: 1.25em;
+    color: rgb(95, 90, 97) !important;
+    border-bottom: solid 2px rgb(83, 81, 83);
+    display: inline-block;
+    margin: 1em 0.5em 0 0.5em;
+    padding: 0.75em 0;
+}
 </style>
