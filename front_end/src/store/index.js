@@ -3,7 +3,6 @@ import Vuex from 'vuex'
 
 import axios from 'axios'
 import SERVER from '@/api/spring'
-// import router from '@/router'
 
 Vue.use(Vuex);
 
