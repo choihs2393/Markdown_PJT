@@ -7,6 +7,7 @@ export default {
         email: '/nonmember/email',
         authSend: '/nonmember/email/authSend',
         authCheck: '/nonmember/email/authCheck',
+
         logout: '/account/logout',
     }
 }
