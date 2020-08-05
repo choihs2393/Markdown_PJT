@@ -10,33 +10,45 @@
           </v-toolbar>
           <v-card-text>
             <v-form class="ma-4">
-              <ValidationProvider
-                mode="eager" v-slot="{ errors }" name="Email"
-                rules="required|email">
-                <v-text-field
-                  v-model="signupData.email"
-                  :error-messages="errors"
-                  label="E-mail"
-                  required
-                  type="email">
-                  <template v-slot:append-outer>
-                    <v-btn outlined small rounded @click="checkEmail(signupData)">Check</v-btn>  
-                  </template>
-                </v-text-field>
-              </ValidationProvider>
+              <ValidationObserver v-slot="{ invalid }">
+                <ValidationProvider
+                  mode="eager" v-slot="{ errors }" name="Email"
+                  rules="required|email">
+                  <v-text-field
+                    v-model="signupData.email"
+                    :error-messages="errors"
+                    label="E-mail"
+                    required
+                    type="email">
+                    <template v-slot:append-outer>
+                      <v-btn
+                        :disabled="invalid" outlined small rounded
+                        @click="checkEmailDuplicate(signupData), isDuplicateAlert=true">
+                        CHECK
+                      </v-btn>  
+                    </template>
+                  </v-text-field>
+                </ValidationProvider>
+              </ValidationObserver>
+              <v-alert dense outlined type="error" v-if="isDuplicateAlert && !isDuplicateChecked">
+                이미 가입된 Email 입니다.
+              </v-alert>
 
-              <ValidationProvider v-show="isEmailChecked" mode="eager" v-slot="{ errors }" name="CodeNumber" rules="required">
+              <ValidationProvider v-show="isDuplicateChecked" mode="eager" v-slot="{ errors }" name="CodeNumber" rules="required">
                 <v-text-field
                   v-model="signupData.authNum"
                   :error-messages="errors"
                   label="CodeNumber"
                   required>
                   <template v-slot:append-outer>
-                    <v-btn outlined small rounded class="mr-1" @click="confirmAuthNum(signupData)">Confirm</v-btn>  
-                    <v-btn outlined small rounded @click="sendEmail(signupData)">Re-Send</v-btn>
+                    <v-btn outlined small rounded class="mr-1" @click="checkAuthNum(signupData), isAuthNumAlert=true">Confirm</v-btn>  
+                    <v-btn outlined small rounded @click="sendAuthNum(signupData)">Re-Send</v-btn>
                   </template>
                 </v-text-field>
               </ValidationProvider>
+              <v-alert dense outlined type="error" v-if="isAuthNumAlert && !isAuthNumChecked">
+                인증코드를 다시 확인해주세요.
+              </v-alert>
 
               <ValidationProvider mode="eager" v-slot="{ errors }" name="Name" rules="required|max:10">
                 <v-text-field
@@ -47,34 +59,36 @@
                   required
                 ></v-text-field>
               </ValidationProvider>
+
               <ValidationProvider
                 mode="eager" v-slot="{ errors }" name="Password" vid="confirmation"
-                :rules="{ required: true, regex: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/ }">
+                :rules="{ required: true, min: 8, regex: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]/ }">
                 <v-text-field
                   v-model="signupData.password"
                   :error-messages="errors"
-                  :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show1 = !show1"
                   label="Password"
                   name="password"
-                  :type="show1 ? 'text' : 'password'"
+                  type="password"
                 ></v-text-field>
               </ValidationProvider>
+
               <ValidationProvider mode="eager" v-slot="{ errors }" name="PasswordConfirm" rules="required|confirmed:confirmation">
                 <v-text-field
                   v-model="signupData.passwordConfirm"
                   :error-messages="errors"
-                  :append-icon="show1 ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show1 = !show1"
                   label="Password Confirm"
                   name="passwordConfirm"
-                  :type="show1 ? 'text' : 'password'"
+                  type="password"
                 ></v-text-field>
               </ValidationProvider>
             </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn class="mb-4 mr-1" color="primary" :disabled="invalid" @click="signup(signupData), submit(), close">SignUp</v-btn>
-            <v-btn class="mb-4 mr-4" @click="close">close</v-btn>
+            <v-btn
+              class="mb-4 mr-1" color="primary" @click="signup(signupData), close()"
+              :disabled="invalid || !isDuplicateChecked || !isAuthNumChecked">SignUp</v-btn>
+            <v-btn class="mb-4 mr-4" @click="close()">close</v-btn>
           </v-card-actions>
         </v-card>
       </ValidationObserver>
@@ -83,39 +97,42 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
-// import { required, email, max } from 'vee-validate/dist/rules';
-import { ValidationObserver, setInteractionMode } from 'vee-validate'
-// import { extend, ValidationObserver, setInteractionMode } from 'vee-validate'
-import { ValidationProvider } from 'vee-validate/dist/vee-validate.full.esm';
-// import { localize } from 'vee-validate/dist/vee-validate.full';
-
+import { required, email, max, min, regex, confirmed } from 'vee-validate/dist/rules';
+import { extend, ValidationObserver, setInteractionMode, ValidationProvider } from 'vee-validate'
 
 setInteractionMode('eager')
 
-// extend('emailCheck', value => {
-//   if (value) {
+extend('required', {
+  ...required,
+  message: '{_field_} 값은 반드시 입력해야 합니다.',
+})
 
-//   }
-//   message: '{_field_} can not be empty',
-//   return true
-// })
+extend('email', {
+  ...email,
+  message: '{_field_} 형식이 아닙니다.',
+})
 
-// extend('required', {
-//   ...required,
-//   message: '{_field_} can not be empty',
-// })
+extend('regex', {
+  ...regex,
+  message: '비밀번호는 영문, 숫자, 특수기호를 모두 포함하여야 합니다.',
+})
 
-// extend('max', {
-//   ...max,
-//   message: '{_field_} may not be greater than {length} characters',
-// })
+extend('max', {
+  ...max,
+  message: '{_field_} 값은 {length}자리 이하로 입력해주세요.',
+})
 
-// extend('email', {
-//   ...email,
-//   message: 'Email must be valid',
-// })
+extend('min', {
+  ...min,
+  message: '{_field_} 값은 최소 {length}자리 이상이어야 합니다.',
+})
+
+extend('confirmed', {
+  ...confirmed,
+  message: '비밀번호가 같지 않습니다.',
+})
 
 export default {
   name: 'SignupModal',
@@ -126,14 +143,17 @@ export default {
   },
 
   computed: {
-    ...mapGetters(['isEmailChecked'])
+    ...mapState([
+      'isDuplicateChecked',
+      'isAuthNumChecked',
+    ]),
   },
 
   data() {
     return {
       isSignupModal: false,
-      show1: false,
-      emailCheckColor: '',
+      isDuplicateAlert: false,
+      isAuthNumAlert: false,
 
       signupData: {
         email: '',
@@ -146,12 +166,17 @@ export default {
   },
 
   methods: {
-    ...mapActions(['signup', 'checkEmail', 'sendEmail', 'confirmAuthNum']),
+    ...mapActions([
+      'signup',
+      'checkEmailDuplicate',
+      'sendAuthNum',
+      'checkAuthNum',
+    ]),
 
-    submit() {
-      this.$refs.observer.validate()
-      this.isSignupModal = false
-    },
+    // submit() {
+    //   this.$refs.observer.validate()
+    //   this.isSignupModal = false
+    // },
     close() {
       this.signupData = {
         email: '',
@@ -160,9 +185,10 @@ export default {
         password: '',
         passwordConfirm: '',
       }
-      this.$store.state.emailResult = false
       this.$refs.observer.reset()
       this.isSignupModal = false
+      this.isDuplicateAlert = false
+      this.isAuthNumAlert = false
     },
   }
 }
