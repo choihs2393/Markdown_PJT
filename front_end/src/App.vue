@@ -7,15 +7,15 @@
       <v-spacer></v-spacer>
       
       <!-- 로그인 전 화면의 상단바 -->
-      <template v-if="!isLogin">
+      <template v-if="!isLoggedIn">
         <LoginModal />
         <SignupModal />
       </template>
 
       <!-- 로그인 후 화면의 상단바 -->
-      <template v-if="isLogin">
+      <template v-if="isLoggedIn">
         <div>
-          <span>{{userEmail}}님</span>
+          <span>{{ $store.state.userEmail }}님</span>
         </div>
         <LogoutModal />
       </template>
@@ -116,7 +116,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 import { remote } from "electron";
 
 const fs = require("fs");
@@ -136,7 +136,7 @@ export default {
       div.style.color = "black";
   },
   computed: {
-    ...mapState({isLogin: 'isLogin', userEmail: 'userEmail'}),
+    ...mapGetters(['isLoggedIn']),
   },
   components: {
     LoginModal,
