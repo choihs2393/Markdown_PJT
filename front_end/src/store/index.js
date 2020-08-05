@@ -18,6 +18,7 @@ export default new Vuex.Store({
     refreshTokenExpiraionDate: localStorage.getItem('refresh-token-expiraion-date'),
     userEmail: '',
 
+    // email_authentication
     isDuplicateChecked: false,
     isAuthNumChecked: false,
 
@@ -45,7 +46,7 @@ export default new Vuex.Store({
     // 토큰 저장
     SET_TOKEN(state, token) {      
       state.authorization = token.authorization
-      state.accessTokenExpiraionDate = token.accesstokenrxpiraiondate
+      state.accessTokenExpiraionDate = token.accesstokenexpiraiondate
       state.refreshToken = token.refreshtoken
       state.refreshTokenExpiraionDate = token.refreshtokenexpiraiondate
       state.userEmail = token.useremail
@@ -81,29 +82,20 @@ export default new Vuex.Store({
   // dispatch를 통해 실행함.
   actions: {
 
-    // 회원가입
-    signup({ dispatch }, signupData) {
-      const info = {
-        data: signupData,
-        location: SERVER.ROUTES.signup
-      }
-      dispatch('postAuthData', info)
-    },
-    
     // 로그인
-    login({ dispatch }, loginData) {
-      const info = {
-        data: loginData,
-        location: SERVER.ROUTES.login
-      }
-      dispatch('postAuthData', info)
-    },
-    
-    // 회원가입, 로그인 요청
-    postAuthData({ commit }, info) {
-      axios.post(SERVER.URL + info.location, info.data)
+    login({ commit }, loginData) {
+      axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
         .then(res => {
           commit('SET_TOKEN', res.headers)  // 토큰 저장
+        })
+        .catch(err => console.error(err.response.data))
+    },
+    
+    // 회원가입
+    signup({ dispatch }, signupData) {
+      axios.post(SERVER.URL + SERVER.ROUTES.signup, signupData)
+        .then(() => {
+          dispatch('login', signupData)  // 회원가입 성공 시, 자동 로그인
         })
         .catch(err => console.error(err.response.data))
     },
