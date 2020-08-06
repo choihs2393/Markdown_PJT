@@ -2,7 +2,7 @@ package com.ggbg.note.bean;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class ErrorResponse {
+public class ExceptionResponse {
 
     @ApiModelProperty(value = "message", position = 1)
     public String message;

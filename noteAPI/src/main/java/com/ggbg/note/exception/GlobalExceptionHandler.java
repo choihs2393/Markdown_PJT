@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.ggbg.note.bean.ErrorResponse;
+import com.ggbg.note.bean.ExceptionResponse;
 import com.ggbg.note.util.HttpsConnection;
 
 @RestControllerAdvice
@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
 	protected ResponseEntity UnAuthorizationException(UnAuthorizationException e) {
 		ResponseEntity response = null;
 		
-		final ErrorResponse result = new ErrorResponse();
+		final ExceptionResponse result = new ExceptionResponse();
 		
 		result.code = ErrorCode.Unauthorized_Account.getCode();
 		result.message = ErrorCode.Unauthorized_Account.getMessage() + " : " + e.getMessage();
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
 	protected ResponseEntity ExpiredTokenException(ExpiredTokenException e) {
 		ResponseEntity response = null;
 		
-		final ErrorResponse result = new ErrorResponse();
+		final ExceptionResponse result = new ExceptionResponse();
 		
 		result.code = ErrorCode.ExpiredToken.getCode();
 		result.message = ErrorCode.ExpiredToken.getMessage() + " : " + e.getMessage();
@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
 	protected ResponseEntity UnknownException(UnknownException e) {
 		ResponseEntity response = null;
 		
-		final ErrorResponse result = new ErrorResponse();
+		final ExceptionResponse result = new ExceptionResponse();
 		
 		result.code = ErrorCode.Unknown.getCode();
 		result.message = ErrorCode.Unknown.getMessage() + " : " + e.getMessage();
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
 	protected ResponseEntity InternalServerException(InternalServerException e) {
 		ResponseEntity response = null;
 		
-		final ErrorResponse result = new ErrorResponse();
+		final ExceptionResponse result = new ExceptionResponse();
 		
 		result.code = ErrorCode.InternalServer.getCode();
 		result.message = ErrorCode.InternalServer.getMessage() + " : " + e.getMessage();

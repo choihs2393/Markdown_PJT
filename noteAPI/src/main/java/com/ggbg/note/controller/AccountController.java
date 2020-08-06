@@ -93,7 +93,7 @@ public class AccountController {
 				result.result = "success";
 				response = new ResponseEntity<>(result, HttpStatus.OK);
 			} else {
-				response = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+				response = new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // NOT_FOUND
 			}
 		} else { // 유효한 회원정보가 아닐경우
 			result.status = true;
