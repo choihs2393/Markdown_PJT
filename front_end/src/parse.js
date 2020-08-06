@@ -31,7 +31,7 @@ const Regex = {
 	boldUnderbar : /(__)(.+)(?:(__))/g,
 	paragraph : /^(?!(?:<h|<b|<u|<pre|<code))([^\n]+(?:\n[^\n]+)*)/gm, // 헤더 무시하는 정규식
 	unorderList : /\n{0,3}( {0,4})(?:(-|\*|\+)) +([^\n]*)(?: +-+)? *(?:\n+|$)/g,
-	orderList : /^(?!(?:<h|<b|<u|<pre|<code))( {0,4})(?:([1-9].) )([^\n]*?)(?: +#+)? *([^\n]+(?:\n[^\n]+)*)/gm,
+	// orderList : /^(?!(?:<h|<b|<u|<pre|<code))( {0,4})(?:([1-9].) )([^\n]*?)(?: +#+)? *([^\n]+(?:\n[^\n]+)*)/gm,
 	video : /(@\[.+\])+(\((?:https?:\/\/)?(\w*:\w*@)?[-\w.]+((:\d+)?(\/([\w/_.]*(\?\S+)?)?)?)+\))/g,
 	emoji : /(?::(\w+):)/g
 };
@@ -66,7 +66,7 @@ const replaceMarkdown = function(str) {
 	.replace(Regex.boldUnderbar, Replacer.boldUnderbar)
 	.replace(Regex.italicAsterisk, Replacer.italicAsterisk)
 	.replace(Regex.italicUnderbar, Replacer.italicUnderbar)
-	.replace(Regex.orderList, Replacer.orderList)
+	// .replace(Regex.orderList, Replacer.orderList)
 	.replace(Regex.unorderList, Replacer.unorderList)
 	.replace(Regex.paragraph, Replacer.paragraph);
 	return str;
