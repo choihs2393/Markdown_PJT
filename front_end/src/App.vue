@@ -53,7 +53,7 @@
         </v-toolbar>
 
         <v-list subheader flat>
-          <v-subheader :inset="inset">FOLDERS</v-subheader>
+          <v-subheader inset>FOLDERS</v-subheader>
 
             <v-list-item 
               v-for="folder in folders" 
@@ -75,9 +75,9 @@
               </v-list-item-action>
             </v-list-item>
 
-            <v-divider :inset="inset"></v-divider>
+            <v-divider inset></v-divider>
 
-            <v-subheader :inset="inset">FILES</v-subheader>
+            <v-subheader inset>FILES</v-subheader>
 
             <v-list-item v-for="file in files" :key="file.title" link>
                 <!-- <v-list-item-avatar>
