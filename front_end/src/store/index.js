@@ -95,7 +95,11 @@ export default new Vuex.Store({
     signup({ dispatch }, signupData) {
       axios.post(SERVER.URL + SERVER.ROUTES.signup, signupData)
         .then(() => {
-          dispatch('login', signupData)  // 회원가입 성공 시, 자동 로그인
+          const loginData = {
+            email: signupData.email,
+            password: signupData.password 
+          }
+          dispatch('login', loginData)  // 회원가입 성공 시, 자동 로그인
         })
         .catch(err => console.error(err.response.data))
     },
