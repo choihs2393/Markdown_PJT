@@ -193,8 +193,8 @@ export default {
 
           for(var i = 0; i < fileList.length; i++) {
             console.log(folderFullPath + "\\" + fileList[i]);
-
-            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+            if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
+              this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
 
           }
         })
