@@ -1,12 +1,9 @@
 package com.ggbg.note.security;
 
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.Date;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,6 +20,7 @@ import com.ggbg.note.service.IAccountService;
 import com.ggbg.note.util.JwtTokenUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 
 @Component
 public class CustomJwtRequestFilter extends OncePerRequestFilter {
@@ -62,6 +60,9 @@ public class CustomJwtRequestFilter extends OncePerRequestFilter {
 			} catch (IllegalArgumentException e) {
 				logger.warn("Unable to get JWT Token");
 			} catch (ExpiredJwtException e) {
+				logger.warn("ExpiredJwtException");
+			} catch (MalformedJwtException e) {
+				logger.warn("MalformedJwtException");
 			}
 		} else {
 			logger.warn("JWT Token does not begin with Bearer String");

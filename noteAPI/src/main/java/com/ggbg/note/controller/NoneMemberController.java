@@ -13,18 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ggbg.note.bean.Account;
-import com.ggbg.note.bean.BasicResponse;
+import com.ggbg.note.bean.SuccessResponse;
 import com.ggbg.note.service.IAccountService;
 import com.ggbg.note.service.INonMemberService;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-
-@ApiResponses(value = { @ApiResponse(code = 401, message = "Unauthorized", response = BasicResponse.class),
-		@ApiResponse(code = 403, message = "Forbidden", response = BasicResponse.class),
-		@ApiResponse(code = 404, message = "Not Found", response = BasicResponse.class),
-		@ApiResponse(code = 500, message = "Failure", response = BasicResponse.class) })
 
 @RequestMapping("/nonmember")
 @RestController
@@ -39,11 +34,11 @@ public class NoneMemberController {
 	public ResponseEntity signUp(@RequestBody(required = true) Account account) {
 		logger.debug("=============== signUp entered =============");
 		ResponseEntity response = null;
-		final BasicResponse result = new BasicResponse();
-		String msg = nonMemberService.signUp(account);
-		if (msg.equals("success")) {
+		final SuccessResponse result = new SuccessResponse();
+		boolean ret = nonMemberService.signUp(account);
+		if (ret) {
 			result.status = true;
-			result.result = msg;
+			result.result = "success";
 			response = new ResponseEntity<>(result, HttpStatus.OK);
 		} else {
 			response = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
@@ -58,13 +53,13 @@ public class NoneMemberController {
 		logger.debug("=============== email check entered =============");
 		System.out.println("=============== email check entered =============");
 		ResponseEntity response = null;
-		final BasicResponse result = new BasicResponse();
-		String msg = nonMemberService.emailCheck(map.get("email"));
+		final SuccessResponse result = new SuccessResponse();
+		boolean ret = nonMemberService.emailCheck(map.get("email"));
 		result.status = true;
-		if (msg.equals("success")) {
-			result.result = msg;
+		if (ret) {
+			result.result = "success";
 		} else {
-			result.result = msg;
+			result.result ="fail";
 		}
 		response = new ResponseEntity<>(result, HttpStatus.OK);
 		return response;
@@ -76,13 +71,13 @@ public class NoneMemberController {
 	public ResponseEntity emailAuth(@RequestBody Map<String, String> map) {
 		logger.debug("=============== email auth entered =============");
 		ResponseEntity response = null;
-		final BasicResponse result = new BasicResponse();
-		String msg = nonMemberService.emailAuthSend(map.get("email"));
+		final SuccessResponse result = new SuccessResponse();
+		boolean ret = nonMemberService.emailAuthSend(map.get("email"));
 		result.status = true;
-		if (msg.equals("success")) {
-			result.result = msg;
+		if (ret) {
+			result.result = "success";
 		} else {
-			result.result = msg;
+			result.result = "fail";
 		}
 		response = new ResponseEntity<>(result, HttpStatus.OK);
 
@@ -94,13 +89,13 @@ public class NoneMemberController {
 	public ResponseEntity emailAuthCheck(@RequestBody Map<String, String> map) {
 		logger.debug("=============== email auth check =============");
 		ResponseEntity response = null;
-		final BasicResponse result = new BasicResponse();
-		String msg = nonMemberService.emailAuthCheck(map.get("email"), map.get("authNum"));
+		final SuccessResponse result = new SuccessResponse();
+		boolean ret = nonMemberService.emailAuthCheck(map.get("email"), map.get("authNum"));
 		result.status = true;
-		if (msg.equals("success")) {
-			result.result = msg;
+		if (ret) {
+			result.result = "success";
 		} else {
-			result.result = msg;
+			result.result = "fail";
 		}
 		response = new ResponseEntity<>(result, HttpStatus.OK);
 

@@ -3,7 +3,7 @@ export default {
     URL: 'http://localhost:8080/noteAPI',
     ROUTES: {
         signup: '/nonmember/signUp',
-        login: '/nonmember/login',
+        login: '/login',
         email: '/nonmember/email',
         authSend: '/nonmember/email/authSend',
         authCheck: '/nonmember/email/authCheck',
