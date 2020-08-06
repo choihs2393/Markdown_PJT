@@ -86,7 +86,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
-              class="mb-4 mr-1" color="primary" @click="signup(signupData), close()"
+              class="mb-4 mr-1" color="primary" @click="signup(signupData), submit()"
               :disabled="invalid || !isDuplicateChecked || !isAuthNumChecked">SignUp</v-btn>
             <v-btn class="mb-4 mr-4" @click="close()">close</v-btn>
           </v-card-actions>
@@ -173,10 +173,11 @@ export default {
       'checkAuthNum',
     ]),
 
-    // submit() {
-    //   this.$refs.observer.validate()
-    //   this.isSignupModal = false
-    // },
+    submit() {
+      this.$refs.observer.validate()
+      this.isSignupModal = false
+    },
+
     close() {
       this.signupData = {
         email: '',
