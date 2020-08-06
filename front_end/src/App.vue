@@ -226,6 +226,9 @@ html, body {
   font-family: 'Helvetica Neue', Arial, sans-serif;
   color: #333;
 }
+.v-list {
+  padding: 0;
+}
 .sidesubheader {
     border-bottom: solid 3px rgb(100, 93, 102);
     display: inline-block;
@@ -253,7 +256,7 @@ html, body {
     color: rgb(95, 90, 97) !important;
     border-bottom: solid 2px rgb(83, 81, 83);
     display: inline-block;
-    margin: 1em 0.5em 0 0.5em;
+    margin: 0.5em;
     padding: 0.75em 0;
 }
 </style>
