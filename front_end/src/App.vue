@@ -17,13 +17,14 @@
         <div>
           <span>{{ $store.state.userEmail }}님</span>
         </div>
+        <MypageModal />
         <LogoutModal />
       </template>
 
       <v-switch
         v-model="$vuetify.theme.dark"
         hide-details
-        label="Theme Dark"
+        label="Dark"
       ></v-switch>
 
     </v-app-bar>
@@ -127,6 +128,7 @@ const fs = require("fs");
 import LoginModal from "./components/LoginModal.vue"
 import SignupModal from "./components/SignupModal.vue"
 import LogoutModal from "./components/LogoutModal.vue"
+import MypageModal from "./components/MypageModal.vue"
 
 export default {
   name: "App",
@@ -145,7 +147,8 @@ export default {
   components: {
     LoginModal,
     SignupModal,
-    LogoutModal
+    LogoutModal,
+    MypageModal,
   },
   props: {
     source: String,
