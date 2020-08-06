@@ -22,6 +22,9 @@ export default new Vuex.Store({
     isDuplicateChecked: false,
     isAuthNumChecked: false,
 
+    // password_check
+    isPasswordChecked: false,
+
     theme: '',
   },
 
@@ -74,7 +77,12 @@ export default new Vuex.Store({
     // 인증번호 확인 결과 저장
     SET_AUTHNUM_CHECKED(state, result) {
       result==='success' ? state.isAuthNumChecked = true : state.isAuthNumChecked = false
-    }
+    },
+
+    // 비밀번호 확인 결과 저장
+    SET_PASSWORD_CHECKED(state, result) {
+      state.isPasswordChecked = result
+    },
   },
 
   // 범용적인 함수들. mutations에 정의한 함수를 actions에서 실행 가능.
@@ -87,8 +95,13 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
         .then(res => {
           commit('SET_TOKEN', res.headers)  // 토큰 저장
+          commit('SET_PASSWORD_CHECKED', true)
         })
-        .catch(err => console.error(err.response.data))
+        .catch(err => {
+          if (err.response.status===401) {
+            commit('SET_PASSWORD_CHECKED', false)
+          }
+        })
     },
     
     // 회원가입
