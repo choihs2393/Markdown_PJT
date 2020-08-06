@@ -53,12 +53,12 @@
         </v-toolbar>
 
         <v-list subheader flat>
-          <v-subheader inset>FOLDERS</v-subheader>
+          <v-subheader >FOLDERS</v-subheader>
 
             <v-list-item 
               v-for="folder in folders" 
-              :key="folder.title" 
-              link>
+              :key="folder.title"
+              disabled>
               <!-- <v-list-item-avatar>
                 <v-icon :class="[folder.iconClass]">{{ folder.icon }}</v-icon>
               </v-list-item-avatar> -->
@@ -68,18 +68,18 @@
                 <v-list-item-subtitle>{{ folder.subtitle }}</v-list-item-subtitle>
               </v-list-item-content>
 
-              <v-list-item-action>
+              <!-- <v-list-item-action>
                 <v-btn icon>
                   <v-icon color="grey lighten-1">mdi-information</v-icon>
                 </v-btn>
-              </v-list-item-action>
+              </v-list-item-action> -->
             </v-list-item>
 
-            <v-divider inset></v-divider>
+            <v-divider ></v-divider>
 
-            <v-subheader inset>FILES</v-subheader>
+            <v-subheader >FILES</v-subheader>
 
-            <v-list-item v-for="file in files" :key="file.title" link>
+            <v-list-item v-for="file in files" :key="file.title" @click="openFile(file.fileFullPath)">
                 <!-- <v-list-item-avatar>
                 <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
               </v-list-item-avatar> -->
@@ -89,11 +89,11 @@
                 <v-list-item-subtitle>{{ file.subtitle }}</v-list-item-subtitle>
               </v-list-item-content>
 
-              <v-list-item-action>
+              <!-- <v-list-item-action>
                 <v-btn icon ripple @click="openFile(file.fileFullPath)">
                   <v-icon color="grey lighten-1">mdi-information</v-icon>
                 </v-btn>
-              </v-list-item-action>
+              </v-list-item-action> -->
             </v-list-item>
           </v-list>
 
@@ -207,7 +207,7 @@ export default {
         if(err) throw err;
         // console.log(data);
         // fileData = data;
-        openedFileData = data;
+        let openedFileData = data;
         console.log(openedFileData);
 
         let win = BrowserWindow.getFocusedWindow();
@@ -233,7 +233,7 @@ html, body {
     margin: 2.5em 0 0 0;
     padding: 0 0.75em 0.5em 0;
 }
-.theme--light.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled) {
+.theme--light.v-list-item:not(.v-list-item--active) {
     color: #615f75 !important;
     font-size:0.5em;
 }
