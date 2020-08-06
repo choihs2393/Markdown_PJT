@@ -184,8 +184,8 @@ Style with support for rainbow parens
   display: block;
   overflow-x: auto;
   padding: 0.5em;
-  background: #474949;
-  color: #d1d9e1;
+  background: #474949 !important;
+  color: #d1d9e1 !important;
 }
 
 
