@@ -16,18 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ggbg.note.bean.Account;
-import com.ggbg.note.bean.BasicResponse;
+import com.ggbg.note.bean.SuccessResponse;
 import com.ggbg.note.service.IAccountService;
 import com.ggbg.note.util.JwtTokenUtil;
 
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-
-@ApiResponses(value = { @ApiResponse(code = 401, message = "Unauthorized", response = BasicResponse.class),
-		@ApiResponse(code = 403, message = "Forbidden", response = BasicResponse.class),
-		@ApiResponse(code = 404, message = "Not Found", response = BasicResponse.class),
-		@ApiResponse(code = 500, message = "Failure", response = BasicResponse.class) })
 
 @RequestMapping("/account")
 @RestController
@@ -58,7 +53,7 @@ public class AccountController {
 //	public ResponseEntity logout(@RequestParam(required = true) String email) {
 //		logger.debug("=============== signIn entered =============");
 //		ResponseEntity response = null;
-//		final BasicResponse result = new BasicResponse();
+//		final SuccessResponse result = new SuccessResponse();
 //		String msg = accountService.logout(email);
 //		if("msg".equals("success")) {
 //			result.status = true;
@@ -79,7 +74,7 @@ public class AccountController {
 			@RequestBody(required = true) Map<String, String> map) {
 		logger.debug("=============== accountModify =============");
 		ResponseEntity response = null;
-		final BasicResponse result = new BasicResponse();
+		final SuccessResponse result = new SuccessResponse();
 		String email = map.get("email");
 		String password = map.get("password");
 		String newPassword = map.get("newPassword");
@@ -117,7 +112,7 @@ public class AccountController {
 			@RequestBody(required = true) Map<String, String> map) {
 		logger.debug("=============== accountModify =============");
 		ResponseEntity response = null;
-		final BasicResponse result = new BasicResponse();
+		final SuccessResponse result = new SuccessResponse();
 		String email = map.get("email");
 		String password = map.get("password");
 		boolean isValidAccount = accountService.validAccountCheck(email, password);
@@ -163,7 +158,7 @@ public class AccountController {
 //			tmp2.add(new SimpleGrantedAuthority(a));
 //		}
 		ResponseEntity response = null;
-		final BasicResponse result = new BasicResponse();
+		final SuccessResponse result = new SuccessResponse();
 
 		return response;
 	}

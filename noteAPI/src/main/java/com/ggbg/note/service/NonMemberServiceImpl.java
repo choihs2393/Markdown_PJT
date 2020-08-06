@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.ggbg.note.bean.Account;
 import com.ggbg.note.bean.Role;
 import com.ggbg.note.bean.Token;
+import com.ggbg.note.exception.InternalServerException;
 import com.ggbg.note.repository.AccountRepo;
 import com.ggbg.note.util.JwtTokenUtil;
 
@@ -41,7 +42,7 @@ public class NonMemberServiceImpl implements INonMemberService {
 	private JavaMailSender mailSender;
 
 	@Override
-	public String signUp(Account account) {
+	public boolean signUp(Account account) {
 		BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder(10);
 		account.setRole(Role.USER);
 		account.setPassword(bcryptPasswordEncoder.encode(account.getPassword()));
@@ -51,21 +52,21 @@ public class NonMemberServiceImpl implements INonMemberService {
 
 		account.setCreateDate(simpleDateFormat.format(date));
 		accountRepo.save(account); // 만약 db가 꺠져서 저장이 안되던가 하는 상황에서는 에러처리를 어떻게 해야하는지 jpa search
-		return "success";
+		return true;
 	}
 
 	@Override
-	public String emailCheck(String email) {
+	public boolean emailCheck(String email) {
 		Optional<Account> optional = accountRepo.findAccountByEmail(email);
 		if (optional.isPresent()) {
-			return "fail";
+			return false;
 		} else {
-			return "success"; // 해당부분에 대해서는 예외처리로
+			return true; // 해당부분에 대해서는 예외처리로
 		}
 	}
 
 	@Override
-	public String emailAuthSend(String email) {
+	public boolean emailAuthSend(String email) {
 
 		Random random = new Random();
 		int randNum = random.nextInt(3829375) + 293817;
@@ -98,21 +99,17 @@ public class NonMemberServiceImpl implements INonMemberService {
 			ValueOperations<String, Object> vop = redisTemplate.opsForValue();
 			vop.set(key, token);
 			redisTemplate.expire(key, 60 * 5, TimeUnit.SECONDS); // 5분
-			return "success";
+			return true;
 		} catch (Exception e) {
-			e.printStackTrace();
+			throw new InternalServerException("emailAuthSend");
 		}
-
-		return "fail";
 	}
 
 	@Override
-	public String emailAuthCheck(String email, String authNum) { // 여기서 fail 뜨면 시간 만료된거니까 다시 인증코드 보내라하세염
+	public boolean emailAuthCheck(String email, String authNum) { // 여기서 fail 뜨면 시간 만료된거니까 다시 인증코드 보내라하세염
 		/*
 		 * redis 에서 가져와서 같은 값인지 검증하는 부분
 		 */
-		System.out.println(email);
-		System.out.println(authNum);
 		ValueOperations<String, Object> vop = redisTemplate.opsForValue();
 		String key = email + "-auth";
 
@@ -120,11 +117,11 @@ public class NonMemberServiceImpl implements INonMemberService {
 		if (token != null) {
 			String value = jwtTokenUtil.getEmailAuthNumFromToken(token.getToken());
 			if (authNum.equals(value)) {
-				return "success";
+				return true;
 			}
 		}
 		
-		return "fail";
+		return false;
 	}
 
 }

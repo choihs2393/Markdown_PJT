@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -70,9 +71,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
         http
             .authorizeRequests()
 //            .antMatchers("/admin/**").hasAnyRole("ADMIN")
-            .antMatchers("/account/**").hasAnyRole("USER")
             .antMatchers("/nonmember/**").permitAll()
             .antMatchers("/token/**").permitAll()
+            .antMatchers("/account/**").hasAnyRole("USER")
             .anyRequest().authenticated();
         
         http
@@ -98,6 +99,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	}
 	
 	@Override
+	public void configure(WebSecurity web) {
+		web
+			.ignoring()
+			.antMatchers("/nonmember/**");
+
+	}
+	@Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(detailService).passwordEncoder(passwordEncoder());
     }
@@ -113,7 +121,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		
 		try {
 			filter.setAuthenticationManager(this.authenticationManagerBean());
-			filter.setFilterProcessesUrl("/nonmember/login");
+			filter.setFilterProcessesUrl("/login");
 			filter.setPostOnly(true);
 			filter.setUsernameParameter("username");
 			filter.setPasswordParameter("password");

@@ -2,7 +2,7 @@ package com.ggbg.note.bean;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class BasicResponse {
+public class SuccessResponse {
     @ApiModelProperty(value = "status", position = 1)
     public boolean status;
     @ApiModelProperty(value = "result", position = 2)

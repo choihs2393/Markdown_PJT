@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import com.ggbg.note.exception.UnAuthorizationException;
 import com.ggbg.note.util.JwtTokenUtil;
 
 @Component
@@ -25,9 +26,7 @@ public class VerifyAccountInterceptor implements HandlerInterceptor{
 		if(email.equals(emailByToken)) {
 			return true;
 		}else {
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-			return false;
+			throw new UnAuthorizationException(email);
 		}
 	}
-
 }
