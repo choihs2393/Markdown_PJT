@@ -30,7 +30,7 @@ public class GlobalExceptionHandler {
 		result.status = ErrorCode.Unauthorized_Account.getStatus();
 		response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
 		
-//		httpConnection.postRequest(ErrorCode.Unauthorized_Account.getMessage(), e.getMessage());
+		httpConnection.postRequest(ErrorCode.Unauthorized_Account.getMessage(), e.getMessage());
 		
 		return response;
 	}
@@ -46,7 +46,7 @@ public class GlobalExceptionHandler {
 		result.status = ErrorCode.ExpiredToken.getStatus();
 		response = new ResponseEntity<>(result, HttpStatus.NOT_ACCEPTABLE);
 		
-//		httpConnection.postRequest(ErrorCode.ExpiredToken.getMessage(), e.getMessage());
+		httpConnection.postRequest(ErrorCode.ExpiredToken.getMessage(), e.getMessage());
 
 		return response;
 	}
@@ -62,7 +62,7 @@ public class GlobalExceptionHandler {
 		result.status = ErrorCode.Unknown.getStatus();
 		response = new ResponseEntity<>(result, HttpStatus.SERVICE_UNAVAILABLE);
 		
-//		httpConnection.postRequest(ErrorCode.Unknown.getMessage(), e.getMessage());
+		httpConnection.postRequest(ErrorCode.Unknown.getMessage(), e.getMessage());
 		
 		return response;
 	}
@@ -78,7 +78,7 @@ public class GlobalExceptionHandler {
 		result.status = ErrorCode.InternalServer.getStatus();
 		response = new ResponseEntity<>(result, HttpStatus.SERVICE_UNAVAILABLE);
 		
-//		httpConnection.postRequest(ErrorCode.InternalServer.getMessage(), e.getMessage());
+		httpConnection.postRequest(ErrorCode.InternalServer.getMessage(), e.getMessage());
 
 		return response;
 	}
