@@ -10,3 +10,4 @@ services:
     build: .
     expose:
       - 8080
+      
