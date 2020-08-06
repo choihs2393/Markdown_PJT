@@ -203,14 +203,13 @@ export default {
 
     openFile(absoluteFilePath) {
       fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
-        // console.log(absoluteFilePath);
         if(err) throw err;
         // console.log(data);
         // fileData = data;
         let openedFileData = data;
-        console.log(openedFileData);
+        // console.log(openedFileData);
 
-        let win = BrowserWindow.getFocusedWindow();
+        let win = remote.BrowserWindow.getFocusedWindow();
         win.webContents.send("ping", openedFileData);
       });
     }
