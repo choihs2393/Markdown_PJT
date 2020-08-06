@@ -95,11 +95,11 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
         .then(res => {
           commit('SET_TOKEN', res.headers)  // 토큰 저장
-          commit('SET_PASSWORD_CHECKED', true)
+          commit('SET_PASSWORD_CHECKED', false)
         })
         .catch(err => {
           if (err.response.status===401) {
-            commit('SET_PASSWORD_CHECKED', false)
+            commit('SET_PASSWORD_CHECKED', true)
           }
         })
     },

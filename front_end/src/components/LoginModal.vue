@@ -32,7 +32,7 @@
                   prepend-icon="mdi-lock"
                 ></v-text-field>
               </ValidationProvider>
-              <v-alert dense outlined type="error" v-if="isPasswordAlert && !isPasswordChecked">
+              <v-alert dense outlined type="error" v-if="isPasswordChecked">
                 이메일과 비밀번호가 맞지 않습니다.
               </v-alert>
             </v-form>
