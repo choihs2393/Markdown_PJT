@@ -123,7 +123,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 		vop.set(email, token); // 일주일
 		redisTemplate.expire(email, 60 * 60 * 24 * 31, TimeUnit.SECONDS); // 한달
 
-		// 로그인했을떄는 계속 refresh token 만들어주고 / refresh token 이 살아있는동안은 access token 과
+		// 로그인했을떄는 계속 refresh  token 만들어주고 / refresh token 이 살아있는동안은 access token 과
 		// refresh token 의 값을 이용해서 access token 갱신
 		// 그럼 쿠키에 담긴 access token 의 expire은 refresh token 과 같이 하는건지?
 
