@@ -34,24 +34,20 @@
             <v-list-item @click="() => {}">
               <MypageModal />
             </v-list-item>
-            <v-list-item>
-              <v-list-item-title>
-                <LogoutModal />
-              </v-list-item-title>
+            <v-list-item @click="$store.state.isLogoutModal = !$store.state.isLogoutModal">
+              <v-list-item-title>Logout</v-list-item-title>
             </v-list-item>
             <v-list-item>
-              <v-list-item-title>
                 <v-switch
                   v-model="$vuetify.theme.dark"
-                  hide-details
                   label="Dark"
                 ></v-switch>
-              </v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
       </template>
 
+      <LogoutModal />
     </v-app-bar>
 </template>
 

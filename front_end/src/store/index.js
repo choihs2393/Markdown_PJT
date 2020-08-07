@@ -26,7 +26,8 @@ export default new Vuex.Store({
     isPasswordChecked: false,
 
     // modal
-    drawer: true,
+    drawer: false,
+    isLogoutModal: false,
 
     theme: '',
   },
