@@ -99,7 +99,6 @@ import { mapActions, mapGetters } from 'vuex';
 import { remote } from "electron";
 
 const fs = require("fs");
-<<<<<<< HEAD
 import NavBar from "./components/NavBar.vue"
 
 // 드래그 후 드랍을 하면,
@@ -166,12 +165,6 @@ document.addEventListener('drop', (event) => {
       });
     }
 });
-=======
-import LoginModal from "./components/LoginModal.vue"
-import SignupModal from "./components/SignupModal.vue"
-import LogoutModal from "./components/LogoutModal.vue"
-import MypageModal from "./components/MypageModal.vue"
->>>>>>> feature/S03P13B104-38_Mypage-UI
 
 export default {
   name: "App",
@@ -188,14 +181,7 @@ export default {
     ...mapGetters(['isLoggedIn']),
   },
   components: {
-<<<<<<< HEAD
     NavBar
-=======
-    LoginModal,
-    SignupModal,
-    LogoutModal,
-    MypageModal,
->>>>>>> feature/S03P13B104-38_Mypage-UI
   },
   props: {
     source: String,
