@@ -39,7 +39,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn :disabled="invalid" color="primary" @click="login(loginData), isPasswordAlert=true">Login</v-btn>
+            <v-btn :disabled="invalid" color="primary" @click="login(loginData)">Login</v-btn>
           </v-card-actions>
         </v-card>
       </ValidationObserver>
@@ -82,7 +82,7 @@ export default {
   data() {
     return {
       isLoginModal: false,
-      isPasswordAlert: false,
+      // isPasswordAlert: false,
 
       loginData: {
         email: '',
