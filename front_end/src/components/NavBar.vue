@@ -1,6 +1,6 @@
 <template>
     <v-app-bar app elevate-on-scroll>
-        <v-app-bar-nav-icon @click.stop="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-app-bar-nav-icon @click="$store.state.drawer = !$store.state.drawer"></v-app-bar-nav-icon>
       <v-toolbar-title>Markdown</v-toolbar-title>
       <v-spacer></v-spacer>
       
@@ -15,14 +15,42 @@
         <div>
           <span>{{ $store.state.userEmail }}님</span>
         </div>
-        <LogoutModal />
-      </template>
 
-      <v-switch
-        v-model="$vuetify.theme.dark"
-        hide-details
-        label="Theme Dark"
-      ></v-switch>
+        <v-menu
+          left
+          bottom
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              icon
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>mdi-cog</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list>
+            <v-list-item @click="() => {}">
+              <MypageModal />
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title>
+                <LogoutModal />
+              </v-list-item-title>
+            </v-list-item>
+            <v-list-item>
+              <v-list-item-title>
+                <v-switch
+                  v-model="$vuetify.theme.dark"
+                  hide-details
+                  label="Dark"
+                ></v-switch>
+              </v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </template>
 
     </v-app-bar>
 </template>
@@ -33,12 +61,14 @@ import { mapGetters } from 'vuex';
 import LoginModal from "./LoginModal.vue"
 import SignupModal from "./SignupModal.vue"
 import LogoutModal from "./LogoutModal.vue"
+import MypageModal from "./MypageModal.vue"
 
 export default {
     components: {
         LoginModal,
         SignupModal,
-        LogoutModal
+        LogoutModal,
+        MypageModal,
     },
     computed: {
         ...mapGetters(['isLoggedIn']),

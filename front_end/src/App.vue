@@ -1,10 +1,10 @@
 <template>
   <v-app id="inspire">
 
-    <NavBar></NavBar>
+    <NavBar />
 
     <v-navigation-drawer
-      v-model="drawer"
+      v-model="$store.state.drawer"
       app>
       <v-card>
         <v-toolbar
@@ -168,8 +168,18 @@ document.addEventListener('drop', (event) => {
 
 export default {
   name: "App",
+
+    components: {
+      NavBar,
+    },
+
+    props: {
+      source: String,
+    },
+
   created() {
   },
+
   updated(){
     var div = document.getElementById("compiledMarkdown");
     if(this.$vuetify.theme.dark == true)
@@ -177,19 +187,14 @@ export default {
     else
       div.style.color = "black";
   },
+
   computed: {
     ...mapGetters(['isLoggedIn']),
   },
-  components: {
-    NavBar
-  },
-  props: {
-    source: String,
-  },
+
   data () {
     return {
       dialog: false,
-      drawer: false,
       theme: this.$vuetify.theme.dark,
       folders: [
         // { icon: 'folder', iconClass: 'grey lighten-1 white--text', title: 'Photos', subtitle: 'Jan 9, 2014' },
