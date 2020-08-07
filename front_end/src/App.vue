@@ -96,9 +96,10 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import { remote } from "electron";
+import { remote, ipcRenderer } from "electron";
 
 const fs = require("fs");
+const path = require("path");
 import NavBar from "./components/NavBar.vue"
 
 // 드래그 후 드랍을 하면,
@@ -155,13 +156,15 @@ document.addEventListener('drop', (event) => {
       
       fs.readFile(f.path, 'utf8', (err, data) => {
         if(err) throw err;
+        console.log('f.path', f.path)
         // console.log(data);
         // fileData = data;
         let openedFileData = data;
-        // console.log("openedFileData : " + openedFileData);
+        console.log("openedFileData : " + openedFileData);
 
+        let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': f.path};
         let win = remote.BrowserWindow.getFocusedWindow();
-        win.webContents.send("ping", openedFileData);
+        win.webContents.send("ping", fileDataObject);
       });
     }
 });
@@ -179,7 +182,31 @@ export default {
 
   created() {
   },
+  mounted() {
+    ipcRenderer.on('ping', (event, message) => {
+      var absoluteFilePath = message['absoluteFilePath'];
+      console.log('absolute', absoluteFilePath);
+      var folderFullPath = path.dirname(absoluteFilePath);
+      var folderName = path.basename(path.dirname(absoluteFilePath));
 
+      // console.log("folderFullPath : " + folderFullPath);
+      // console.log("folderName : " + folderName);
+      this.folders = [];
+      this.folders.push({icon: 'folder',  iconClass: 'grey lighten-1 white--text', title: folderName});
+
+      fs.readdir(folderFullPath, (err, fileList) => {
+        this.files = [];
+
+        // console.log('filelist', fileList);
+
+        for(var i = 0; i < fileList.length; i++) {
+          // console.log(folderFullPath + "\\" + fileList[i]);
+          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
+            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+        }
+      })
+    });
+  },
   updated(){
     var div = document.getElementById("compiledMarkdown");
     if(this.$vuetify.theme.dark == true)
@@ -250,8 +277,10 @@ export default {
         let openedFileData = data;
         // console.log(openedFileData);
 
+        let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': absoluteFilePath};
         let win = remote.BrowserWindow.getFocusedWindow();
-        win.webContents.send("ping", openedFileData);
+        win.webContents.send("ping", fileDataObject);
+        console.log('absolutefilepath', absoluteFilePath);
       });
     }
   },

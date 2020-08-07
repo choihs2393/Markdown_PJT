@@ -40,7 +40,7 @@ var data = sampleData;
 
 require('electron').ipcRenderer.on('ping', (event, message) => {
   console.log(message);
-  data.input = message;
+  data.input = message['openedFileData'];
 });
 
 export default {

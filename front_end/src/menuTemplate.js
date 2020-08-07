@@ -168,8 +168,8 @@ function openFile() {
     .then(result => {
         fileData = result;
 
-        console.log(typeof fileData);
-        console.log(fileData);
+        // console.log(typeof fileData);
+        // console.log(fileData);
 
         // 작성중인 텍스트가 있다면, 저장할건지 먼저 물어본 뒤 파일을 열기.
         if(fileData.length > 0) {
@@ -224,10 +224,11 @@ function openFile() {
                 // console.log(data);
                 // fileData = data;
                 openedFileData = data;
-                console.log(openedFileData);
+                // console.log(openedFileData);
 
+                let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': absoluteFilePath};
                 let win = BrowserWindow.getFocusedWindow();
-                win.webContents.send("ping", openedFileData);
+                win.webContents.send("ping", fileDataObject);
             });
         });
     });
