@@ -9,5 +9,7 @@ export default {
         authCheck: '/nonmember/email/authCheck',
 
         logout: '/account/logout',
+        modify: '/account/v1/modify',
+        delete: '/account/v1/delete',
     }
 }

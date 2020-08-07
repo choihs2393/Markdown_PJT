@@ -26,7 +26,7 @@
             v-bind="attrs"
             v-on="on"
           >
-            <v-icon>mdi-cog</v-icon>
+            <v-icon>fas fa-ellipsis-h</v-icon>
           </v-btn>
         </template>
 
