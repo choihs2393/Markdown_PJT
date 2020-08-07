@@ -16,7 +16,7 @@ export default new Vuex.Store({
     accessTokenExpiraionDate: localStorage.getItem('access-token-expiraion-date'),
     refreshToken: localStorage.getItem('refresh-token'),
     refreshTokenExpiraionDate: localStorage.getItem('refresh-token-expiraion-date'),
-    userEmail: '',
+    userEmail: localStorage.getItem('email'),
 
     // email_authentication
     isDuplicateChecked: false,
@@ -25,9 +25,14 @@ export default new Vuex.Store({
     // password_check
     isPasswordChecked: false,
 
+    // modify_check
+    isModifyChecked: false,
+
     // modal
     drawer: false,
     isLogoutModal: false,
+    isMypageModal: false,
+    isDeleteModal: false,
 
     theme: '',
   },
@@ -40,6 +45,7 @@ export default new Vuex.Store({
       headers: {
         Authorization:  state.authorization,
         RefreshToken: state.refreshToken,
+        Email: state.userEmail,
       }
     }),
   },
@@ -62,6 +68,7 @@ export default new Vuex.Store({
       localStorage.setItem('access-token-expiraion-date', state.accessTokenExpiraionDate)
       localStorage.setItem('refresh-token', state.refreshToken)
       localStorage.setItem('refresh-token-expiraion-date', state.refreshTokenExpiraionDate)
+      localStorage.setItem('email', state.userEmail)
     },
 
     // 토큰 삭제
@@ -86,6 +93,11 @@ export default new Vuex.Store({
     // 비밀번호 확인 결과 저장
     SET_PASSWORD_CHECKED(state, result) {
       state.isPasswordChecked = result
+    },
+
+    // 회원정보 수정 결과 저장
+    SET_MODIFY_RESULT(state, result) {
+      result==='success' ? state.isModifyChecked = false : state.isModifyChecked = true
     },
   },
 
@@ -132,6 +144,7 @@ export default new Vuex.Store({
           localStorage.removeItem('access-token-expiraion-date')
           localStorage.removeItem('refresh-token')
           localStorage.removeItem('refresh-token-expiraion-date')
+          localStorage.removeItem('email')
         })
         .catch(err => console.error(err.response.data))
     },
@@ -173,6 +186,35 @@ export default new Vuex.Store({
         })
         .catch(err => console.error(err.response.data))
     },
+
+    // 회원정보 수정
+    updateUserInfo({ getters, commit, dispatch }, userInfo) {
+      axios.post(SERVER.URL + SERVER.ROUTES.modify, userInfo, getters.config)
+        .then(res => {
+          commit('SET_MODIFY_RESULT', res.data['result'])
+        })
+        .catch(err => {
+          // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+          if (err.response.status===401) {
+            dispatch('logout')
+          }
+        })
+    },
+
+    // 회원탈퇴
+    deleteAccount({ getters, commit, dispatch }, userInfo) {
+      axios.post(SERVER.URL + SERVER.ROUTES.delete, userInfo, getters.config)
+        .then(res => {
+          commit('SET_MODIFY_RESULT', res.data['result'])
+          dispatch('logout')
+        })
+        .catch(err => {
+          // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+          if (err.response.status===401) {
+            dispatch('logout')
+          }
+        })
+    }
   },
   modules: {}
 });

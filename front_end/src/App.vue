@@ -2,7 +2,8 @@
   <v-app id="inspire">
 
     <NavBar />
-
+    
+    <!-- <SideBar /> -->
     <v-navigation-drawer
       v-model="$store.state.drawer"
       app>
@@ -85,8 +86,7 @@
               <v-btn text color="primary" @click="dialog = false">Submit</v-btn>
             </v-card-actions>
           </v-card>
-      </v-dialog>
-
+        </v-dialog>
       </v-card>
     </v-navigation-drawer>
 
@@ -101,6 +101,7 @@ import { remote, ipcRenderer } from "electron";
 const fs = require("fs");
 const path = require("path");
 import NavBar from "./components/NavBar.vue"
+// import SideBar from "./components/SideBar.vue"
 
 // 드래그 후 드랍을 하면,
 document.addEventListener('drop', (event) => {
