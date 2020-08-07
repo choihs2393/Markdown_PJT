@@ -28,6 +28,8 @@ export default new Vuex.Store({
     // modal
     drawer: false,
     isLogoutModal: false,
+    isMypageModal: false,
+
 
     theme: '',
   },
