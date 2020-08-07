@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.FilterChain;
@@ -105,10 +106,10 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 		
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		
-		Calendar accessTokenCal = Calendar.getInstance();
+		Calendar accessTokenCal = Calendar.getInstance(Locale.KOREA);
 		accessTokenCal.add(Calendar.MINUTE, 30);
 
-		Calendar refrestTokenCal = Calendar.getInstance();
+		Calendar refrestTokenCal = Calendar.getInstance(Locale.KOREA);
 		refrestTokenCal.add(Calendar.DATE, 30);
 		
 		String accessTokenExpirationDate = simpleDateFormat.format(accessTokenCal.getTime()); 
