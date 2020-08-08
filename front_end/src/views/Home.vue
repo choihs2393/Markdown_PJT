@@ -1,5 +1,7 @@
 <template>
   <v-main>
+    <SideBar />
+
     <v-container class="md" fluid>
 
       <div id="editor_div">
@@ -36,6 +38,8 @@
 import parse from "../parse";
 import sampleData from "../sampleData.js";
 
+import SideBar from "@/components/SideBar.vue";
+
 var data = sampleData;
 
 require('electron').ipcRenderer.on('ping', (event, message) => {
@@ -46,6 +50,7 @@ require('electron').ipcRenderer.on('ping', (event, message) => {
 export default {
   name: "Home",
   components: {
+    SideBar
   },
   created() {
   },

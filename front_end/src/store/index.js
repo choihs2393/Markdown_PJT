@@ -1,8 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import router from "@/router/index.js"
 
 import axios from 'axios'
 import SERVER from '@/api/spring'
+
+
 
 Vue.use(Vuex);
 
@@ -27,6 +30,7 @@ export default new Vuex.Store({
 
     // modal
     drawer: false,
+    drawerShare: false,
     isLogoutModal: false,
 
     theme: '',
@@ -100,6 +104,8 @@ export default new Vuex.Store({
         .then(res => {
           commit('SET_TOKEN', res.headers)  // 토큰 저장
           commit('SET_PASSWORD_CHECKED', false)
+
+          router.push({name: "Share"});
         })
         .catch(err => {
           if (err.response.status===401) {
@@ -132,6 +138,8 @@ export default new Vuex.Store({
           localStorage.removeItem('access-token-expiraion-date')
           localStorage.removeItem('refresh-token')
           localStorage.removeItem('refresh-token-expiraion-date')
+          
+          router.push({name: "Home"});
         })
         .catch(err => console.error(err.response.data))
     },
