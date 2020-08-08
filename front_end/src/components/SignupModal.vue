@@ -2,7 +2,7 @@
   <div>
     <v-btn text @click="isSignupModal=!isSignupModal">SignUp</v-btn>
 
-    <v-dialog v-model="isSignupModal" max-width="500px">
+    <v-dialog v-model="isSignupModal" persistent max-width="500px">
       <ValidationObserver ref="observer" v-slot="{ invalid }">
         <v-card class="elevation-12">
           <v-toolbar dark flat>

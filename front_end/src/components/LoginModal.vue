@@ -2,8 +2,8 @@
   <div>
     <v-btn text @click="isLoginModal = !isLoginModal">LogIn</v-btn>
 
-    <v-dialog v-model="isLoginModal" max-width="500px">
-      <ValidationObserver v-slot="{ invalid }">
+    <v-dialog v-model="isLoginModal" persistent max-width="500px">
+      <ValidationObserver ref="observer">
         <v-card class="elevation-12">
           <v-toolbar dark flat>
             <v-toolbar-title>LogIn</v-toolbar-title>
@@ -30,6 +30,7 @@
                   name="password"
                   type="password"
                   prepend-icon="mdi-lock"
+                  @keyup.enter="login(loginData), submit()"
                 ></v-text-field>
               </ValidationProvider>
               <v-alert dense outlined type="error" v-if="isPasswordChecked">
@@ -39,7 +40,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn :disabled="invalid" color="primary" @click="login(loginData)">Login</v-btn>
+            <v-btn color="primary" @click="login(loginData), submit()">Login</v-btn>
+            <v-btn @click="close()">Close</v-btn>
           </v-card-actions>
         </v-card>
       </ValidationObserver>
@@ -94,10 +96,19 @@ export default {
   methods: {
     ...mapActions(['login']),
 
-    // submit() {
-    //   this.$refs.observer.validate()
-    //   this.isLoginModal = false
-    // },
+    close() {
+      this.loginData = {
+        email: '',
+        password: '',
+      }
+      this.$refs.observer.reset()
+      this.isLoginModal = false
+      this.$store.state.isPasswordChecked = false
+    },
+
+    submit() {
+      this.$refs.observer.validate()
+    },
   }
 }
 </script>

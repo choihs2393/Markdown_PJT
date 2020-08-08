@@ -117,7 +117,7 @@ export default new Vuex.Store({
           commit('SET_TOKEN', res.headers)  // 토큰 저장
           commit('SET_PASSWORD_CHECKED', false)
 
-          router.push({name: "Share"});
+          // router.push({name: "Share"});
         })
         .catch(err => {
           if (err.response.status===401) {

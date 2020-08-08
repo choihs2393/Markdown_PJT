@@ -5,7 +5,7 @@
         <v-toolbar-title>Logout</v-toolbar-title>
       </v-toolbar>
       <v-card-text>
-        Are you sure you want to log out?
+        로그아웃 하시겠습니까?
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>

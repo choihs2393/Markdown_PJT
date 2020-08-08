@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-dialog v-model="$store.state.isMypageModal" max-width="500px">
+    <v-dialog v-model="$store.state.isMypageModal" persistent max-width="500px">
       <ValidationObserver ref="observer">
         <v-card class="elevation-12">
           <v-toolbar dark flat>

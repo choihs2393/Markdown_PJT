@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="$store.state.isDeleteModal" max-width="400">
+  <v-dialog v-model="$store.state.isDeleteModal" persistent max-width="400">
     <v-card>
       <v-card-title class="headline">정말 계정을 탈퇴하시겠습니까?</v-card-title>
       <v-card-actions>
