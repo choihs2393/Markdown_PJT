@@ -15,6 +15,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ggbg.note.bean.Account;
 import com.ggbg.note.bean.Role;
@@ -41,6 +42,7 @@ public class NonMemberServiceImpl implements INonMemberService {
 	@Autowired
 	private JavaMailSender mailSender;
 
+	@Transactional
 	@Override
 	public boolean signUp(Account account) {
 		BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder(10);
