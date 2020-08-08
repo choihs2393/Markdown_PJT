@@ -47,7 +47,7 @@ import SideBar from "@/components/SideBar.vue";
 var data = sampleData;
 
 require('electron').ipcRenderer.on('ping', (event, message) => {
-  console.log(message);
+  // console.log(message);
   data.input = message['openedFileData'];
 });
 
@@ -109,7 +109,7 @@ document.addEventListener('drop', (event) => {
         // console.log(data);
         // fileData = data;
         let openedFileData = data;
-        console.log("openedFileData : " + openedFileData);
+        // console.log("openedFileData : " + openedFileData);
 
         let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': f.path};
         let win = remote.BrowserWindow.getFocusedWindow();
