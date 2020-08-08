@@ -88,17 +88,44 @@
 </template>
 
 <script>
-import { remote } from "electron";
+import { remote, ipcRenderer } from "electron";
 import fs from "fs";
+import path from "path";
 
 export default {
+   mounted() {
+    ipcRenderer.on('ping', (event, message) => {
+      var absoluteFilePath = message['absoluteFilePath'];
+      // console.log('absolute', absoluteFilePath);
+      var folderFullPath = path.dirname(absoluteFilePath);
+      var folderName = path.basename(path.dirname(absoluteFilePath));
+
+      // console.log("folderFullPath : " + folderFullPath);
+      // console.log("folderName : " + folderName);
+      this.folders = [];
+      this.folders.push({icon: 'folder',  iconClass: 'grey lighten-1 white--text', title: folderName});
+
+      fs.readdir(folderFullPath, (err, fileList) => {
+        this.files = [];
+
+        // console.log('filelist', fileList);
+
+        for(var i = 0; i < fileList.length; i++) {
+          // console.log(folderFullPath + "\\" + fileList[i]);
+          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
+            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+        }
+      })
+    });
+  },
     data() {
         return {
             dialog: false,
-            folders: {
-            },
-            files: {
-            }
+            folders: [
+
+            ],
+            files: [
+            ]
         }
     },
     methods: {
@@ -161,8 +188,10 @@ export default {
         let openedFileData = data;
         // console.log(openedFileData);
 
+        let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': absoluteFilePath};
         let win = remote.BrowserWindow.getFocusedWindow();
-        win.webContents.send("ping", openedFileData);
+        win.webContents.send("ping", fileDataObject);
+        // console.log('absolutefilepath', absoluteFilePath);
       });
     }
     }

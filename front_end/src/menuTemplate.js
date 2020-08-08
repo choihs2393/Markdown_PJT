@@ -141,7 +141,7 @@ function saveFile() {
     BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
     .then(result => {
         fileData = result;
-        console.log(fileData);
+        // console.log(fileData);
     });
 
     var fileName = dialog.showSaveDialog(BrowserWindow.getFocusedWindow(),
@@ -196,7 +196,7 @@ function openFile() {
                         }
                     )
                     .then(result => {
-                        console.log(result.filePath);
+                        // console.log(result.filePath);
             
                         var fileName = result.filePath;
                         fs.writeFile(fileName, fileData, (err) => {
