@@ -1,6 +1,7 @@
 package com.ggbg.note.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ggbg.note.bean.Account;
+import com.ggbg.note.bean.Band;
 import com.ggbg.note.bean.SuccessResponse;
 import com.ggbg.note.service.IAccountService;
 import com.ggbg.note.util.JwtTokenUtil;
@@ -132,34 +134,35 @@ public class AccountController {
 		return response;
 	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
 
-	// Header에 email과 accessToken을 보내주면 됨.
+	// header에 accessToken을 보내주면 됨.
 	// 반환값은 name
 	@ApiOperation(value = "onLocalInit", httpMethod = "POST", notes = "Hello this is onLocalInit")
 	@PostMapping("/onLocalInit")
 	public ResponseEntity onLocalInit(HttpServletRequest request) {
-		System.out.println("test");
 		ResponseEntity response = null;
 		final SuccessResponse result = new SuccessResponse();
 
 		String accessToken = request.getHeader("Authorization").substring(7);
 
-		String accountName = accountService.onLocalInit(accessToken);
-		Map<String, Object> map = new HashMap<String, Object>();
-		result.status = true;
-		if (accountName != null && !accountName.equals("")) {
-			map.put("name", accountName);
+		Map<String, Object> map = accountService.onLocalInit(accessToken);
+		String name = (String) map.get("name");
+		if (name != null && !name.equals("")) {
+			result.status = true;
 			result.result = "success";
 			result.map = map;
-		} else { // 유효한 회원정보가 아닐경우
+			response = new ResponseEntity<>(result, HttpStatus.OK);
+		} else {
+			result.status = false;
 			result.result = "fail";
+			response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
 		}
-		response = new ResponseEntity<>(result, HttpStatus.OK);
+
 
 		return response;
 	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
 
-	// Header에 email과 accessToken을 보내주면 됨.
-	// 반환값은 name
+	// accessToken을 보내주면 됨.
+	// 반환값은 name, email, group, status
 	@ApiOperation(value = "onServerInit", httpMethod = "POST", notes = "Hello this is onServerInit")
 	@PostMapping("/onServerInit")
 	public ResponseEntity onServerInit(HttpServletRequest request) {
@@ -168,19 +171,49 @@ public class AccountController {
 
 		String accessToken = request.getHeader("Authorization").substring(7);
 
-		String accountName = accountService.onLocalInit(accessToken);
-		Map<String, Object> map = new HashMap<String, Object>();
-		result.status = true;
-		if (accountName != null && !accountName.equals("")) {
-			map.put("name", accountName);
+		Map<String, Object> map = accountService.onServerInit(accessToken);
+		
+		String name = (String) map.get("name");
+		
+		if (name != null && !name.equals("")) {
+			result.status = true;
 			result.result = "success";
 			result.map = map;
-		} else { // 유효한 회원정보가 아닐경우
+			response = new ResponseEntity<>(result, HttpStatus.OK);
+		} else { 
+			result.status = false;
 			result.result = "fail";
+			response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+		}
+
+		return response;
+	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+	
+	// accessToken을 보내주면 됨.
+	// 반환값은 name, email, group, status
+	@ApiOperation(value = "statusList", httpMethod = "POST", notes = "Hello this is statusList")
+	@PostMapping("/statusList")
+	public ResponseEntity statusList(HttpServletRequest request) {
+		ResponseEntity response = null;
+		final SuccessResponse result = new SuccessResponse();
+
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		List<Band> list = accountService.statusList(accessToken);
+		
+		result.status = true;
+		if (!list.isEmpty()) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("status", list);
+			result.result = "success";
+			result.map = map;
+		} else { 
+			result.result = "emptyData";
 		}
 		response = new ResponseEntity<>(result, HttpStatus.OK);
 
 		return response;
 	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
-
+	
+	
 }
