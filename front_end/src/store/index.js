@@ -19,7 +19,9 @@ export default new Vuex.Store({
     accessTokenExpiraionDate: localStorage.getItem('access-token-expiraion-date'),
     refreshToken: localStorage.getItem('refresh-token'),
     refreshTokenExpiraionDate: localStorage.getItem('refresh-token-expiraion-date'),
-    userEmail: localStorage.getItem('email'),
+
+    userEmail: '',
+    userName: '소망이',
 
     // email_authentication
     isDuplicateChecked: false,
@@ -66,13 +68,13 @@ export default new Vuex.Store({
       state.accessTokenExpiraionDate = token.accesstokenexpiraiondate
       state.refreshToken = token.refreshtoken
       state.refreshTokenExpiraionDate = token.refreshtokenexpiraiondate
-      state.userEmail = token.useremail
+      // state.userEmail = token.useremail
 
       localStorage.setItem('authorization', state.authorization)
       localStorage.setItem('access-token-expiraion-date', state.accessTokenExpiraionDate)
       localStorage.setItem('refresh-token', state.refreshToken)
       localStorage.setItem('refresh-token-expiraion-date', state.refreshTokenExpiraionDate)
-      localStorage.setItem('email', state.userEmail)
+      // localStorage.setItem('email', state.userEmail)
     },
 
     // 토큰 삭제
@@ -81,7 +83,7 @@ export default new Vuex.Store({
       state.accessTokenExpiraionDate = null
       state.refreshToken = null
       state.refreshTokenExpiraionDate = null
-      state.userEmail = null
+      // state.userEmail = null
     },
 
     // email 중복체크 결과 저장
@@ -103,6 +105,11 @@ export default new Vuex.Store({
     SET_MODIFY_RESULT(state, result) {
       result==='success' ? state.isModifyChecked = false : state.isModifyChecked = true
     },
+
+    // 초기 회원정보 저장
+    SET_INIT_USER_INFO(state, info) {
+      state.userName = info['name']
+    }
   },
 
   // 범용적인 함수들. mutations에 정의한 함수를 actions에서 실행 가능.
@@ -117,7 +124,7 @@ export default new Vuex.Store({
           commit('SET_TOKEN', res.headers)  // 토큰 저장
           commit('SET_PASSWORD_CHECKED', false)
 
-          // router.push({name: "Share"});
+          router.push({name: "Share"});
         })
         .catch(err => {
           if (err.response.status===401) {
@@ -150,7 +157,7 @@ export default new Vuex.Store({
           localStorage.removeItem('access-token-expiraion-date')
           localStorage.removeItem('refresh-token')
           localStorage.removeItem('refresh-token-expiraion-date')
-          localStorage.removeItem('email')
+          // localStorage.removeItem('email')
           
           router.push({name: "Home"});
         })
@@ -222,7 +229,22 @@ export default new Vuex.Store({
             dispatch('logout')
           }
         })
-    }
+    },
+
+    // 초기 회원정보 세팅
+    initUserInfo({ getters, commit }) {
+      axios.post(SERVER.URL + SERVER.ROUTES.onLocalInit, null, getters.config)
+        .then(res => {
+          console.log(res.data.map)
+          if (res.data['result'] === 'success') {
+            commit('SET_INIT_USER_INFO', res.data.map)
+          }
+
+        })
+        .catch(err => {
+          console.error(err.response.data)
+        })
+    },
   },
   modules: {}
 });

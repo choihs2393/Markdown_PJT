@@ -14,7 +14,7 @@
     <!-- 로그인 후 화면의 상단바 -->
     <template v-if="isLoggedIn">
       <div>
-        <span>{{ $store.state.userEmail }}님</span>
+        <span>{{ $store.state.userName }}님</span>
       </div>
 
       <v-menu

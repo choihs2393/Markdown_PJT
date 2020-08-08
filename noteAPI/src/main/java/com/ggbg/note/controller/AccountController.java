@@ -132,7 +132,7 @@ public class AccountController {
 		return response;
 	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
 
-	// Header에 email과 accessToken을 보내주면 됨.
+	// Header에 accessToken을 보내주면 됨.
 	// 반환값은 name
 	@ApiOperation(value = "onLocalInit", httpMethod = "POST", notes = "Hello this is onLocalInit")
 	@PostMapping("/onLocalInit")

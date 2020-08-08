@@ -21,6 +21,7 @@ export default {
 
   created() {
     console.log("created()");
+    this.$store.dispatch('initUserInfo')
   },
  
   // updated(){

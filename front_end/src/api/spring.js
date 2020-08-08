@@ -11,5 +11,7 @@ export default {
         logout: '/account/logout',
         modify: '/account/v1/modify',
         delete: '/account/v1/delete',
+
+        onLocalInit: '/account/onLocalInit',
     }
 }
