@@ -144,7 +144,6 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 		response.addHeader("RefreshToken", "Bearer " + refreshToken);
 		response.addHeader("AccessTokenExpiraionDate", accessTokenExpirationDate);
 		response.addHeader("RefreshTokenExpiraionDate", refreshTokenExpirationDate);
-		response.addHeader("UserEmail", email);
 	}
 
 	@Override
@@ -152,7 +151,4 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 			AuthenticationException failed) throws IOException, ServletException {
 		super.unsuccessfulAuthentication(request, response, failed);
 	}
-	
-
-
 }

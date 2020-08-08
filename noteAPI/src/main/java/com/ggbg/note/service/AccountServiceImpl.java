@@ -149,4 +149,12 @@ public class AccountServiceImpl implements IAccountService {
 			redisTemplate.expire(email, 1, TimeUnit.MILLISECONDS);
 		return true;
 	}
+	
+	@Override
+	public String onLocalInit(String accessToken) {
+		String name = "";
+		String email = jwtTokenUtil.getUsernameFromToken(accessToken);
+		name = accountRepo.findNameByEmail(email);
+		return name;
+	}
 }

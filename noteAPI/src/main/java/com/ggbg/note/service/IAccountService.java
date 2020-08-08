@@ -15,4 +15,7 @@ public interface IAccountService {
 	//delete account
 	public boolean deleteAccount(String email);
 
+	//init
+	public String onLocalInit(String accessToken);
+
 }
