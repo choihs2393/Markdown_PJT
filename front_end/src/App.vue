@@ -208,13 +208,13 @@ export default {
       })
     });
   },
-  updated(){
-    var div = document.getElementById("compiledMarkdown");
-    if(this.$vuetify.theme.dark == true)
-      div.style.color = "white";
-    else
-      div.style.color = "black";
-  },
+  // updated(){
+  //   var div = document.getElementById("compiledMarkdown");
+  //   if(this.$vuetify.theme.dark == true)
+  //     div.style.color = "white";
+  //   else
+  //     div.style.color = "black";
+  // },
 
   computed: {
     ...mapGetters(['isLoggedIn']),
@@ -223,7 +223,7 @@ export default {
   data () {
     return {
       dialog: false,
-      theme: this.$vuetify.theme.dark,
+      // theme: this.$vuetify.theme.dark,
       folders: [
         // { icon: 'folder', iconClass: 'grey lighten-1 white--text', title: 'Photos', subtitle: 'Jan 9, 2014' },
         // { icon: 'folder', iconClass: 'grey lighten-1 white--text', title: 'Recipes', subtitle: 'Jan 17, 2014' },

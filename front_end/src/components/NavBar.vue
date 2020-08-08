@@ -73,6 +73,20 @@ export default {
 
   computed: {
       ...mapGetters(['isLoggedIn']),
+  },
+
+  updated(){
+    var div = document.getElementById("compiledMarkdown");
+    if(this.$vuetify.theme.dark == true)
+      div.style.color = "white";
+    else
+      div.style.color = "black";
+  },
+  
+  data() {
+    return {
+      theme: this.$vuetify.theme.dark,
+    }
   }
 }
 </script>
