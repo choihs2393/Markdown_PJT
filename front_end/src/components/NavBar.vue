@@ -81,11 +81,11 @@ export default {
   },
 
   updated(){
-    var div = document.getElementById("compiledMarkdown");
-    if(this.$vuetify.theme.dark == true)
-      div.style.color = "white";
-    else
-      div.style.color = "black";
+    // var div = document.getElementById("compiledMarkdown");
+    // if(this.$vuetify.theme.dark == true)
+    //   div.style.color = "white";
+    // else
+    //   div.style.color = "black";
   },
   methods: {
       decideSideBar() {
