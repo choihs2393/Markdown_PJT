@@ -1,14 +1,15 @@
 <template>
-  <v-app-bar app elevate-on-scroll>
-    <v-app-bar-nav-icon @click="$store.state.drawer = !$store.state.drawer"></v-app-bar-nav-icon>
-    <v-toolbar-title>Markdown</v-toolbar-title>
-    <v-spacer></v-spacer>
-    
-    <!-- 로그인 전 화면의 상단바 -->
-    <template v-if="!isLoggedIn">
-      <LoginModal />
-      <SignupModal />
-    </template>
+    <v-app-bar app elevate-on-scroll>
+      <!-- <v-app-bar-nav-icon @click="$store.state.drawer = !$store.state.drawer"></v-app-bar-nav-icon> -->
+      <v-app-bar-nav-icon @click="decideSideBar()"></v-app-bar-nav-icon>
+      <v-toolbar-title>Markdown</v-toolbar-title>
+      <v-spacer></v-spacer>
+      
+      <!-- 로그인 전 화면의 상단바 -->
+      <template v-if="!isLoggedIn">
+        <LoginModal />
+        <SignupModal />
+      </template>
 
     <!-- 로그인 후 화면의 상단바 -->
     <template v-if="isLoggedIn">
@@ -63,7 +64,11 @@ import MypageModal from "./MypageModal.vue"
 
 export default {
   name: 'NavBar',
-
+  data() {
+    return {
+      theme: this.$vuetify.theme.dark,
+    }
+  },
   components: {
     LoginModal,
     SignupModal,
@@ -82,11 +87,21 @@ export default {
     else
       div.style.color = "black";
   },
-  
-  data() {
-    return {
-      theme: this.$vuetify.theme.dark,
-    }
+  methods: {
+      decideSideBar() {
+        console.log("햄버거 버튼 누름.");
+
+        // 로그인 안되어있으면, 폴더트리를 보여주는 사이드바를 열어준다.
+        if(!!this.$store.state.authorization == false) {
+          console.log("로그인 전");
+          this.$store.state.drawer = !this.$store.state.drawer;
+        }
+        // 로그인 되어있으면, 그룹을 보여주는 사이드바를 열어준다.
+        else if(!!this.$store.state.authorization == true) {
+          console.log("로그인 후");
+          this.$store.state.drawerShare = !this.$store.state.drawerShare;
+        }
+      }
   }
 }
 </script>

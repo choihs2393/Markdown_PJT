@@ -2,95 +2,8 @@
   <v-app id="inspire">
 
     <NavBar />
-    
-    <!-- <SideBar /> -->
-    <v-navigation-drawer
-      v-model="$store.state.drawer"
-      app>
-      <v-card>
-        <v-toolbar
-            prominent
-            src="https://images.unsplash.com/photo-1489781879256-fa824b56f24f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"
-            >
-            <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
-            <v-subheader class="sidesubheader">
-            <v-toolbar-title>MY FILES</v-toolbar-title>
-            </v-subheader>
-            <v-spacer></v-spacer>
-            <!-- <v-btn icon
-              @click="dialog = !dialog"
-            > -->
-            <v-btn icon @click="showOpenDialog()">
-              <v-icon>mdi-plus</v-icon>
-            </v-btn>
-            <v-btn icon>
-              <v-icon>mdi-magnify</v-icon>
-            </v-btn>
-        </v-toolbar>
-
-        <v-list subheader flat>
-          <v-subheader >FOLDERS</v-subheader>
-
-            <v-list-item 
-              v-for="folder in folders" 
-              :key="folder.title"
-              disabled>
-              <!-- <v-list-item-avatar>
-                <v-icon :class="[folder.iconClass]">{{ folder.icon }}</v-icon>
-              </v-list-item-avatar> -->
-              <v-list-item-content>
-                <v-list-item-title>{{ folder.title }}</v-list-item-title>
-
-                <v-list-item-subtitle>{{ folder.subtitle }}</v-list-item-subtitle>
-              </v-list-item-content>
-
-              <!-- <v-list-item-action>
-                <v-btn icon>
-                  <v-icon color="grey lighten-1">mdi-information</v-icon>
-                </v-btn>
-              </v-list-item-action> -->
-            </v-list-item>
-
-            <v-divider ></v-divider>
-
-            <v-subheader >FILES</v-subheader>
-
-            <v-list-item v-for="file in files" :key="file.title" @click="openFile(file.fileFullPath)">
-                <!-- <v-list-item-avatar>
-                <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
-              </v-list-item-avatar> -->
-              <v-list-item-content>
-                <v-list-item-title>{{ file.title }}</v-list-item-title>
-
-                <v-list-item-subtitle>{{ file.subtitle }}</v-list-item-subtitle>
-              </v-list-item-content>
-
-              <!-- <v-list-item-action>
-                <v-btn icon ripple @click="openFile(file.fileFullPath)">
-                  <v-icon color="grey lighten-1">mdi-information</v-icon>
-                </v-btn>
-              </v-list-item-action> -->
-            </v-list-item>
-          </v-list>
-
-        <v-dialog v-model="dialog" max-width="500px">
-          <v-card>
-            <v-card-text>
-              <v-text-field label="File name"></v-text-field>
-              <small class="grey--text">* This doesn't actually save.</small>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-
-              <v-btn text color="primary" @click="dialog = false">Submit</v-btn>
-            </v-card-actions>
-          </v-card>
-        </v-dialog>
-      </v-card>
-    </v-navigation-drawer>
-
     <router-view />
+    
   </v-app>
 </template>
 
@@ -100,8 +13,9 @@ import { remote, ipcRenderer } from "electron";
 
 const fs = require("fs");
 const path = require("path");
+
 import NavBar from "./components/NavBar.vue"
-// import SideBar from "./components/SideBar.vue"
+import SideBar from "./components/SideBar.vue"
 
 // 드래그 후 드랍을 하면,
 document.addEventListener('drop', (event) => {
@@ -175,6 +89,7 @@ export default {
 
     components: {
       NavBar,
+      SideBar
     },
 
     props: {
@@ -182,6 +97,7 @@ export default {
     },
 
   created() {
+    console.log("created()");
   },
   mounted() {
     ipcRenderer.on('ping', (event, message) => {
