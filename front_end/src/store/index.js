@@ -39,6 +39,10 @@ export default new Vuex.Store({
     isLogoutModal: false,
     isMypageModal: false,
     isDeleteModal: false,
+    isInviteModal: false,
+
+    // 현재 workspace
+    groupName: undefined,
 
     theme: '',
   },

@@ -7,9 +7,15 @@
           <v-toolbar-title>SHARES</v-toolbar-title>
         </v-subheader>
         <v-spacer></v-spacer>
-        <!-- <v-btn icon
+        <v-btn icon @click="showInviteModal()">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+        <InviteModal />
+      </v-toolbar>
+
+        <v-btn icon
               @click="dialog = !dialog"
-        >-->
+        >
         <v-dialog v-model="dialog" max-width="600px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on">
@@ -38,12 +44,11 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-      </v-toolbar>
-
+        </v-btn>
       <v-list subheader flat>
         <v-subheader>GROUPS</v-subheader>
 
-        <v-list-item v-for="group in groups" :key="group.groupName">
+        <v-list-item v-for="group in groups" :key="group.groupName" @click="updateGroupName(group.groupName)">
           <!-- <v-list-item-avatar>
                 <v-icon :class="[folder.iconClass]">{{ folder.icon }}</v-icon>
           </v-list-item-avatar>-->
@@ -66,7 +71,7 @@
       </v-list>
     </v-card>
 
-    <v-dialog v-model="memberDialog" persistent max-width="600px">
+    <!-- <v-dialog v-model="memberDialog" persistent max-width="600px">
       <template v-slot:activator="{ on }">
         <v-btn color="rgb(255, 170, 128)" bottom block v-on="on">Add group member</v-btn>
       </template>
@@ -90,17 +95,18 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn @click="closeMemberDialog">Close</v-btn>
-          <!-- <v-btn :id=group.groupName @click="addMember(group.groupName)">Add</v-btn> -->
+          <v-btn :id=group.groupName @click="addMember(group.groupName)">Add</v-btn>
           <v-btn :id="groupName" :value="$attrs" @click="addMember(group.groupName)">Add</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
   </v-navigation-drawer>
 </template>
 
 <script>
 import { remote } from "electron";
 import fs from "fs";
+import InviteModal from "./InviteModal.vue";
 
 export default {
   data() {
@@ -112,35 +118,50 @@ export default {
       groups: []
     };
   },
+  components: {
+    InviteModal,
+  },
   methods: {
-    closeMemberDialog() {
-      this.$refs.form.reset();
-      this.memberDialog = false;
-    },
+    // closeMemberDialog() {
+    //   this.$refs.form.reset();
+    //   this.memberDialog = false;
+    // },
     addGroup() {
       this.dialog = false;
       this.groups.push({icon: "assignment", groupName: this.groupName, groupMembers: []});
-      this.groupName = "";
+      this.$store.state.groupName = this.groupName;
     },
-    addMember(param) {
-      this.memberDialog = false;
-
-      var memberEmail = this.email;
-      this.email = "";
-
-      console.log("누를 그룹의 이름 : " + param);
-
-      var idx = this.groups.findIndex(element => element.groupName == param);
-      console.log("idx : " + idx);
-      console.log("찾은 그룹의 이름 : " + this.groups[idx].groupName);
-      console.log(
-        "찾은 그룹의 그룹원들 (추가 전) : " + this.groups[idx].groupMembers
-      );
-      this.groups[idx].groupMembers.push(memberEmail);
-      console.log(
-        "찾은 그룹의 그룹원들 (추가 후) : " + this.groups[idx].groupMembers
-      );
+    showInviteModal () {
+      // console.log('여기', !!(this.$store.state.groupName))
+      if(!!(this.$store.state.groupName)){
+        this.$store.state.isInviteModal = !this.$store.state.isInviteModal;
+        }else{
+        alert('workspace부터 골라')
+      }
+    },
+    updateGroupName (groupName) {
+      this.$store.state.groupName = groupName;
+      console.log(this.$store.state.groupName)
     }
+    // addMember(param) {
+    //   this.memberDialog = false;
+
+    //   var memberEmail = this.email;
+    //   this.email = "";
+
+    //   console.log("누를 그룹의 이름 : " + param);
+
+    //   var idx = this.groups.findIndex(element => element.groupName == param);
+    //   console.log("idx : " + idx);
+    //   console.log("찾은 그룹의 이름 : " + this.groups[idx].groupName);
+    //   console.log(
+    //     "찾은 그룹의 그룹원들 (추가 전) : " + this.groups[idx].groupMembers
+    //   );
+    //   this.groups[idx].groupMembers.push(memberEmail);
+    //   console.log(
+    //     "찾은 그룹의 그룹원들 (추가 후) : " + this.groups[idx].groupMembers
+    //   );
+    // }
   }
 };
 </script>
