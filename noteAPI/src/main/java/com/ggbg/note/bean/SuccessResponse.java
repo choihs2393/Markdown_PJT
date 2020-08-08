@@ -1,5 +1,7 @@
 package com.ggbg.note.bean;
 
+import java.util.Map;
+
 import io.swagger.annotations.ApiModelProperty;
 
 public class SuccessResponse {
@@ -7,6 +9,6 @@ public class SuccessResponse {
     public boolean status;
     @ApiModelProperty(value = "result", position = 2)
     public String result;
-    @ApiModelProperty(value = "object", position = 3)
-    public Object object;
+    @ApiModelProperty(value = "map", position = 3)
+    public Map<String, Object> map;
 }

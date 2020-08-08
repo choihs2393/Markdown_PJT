@@ -12,6 +12,4 @@ public interface INonMemberService {
 
 	public boolean emailAuthCheck(String email, String authNum);
 
-	
-	
 }
