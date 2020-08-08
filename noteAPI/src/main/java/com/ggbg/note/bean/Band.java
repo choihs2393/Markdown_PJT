@@ -17,31 +17,19 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "account")
-public class Account implements Persistable<String>{
+@Table(name = "band")
+public class Band implements Persistable<String>{
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(nullable = false, name = "account_no")
+	@Column(nullable = false, name = "band_no")
 	private int no;
 	
-	@Column(nullable = false, name = "account_email")
-	private String email;
-
-	@Column(nullable = false, name = "account_name")
+	@Column(nullable = false, name = "band_name")
 	private String name;
 
-	@Column(nullable = false, name = "account_password")
-	private String password;
+	@Column(nullable = false, name = "band_number")
+	private int number;
 
-	@Column(nullable = false, name = "account_role")
-	private Role role;
-
-	@Column(nullable = false, name = "account_create_date")
-	private String createDate;
-	
-	public String getRoleKey() {
-		return this.role.getKey();
-	}
 
 	@Override
 	public String getId() {
@@ -52,5 +40,4 @@ public class Account implements Persistable<String>{
 	public boolean isNew() {
 		return false;
 	}
-
 }
