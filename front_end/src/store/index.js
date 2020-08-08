@@ -23,14 +23,10 @@ export default new Vuex.Store({
     userEmail: '',
     userName: '소망이',
 
-    // email_authentication
+    // auth_check
     isDuplicateChecked: false,
     isAuthNumChecked: false,
-
-    // password_check
     isPasswordChecked: false,
-
-    // modify_check
     isModifyChecked: false,
 
     // modal
@@ -39,6 +35,9 @@ export default new Vuex.Store({
     isLogoutModal: false,
     isMypageModal: false,
     isDeleteModal: false,
+
+    // server_check
+    isServerMode: false,
 
     theme: '',
   },
@@ -124,7 +123,7 @@ export default new Vuex.Store({
           commit('SET_TOKEN', res.headers)  // 토큰 저장
           commit('SET_PASSWORD_CHECKED', false)
 
-          router.push({name: "Share"});
+          // router.push({name: "Share"});
         })
         .catch(err => {
           if (err.response.status===401) {
@@ -159,7 +158,7 @@ export default new Vuex.Store({
           localStorage.removeItem('refresh-token-expiraion-date')
           // localStorage.removeItem('email')
           
-          router.push({name: "Home"});
+          // router.push({name: "Share"});
         })
         .catch(err => console.error(err.response.data))
     },
@@ -232,7 +231,7 @@ export default new Vuex.Store({
     },
 
     // 초기 회원정보 세팅
-    initUserInfo({ getters, commit }) {
+    initUserInfo({ getters, commit, dispatch }) {
       axios.post(SERVER.URL + SERVER.ROUTES.onLocalInit, null, getters.config)
         .then(res => {
           console.log(res.data.map)
@@ -243,6 +242,7 @@ export default new Vuex.Store({
         })
         .catch(err => {
           console.error(err.response.data)
+          dispatch('logout')
         })
     },
   },

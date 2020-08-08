@@ -2,26 +2,34 @@
   <v-app id="inspire">
 
     <NavBar />
-    <router-view />
-    
+    <SideBar v-if="!$store.state.isServerMode" />
+    <SideBarShare v-if="$store.state.isServerMode" />
+    <Home />
+    <!-- <router-view /> -->
   </v-app>
 </template>
 
 <script>
 import NavBar from "./components/NavBar.vue"
 import SideBar from "./components/SideBar.vue"
+import SideBarShare from "./components/SideBarShare.vue"
+import Home from "./views/Home.vue"
 
 export default {
   name: "App",
 
     components: {
       NavBar,
-      SideBar
+      SideBar,
+      SideBarShare,
+      Home,
     },
 
-  created() {
-    console.log("created()");
-    this.$store.dispatch('initUserInfo')
+  mounted() {
+    // console.log(localStorage.getItem('authorization'));
+    if (localStorage.getItem('authorization')) {
+      this.$store.dispatch('initUserInfo')
+    }
   },
  
   // updated(){
@@ -35,10 +43,10 @@ export default {
 </script>
 
 <style scoped>
-html, body {
-  margin: 0;
-  height: 100%;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  color: #333;
-}
+  html, body {
+    margin: 0;
+    height: 100%;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    color: #333;
+  }
 </style>

@@ -31,12 +31,12 @@ const router = new VueRouter({
   
 //   const authRequired = !publicPages.includes(to.name)  // 로그인 해야 함.
 //   const unauthRequired = authPages.includes(to.name)  // 로그인 해서는 안됨
-//   const isLoggedIn = !!Vue.$cookies.isKey('auth-token')
+//   const isLoggedIn = !!localStorage.getItem('authorization')
 
 //   if(unauthRequired && isLoggedIn) {
 //     next('/')
 //   }
-//   authRequired && !isLoggedIn ? next({ name: 'Login'}) : next()
+//   authRequired && !isLoggedIn ? next({ name: 'Home'}) : next()
 // })
 
 export default router;
