@@ -80,19 +80,39 @@ export default {
       div.style.color = "white";
     else
       div.style.color = "black";
+
+    if(!!this.$store.state.isShareMode == false) {
+      this.$store.commit('SET_IS_DRAWER_SHARE', false)
+      this.$store.commit('SET_IS_DRAWER', true)
+    }
+    else if(!!this.$store.state.isShareMode == true) {
+      this.$store.commit('SET_IS_DRAWER_SHARE', true)
+      this.$store.commit('SET_IS_DRAWER', false)
+    }
   },
 
   methods: {
       decideSideBar() {
         // 폴더트리를 보여주는 사이드바를 열어준다.
         if(!!this.$store.state.isShareMode == false) {
-          this.$store.state.drawer = !this.$store.state.drawer;
+          this.$store.commit('SET_IS_DRAWER', !this.$store.state.drawer)
+
         }
         // 그룹을 보여주는 사이드바를 열어준다.
         else if(!!this.$store.state.isShareMode == true) {
-          this.$store.state.drawerShare = !this.$store.state.drawerShare;
+          this.$store.commit('SET_IS_DRAWER_SHARE', !this.$store.state.drawerShare)
         }
-      }
+      },
+      // changeLocalShare() {
+      //   if(!!this.$store.state.isShareMode == false) {
+      //     this.$store.state.drawerShare = false
+      //     this.$store.state.drawer = true
+      //   }
+      //   else if(!!this.$store.state.isShareMode == true) {
+      //     this.$store.state.drawer = false
+      //     this.$store.state.drawerShare = true
+      //   }
+      // }
   }
 }
 </script>

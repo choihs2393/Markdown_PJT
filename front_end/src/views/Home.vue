@@ -1,7 +1,5 @@
 <template>
   <v-main>
-    <SideBar />
-
     <v-container class="md" fluid>
 
       <div id="editor_div">
@@ -41,8 +39,6 @@ import sampleData from "../sampleData.js";
 import { remote, ipcRenderer } from "electron";
 import fs from "fs";
 import path from "path"
-
-import SideBar from "@/components/SideBar.vue";
 
 var data = sampleData;
 
@@ -121,7 +117,6 @@ document.addEventListener('drop', (event) => {
 export default {
   name: "Home",
   components: {
-    SideBar
   },
   created() {
   },

@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import router from "@/router/index.js"
 
 import axios from 'axios'
 import SERVER from '@/api/spring'
@@ -123,7 +122,19 @@ export default new Vuex.Store({
     // 워크스페이스 저장
     SET_WORKSPACES(state, result) {
       state.userInfo.group.push(result);
-    }
+    },
+    
+    SET_IS_SHARE(state, result) {
+      state.isShareMode = result
+    },
+
+    SET_IS_DRAWER(state, result) {
+      state.drawer = result
+    },
+
+    SET_IS_DRAWER_SHARE(state, result) {
+      state.drawerShare = result
+    },
   },
 
   // 범용적인 함수들. mutations에 정의한 함수를 actions에서 실행 가능.
@@ -141,6 +152,7 @@ export default new Vuex.Store({
           /* 무성 추가 부분 -> 로그인을 한 후에도 서버요청해서 이름 정보 가져와야 할 듯 싶어서 추가 */
           /* 로그인을 해도 소망이님이 뜨고, 로그인상태로 앱을 껏다 켜야 yb님이라고 뜸. 애초에 로그인 후에 바로 가져오는 게 맞을 것 같습니다. */
           dispatch('initUserInfo');
+          commit('SET_IS_SHARE', true);
         })
         .catch(err => {
           if (err.response.status===401) {
@@ -177,7 +189,7 @@ export default new Vuex.Store({
           
           /* 서버모드로 켜놓고, 로그아웃 하면 서버모드가 유지됩니다. */
           /* 로그아웃시 로컬모드만 사용할 수 있도록 false로 고정해놨습니다. */
-          this.state.isShareMode = false;
+          commit('SET_IS_SHARE', false)
         })
         .catch(err => console.error(err.response.data))
     },

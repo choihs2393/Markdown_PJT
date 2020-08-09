@@ -25,22 +25,17 @@ export default {
     Home,
   },
 
-  created() {
-
-  },
-
   mounted() {
-    console.log("mounted() 호출됨.");
-    
     if (localStorage.getItem('authorization')) {
       this.$store.dispatch('initUserInfo')
+      this.$store.commit('SET_IS_SHARE', true)
+      this.$store.commit('SET_IS_DRAWER_SHARE', true)
+    } else {
+      this.$store.commit('SET_IS_SHARE', false)
+      this.$store.commit('SET_IS_DRAWER', true)
     }
   },
 
-  updated() {
-    console.log('updated() 실행')
-  }
- 
   // updated(){
   //   var div = document.getElementById("compiledMarkdown");
   //   if(this.$vuetify.theme.dark == true)

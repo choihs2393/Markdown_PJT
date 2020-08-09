@@ -181,9 +181,10 @@ export default {
     },
 
     openFile(absoluteFilePath) {
+      console.log(absoluteFilePath);
       fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
-        if(err) throw err;
-        // console.log(data);
+        // if(err) throw err;
+        console.log(data);
         // fileData = data;
         let openedFileData = data;
         // console.log(openedFileData);
