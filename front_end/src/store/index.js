@@ -117,13 +117,15 @@ export default new Vuex.Store({
   actions: {
 
     // 로그인
-    login({ commit }, loginData) {
+    login({ dispatch, commit }, loginData) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
         .then(res => {
           commit('SET_TOKEN', res.headers)  // 토큰 저장
           commit('SET_PASSWORD_CHECKED', false)
 
-          // router.push({name: "Share"});
+          /* 무성 추가 부분 -> 로그인을 한 후에도 서버요청해서 이름 정보 가져와야 할 듯 싶어서 추가 */
+          /* 로그인을 해도 소망이님이 뜨고, 로그인상태로 앱을 껏다 켜야 yb님이라고 뜸. 애초에 로그인 후에 바로 가져오는 게 맞을 것 같습니다. */
+          dispatch('initUserInfo');
         })
         .catch(err => {
           if (err.response.status===401) {
@@ -158,7 +160,9 @@ export default new Vuex.Store({
           localStorage.removeItem('refresh-token-expiraion-date')
           // localStorage.removeItem('email')
           
-          // router.push({name: "Share"});
+          /* 서버모드로 켜놓고, 로그아웃 하면 서버모드가 유지됩니다. */
+          /* 로그아웃시 로컬모드만 사용할 수 있도록 false로 고정해놨습니다. */
+          this.state.isServerMode = false;
         })
         .catch(err => console.error(err.response.data))
     },
