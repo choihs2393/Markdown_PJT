@@ -9,21 +9,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
-import com.ggbg.note.bean.Account;
-import com.ggbg.note.bean.Band;
+import com.ggbg.note.domain.entity.BandEntity;
 
-public interface BandRepo extends JpaRepository<Band, Long> {
-	Optional<Band> findBandByNo(int band_no);
+public interface BandRepo extends JpaRepository<BandEntity, Long> {
+	Optional<BandEntity> findBandByNo(int band_no);
 	
 	@Query(value = "SELECT * "
 			+ "FROM band "
 			+ "where band_no in (select band_no from account_band where account_no = ?1 and account_status = 2) ", nativeQuery = true)
-	List<Band> findAllBandStatusByAccountNo(int no);
+	List<BandEntity> findAllBandStatusByAccountNo(int no);
 	
 	@Query(value = "SELECT * "
 			+ "FROM band "
 			+ "where band_no in (select band_no from account_band where account_no = ?1 and account_status != 2)", nativeQuery = true)
-	List<Band> findAllBandByAccountNo(int no);
+	List<BandEntity> findAllBandByAccountNo(int no);
 	
 	@Transactional
 	@Modifying

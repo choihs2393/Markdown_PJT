@@ -1,0 +1,18 @@
+package com.ggbg.note.service;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class BandServiceImpl implements IBandService {
+	
+	@Override
+	public boolean addBand(String accessToken, String bandName) {
+		boolean ret = false;
+		
+		
+		
+		
+		return ret;
+	}
+
+}

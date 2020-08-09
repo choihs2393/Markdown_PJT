@@ -1,0 +1,10 @@
+package com.ggbg.note.service;
+
+public interface IBandService {
+	
+	public Band addBand(String bandName, int accountNo);
+
+	
+	public void deleteBand(int bandNo);
+	public void renameBand(String newBandName, int bandNo);
+}

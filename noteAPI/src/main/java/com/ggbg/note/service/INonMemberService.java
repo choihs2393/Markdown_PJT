@@ -1,10 +1,10 @@
 package com.ggbg.note.service;
 
-import com.ggbg.note.bean.Account;
+import com.ggbg.note.domain.dto.AccountDTO;
 
 public interface INonMemberService {
 	// signUp process
-	public boolean signUp(Account account);
+	public boolean signUp(AccountDTO accountDTO);
 
 	public boolean emailCheck(String email);
 

@@ -1,6 +1,7 @@
 package com.ggbg.note.service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,15 +20,18 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ggbg.note.bean.Account;
-import com.ggbg.note.bean.Band;
-import com.ggbg.note.bean.Role;
-import com.ggbg.note.bean.Token;
+import com.ggbg.note.domain.Role;
+import com.ggbg.note.domain.Token;
+import com.ggbg.note.domain.dto.AccountDTO;
+import com.ggbg.note.domain.dto.BandDTO;
+import com.ggbg.note.domain.entity.AccountEntity;
+import com.ggbg.note.domain.entity.BandEntity;
 import com.ggbg.note.exception.ExpiredTokenException;
 import com.ggbg.note.exception.UnAuthorizationException;
 import com.ggbg.note.repository.AccountRepo;
 import com.ggbg.note.repository.BandRepo;
 import com.ggbg.note.util.JwtTokenUtil;
+import com.ggbg.note.util.MapperUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -40,7 +44,10 @@ public class AccountServiceImpl implements IAccountService {
 
 	@Autowired
 	private BandRepo bandRepo;
-
+	
+	@Autowired
+	private MapperUtil mapperUtil;
+	
 	@Autowired
 	RedisTemplate<String, Object> redisTemplate;
 
@@ -119,8 +126,8 @@ public class AccountServiceImpl implements IAccountService {
 	@Override
 	public boolean validAccountCheck(String email, String password) {
 		BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder(10);
-		Optional<Account> optional = accountRepo.findAccountByEmail(email);
-		Account account = new Account();
+		Optional<AccountEntity> optional = accountRepo.findAccountByEmail(email);
+		AccountEntity account = new AccountEntity();
 		boolean check = false;
 
 		if (optional.isPresent()) {
@@ -136,16 +143,23 @@ public class AccountServiceImpl implements IAccountService {
 
 	@Transactional
 	@Override
-	public boolean saveAccount(Account account) {
+	public boolean saveAccount(AccountDTO accountDTO) {
 		BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder(10);
-		account.setRole(Role.USER);
-		account.setPassword(bcryptPasswordEncoder.encode(account.getPassword()));
+		accountDTO.setRole(Role.USER);
+		accountDTO.setPassword(bcryptPasswordEncoder.encode(accountDTO.getPassword()));
 
 		Date date = new Date();
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-		account.setCreateDate(simpleDateFormat.format(date));
-		accountRepo.save(account); // 만약 db가 꺠져서 저장이 안되던가 하는 상황에서는 에러처리를 어떻게 해야하는지 jpa search
+		accountDTO.setCreateDate(simpleDateFormat.format(date));
+		accountRepo.save(AccountEntity.builder()
+					.email(accountDTO.getEmail())
+					.name(accountDTO.getName())
+					.password(accountDTO.getPassword())
+					.role(accountDTO.getRole())
+					.createDate(accountDTO.getCreateDate())
+					.build()
+				); // 만약 db가 꺠져서 저장이 안되던가 하는 상황에서는 에러처리를 어떻게 해야하는지 jpa search
 		return true;
 	}
 
@@ -184,7 +198,7 @@ public class AccountServiceImpl implements IAccountService {
 		if (name == null || name.equals(""))
 			throw new UnAuthorizationException(email);
 
-		List<Band> list = bandRepo.findAllBandStatusByAccountNo(no);
+		List<BandEntity> list = bandRepo.findAllBandStatusByAccountNo(no);
 
 		map.put("status", list);
 		map.put("email", email);
@@ -217,9 +231,22 @@ public class AccountServiceImpl implements IAccountService {
 		if (name == null || name.equals(""))
 			throw new UnAuthorizationException(email);
 
-		List<Band> statusList = bandRepo.findAllBandStatusByAccountNo(no);
-		List<Band> groupList = bandRepo.findAllBandByAccountNo(no);
+		List<BandEntity> list1 = bandRepo.findAllBandStatusByAccountNo(no);
+		List<BandEntity> list2 = bandRepo.findAllBandByAccountNo(no);
 
+		List<BandDTO> statusList = new ArrayList<BandDTO>();
+		List<BandDTO> groupList = new ArrayList<BandDTO>();
+
+		for(BandEntity be : list1) {
+			BandDTO bd = mapperUtil.convertToDTO(be, BandDTO.class);
+			statusList.add(bd);
+		}
+		
+		for(BandEntity be : list2) {
+			BandDTO bd = mapperUtil.convertToDTO(be, BandDTO.class);
+			groupList.add(bd);
+		}
+		
 		map.put("status", statusList);
 		map.put("group", groupList);
 		map.put("email", email);
@@ -233,7 +260,7 @@ public class AccountServiceImpl implements IAccountService {
 	}
 
 	@Override
-	public List<Band> statusList(String accessToken) {
+	public List<BandDTO> statusList(String accessToken) {
 		String email = "";
 		int no = -1;
 
@@ -246,8 +273,15 @@ public class AccountServiceImpl implements IAccountService {
 
 		no = (int) map2.get("account_no");
 
-		List<Band> statusList = bandRepo.findAllBandStatusByAccountNo(no);
+		List<BandEntity> list = bandRepo.findAllBandStatusByAccountNo(no);
 
+		List<BandDTO> statusList = new ArrayList<BandDTO>();
+		
+		for(BandEntity be : list) {
+			BandDTO bd = mapperUtil.convertToDTO(be, BandDTO.class);
+			statusList.add(bd);
+		}
+		
 		return statusList;
 	}
 	

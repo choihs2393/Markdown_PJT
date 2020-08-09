@@ -1,0 +1,14 @@
+package com.ggbg.note.util;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+public class ModelMapperUtils {
+	
+	@Autowired
+	private static ModelMapper modelMapper;
+
+	public static ModelMapper getModelMapper() {
+		return modelMapper;
+	}
+	
+}

@@ -12,14 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ggbg.note.bean.Account;
-import com.ggbg.note.bean.SuccessResponse;
-import com.ggbg.note.service.IAccountService;
+import com.ggbg.note.domain.SuccessResponse;
+import com.ggbg.note.domain.dto.AccountDTO;
 import com.ggbg.note.service.INonMemberService;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 
 @RequestMapping("/nonmember")
 @RestController
@@ -31,11 +28,11 @@ public class NoneMemberController {
 
 	@ApiOperation(value = "signUp", httpMethod = "POST", notes = "Hello this is signUp")
 	@PostMapping("/signUp")
-	public ResponseEntity signUp(@RequestBody(required = true) Account account) {
+	public ResponseEntity signUp(@RequestBody(required = true) AccountDTO accountDTO) {
 		logger.debug("=============== signUp entered =============");
 		ResponseEntity response = null;
 		final SuccessResponse result = new SuccessResponse();
-		boolean ret = nonMemberService.signUp(account);
+		boolean ret = nonMemberService.signUp(accountDTO);
 		if (ret) {
 			result.status = true;
 			result.result = "success";

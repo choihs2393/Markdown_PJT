@@ -1,0 +1,67 @@
+package com.ggbg.note.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ggbg.note.bean.Band;
+import com.ggbg.note.bean.SuccessResponse;
+import com.ggbg.note.service.IBandService;
+import com.ggbg.note.util.JwtTokenUtil;
+
+import io.swagger.annotations.ApiOperation;
+
+@RequestMapping("/band")
+@RestController
+public class BandController {
+	private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
+
+	@Autowired
+	private IBandService bandService;
+
+	@Autowired
+	private JwtTokenUtil jwt;
+	
+//	 만들어야할것
+//	 band 초대 승인 눌렀을때 추가 ( band update, account_band update)
+//	 멤버 보여주기
+	
+	@ApiOperation(value = "addBand", httpMethod = "POST", notes = "Hello this is addBand")
+	@PostMapping("/v1/addBand")
+	public ResponseEntity statusList(HttpServletRequest request, 
+			@RequestBody(required = true) Map<String, String> map) {
+		
+		ResponseEntity response = null;
+		final SuccessResponse result = new SuccessResponse();
+
+		String accessToken = request.getHeader("Authorization").substring(7);
+		String bandName = map.get("bandName")
+				
+		boolean res = bandService.addBand(accessToken, bandName);
+		
+		result.status = true;
+		if (!list.isEmpty()) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("status", list);
+			result.result = "success";
+			result.map = map;
+		} else { 
+			result.result = "emptyData";
+		}
+		response = new ResponseEntity<>(result, HttpStatus.OK);
+
+		return response;
+	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+}

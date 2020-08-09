@@ -24,10 +24,10 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import com.ggbg.note.bean.Account;
-import com.ggbg.note.bean.OAuthAttributes;
-import com.ggbg.note.bean.Role;
-import com.ggbg.note.bean.Token;
+import com.ggbg.note.domain.OAuthAttributes;
+import com.ggbg.note.domain.Role;
+import com.ggbg.note.domain.Token;
+import com.ggbg.note.domain.entity.AccountEntity;
 import com.ggbg.note.repository.AccountRepo;
 import com.ggbg.note.util.JwtTokenUtil;
 /*
@@ -63,7 +63,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 		/*
 		 * access token create,
 		 */
-		Account account = saveOrUpdate(attributes);
+		AccountEntity account = saveOrUpdate(attributes);
 		String email = account.getEmail();
 		List<GrantedAuthority> roles = new ArrayList<>();
 		if ((account.getRoleKey()).equals("ROLE_ADMIN")) {
@@ -102,10 +102,10 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
 				attributes.getAttributes(), attributes.getNameAttributeKey());
 	}
 
-	private Account saveOrUpdate(OAuthAttributes attributes) {
+	private AccountEntity saveOrUpdate(OAuthAttributes attributes) {
 		String email = attributes.getEmail();
-		Optional<Account> optional = accountRepo.findAccountByEmail(email);
-		Account account = new Account();
+		Optional<AccountEntity> optional = accountRepo.findAccountByEmail(email);
+		AccountEntity account = new AccountEntity();
 		if (optional.isPresent()) {
 			account = optional.get();
 		} else {

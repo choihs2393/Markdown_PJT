@@ -1,0 +1,17 @@
+package com.ggbg.note.domain;
+
+import java.io.Serializable;
+
+import org.springframework.data.redis.core.RedisHash;
+
+import lombok.Data;
+
+@Data
+@RedisHash
+public class Token implements Serializable {
+
+    private static final long serialVersionUID = -7353484588260422449L;
+    private String email;
+    private String token;
+
+}

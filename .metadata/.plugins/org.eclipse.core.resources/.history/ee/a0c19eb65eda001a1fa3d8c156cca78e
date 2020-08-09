@@ -1,0 +1,4 @@
+package com.ggbg.note.domain;
+
+import org.springframework.context.annotation.Bean;
+

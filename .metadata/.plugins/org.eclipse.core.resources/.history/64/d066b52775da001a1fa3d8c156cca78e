@@ -1,0 +1,5 @@
+package com.ggbg.note.domain.dto;
+
+public class AccountBandDTO {
+
+}
