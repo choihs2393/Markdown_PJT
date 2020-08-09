@@ -1,16 +1,18 @@
 <template>
+
   <v-navigation-drawer v-model="$store.state.drawerShare" app>
     <v-card>
-      <v-toolbar prominent src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2089&q=80">
-        <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
+      <v-toolbar
+        prominent
+        src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2089&q=80"
+      >
         <v-subheader class="sidesubheader">
           <v-toolbar-title>SHARES</v-toolbar-title>
         </v-subheader>
         <v-spacer></v-spacer>
-        <!-- <v-btn icon
-              @click="dialog = !dialog"
-        >-->
-        <v-dialog v-model="dialog" max-width="600px">
+
+        <!-- SHARES 옆에 + 버튼을 눌렀을 때 보이는, 그룹원 추가하는 다이얼로그 -->
+        <v-dialog v-model="memberDialog" max-width="600px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on">
               <v-icon>mdi-plus</v-icon>
@@ -19,13 +21,13 @@
 
           <v-card>
             <v-card-title>
-              <span class="headline">Create a group</span>
+              <span class="headline">Add member</span>
             </v-card-title>
             <v-card-text>
               <v-container>
                 <v-row>
                   <v-col cols="12" sm="20" md="20">
-                    <v-text-field v-model="groupName" label="group name" required></v-text-field>
+                    <v-text-field v-model="memberEmail" label="member email *" required></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
@@ -34,64 +36,57 @@
             <v-card-actions>
               <v-spacer></v-spacer>
               <v-btn color="blue darken-1" text @click="dialog = false">Cancel</v-btn>
-              <v-btn color="blue darken-1" text @click="addGroup()">Add</v-btn>
+              <v-btn color="blue darken-1" text @click="addMember()">Add</v-btn>
             </v-card-actions>
           </v-card>
         </v-dialog>
       </v-toolbar>
-
-      <v-list subheader flat>
-        <v-subheader>GROUPS</v-subheader>
-
-        <v-list-item v-for="group in groups" :key="group.groupName">
-          <!-- <v-list-item-avatar>
-                <v-icon :class="[folder.iconClass]">{{ folder.icon }}</v-icon>
-          </v-list-item-avatar>-->
-          <v-list-item-content>
-            <v-list-item-title :id="group.groupName">{{ group.groupName }}</v-list-item-title>
-          </v-list-item-content>
-        </v-list-item>
-
-        <v-divider></v-divider>
-
-        <!-- <v-subheader >who is in this group?</v-subheader> -->
-
-        <!-- <v-list-item v-for="file in files" :key="file.title" @click="openFile(file.fileFullPath)">
-              <v-list-item-content>
-                <v-list-item-title>{{ file.title }}</v-list-item-title>
-
-                <v-list-item-subtitle>{{ file.subtitle }}</v-list-item-subtitle>
-              </v-list-item-content>
-        </v-list-item>-->
-      </v-list>
     </v-card>
 
-    <v-dialog v-model="memberDialog" persistent max-width="600px">
-      <template v-slot:activator="{ on }">
-        <v-btn color="rgb(255, 170, 128)" bottom block v-on="on">Add group member</v-btn>
-      </template>
+    <v-container>
+      <v-subheader>My Workspace</v-subheader>
+      <v-row>
+        <v-col cols="20">
+          <v-select
+            v-model="selected"
+            :items="workspaces"
+            item-text="name"
+            @change="changeWorkspace"
+            prepend-icon="folder"
+            @mousedown.right="$refs.menu.open($event, selected)"
+          >
+          </v-select>
+        </v-col>
+      </v-row>
+    </v-container>
 
+    <ContextMenu ref="menu">
+      <template slot-scope="{ contextData }">
+        <ContextMenuItem v-if="selected" @click.native="deleteWorkspace">
+          <v-icon>delete</v-icon>{{ contextData }}
+        </ContextMenuItem>
+      </template>
+    </ContextMenu>
+
+    <!-- Add a workspace를 눌렀을 때 보이는 다이얼로그 -->
+    <v-dialog v-model="workspaceDialog" max-width="600px">
       <v-card>
         <v-card-title>
-          <span>Add a group member</span>
+          <span>New workspace</span>
         </v-card-title>
         <v-card-text>
-          <v-form ref="form">
+          <v-form ref="form_workspace">
             <v-row>
-              <v-col cols="12" sm="20">
-                <v-select :items="groups" item-text="groupName" label="Select a group"></v-select>
-              </v-col>
               <v-col cols="12" sm="20" md="20">
-                <v-text-field label="email *" required v-model="email"></v-text-field>
+                <v-text-field label="workspace *" required v-model="workspaceName"></v-text-field>
               </v-col>
             </v-row>
           </v-form>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn @click="closeMemberDialog">Close</v-btn>
-          <!-- <v-btn :id=group.groupName @click="addMember(group.groupName)">Add</v-btn> -->
-          <v-btn :id="groupName" :value="$attrs" @click="addMember(group.groupName)">Add</v-btn>
+          <v-btn color="blue darken-1" text @click="cancelCreateWorkspace">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="createWorkspace">Create</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -99,47 +94,49 @@
 </template>
 
 <script>
-import { remote } from "electron";
-import fs from "fs";
+import "material-design-icons-iconfont/dist/material-design-icons.css";
+import ContextMenu from './ContextMenu';
+import ContextMenuItem from './ContextMenuItem';
 
 export default {
   data() {
     return {
-      dialog: false,
       memberDialog: false,
-      groupName: "",
-      email: "",
-      groups: []
+      workspaceDialog: false,
+      selected: "",
+      workspaceName: "",
+      memberEmail: "",
+      workspaces: [
+        { name: "Add a workspace" },
+        { name: "[Sample] Workspace1" },
+        { name: "[Sample] Workspace2" },
+        { name: "[Sample] Workspace3" }
+      ]
     };
   },
+  components: {
+    ContextMenu,
+    ContextMenuItem,
+  },
   methods: {
-    closeMemberDialog() {
-      this.$refs.form.reset();
-      this.memberDialog = false;
+    cancelCreateWorkspace() {
+      this.selected = "";
+      this.$refs.form_workspace.reset();
+      this.workspaceDialog = false;
     },
-    addGroup() {
-      this.dialog = false;
-      this.groups.push({icon: "assignment", groupName: this.groupName, groupMembers: []});
-      this.groupName = "";
+    createWorkspace() {
+      this.workspaces.push({ name: this.workspaceName });
+      this.selected = this.workspaceName;
+      this.$refs.form_workspace.reset();
+      this.workspaceDialog = false;
     },
-    addMember(param) {
-      this.memberDialog = false;
-
-      var memberEmail = this.email;
-      this.email = "";
-
-      console.log("누를 그룹의 이름 : " + param);
-
-      var idx = this.groups.findIndex(element => element.groupName == param);
-      console.log("idx : " + idx);
-      console.log("찾은 그룹의 이름 : " + this.groups[idx].groupName);
-      console.log(
-        "찾은 그룹의 그룹원들 (추가 전) : " + this.groups[idx].groupMembers
-      );
-      this.groups[idx].groupMembers.push(memberEmail);
-      console.log(
-        "찾은 그룹의 그룹원들 (추가 후) : " + this.groups[idx].groupMembers
-      );
+    changeWorkspace(select) {
+      if (select == "Add a workspace") {
+        this.workspaceDialog = true;
+      }
+    },
+    deleteWorkspace() {
+      this.$refs.menu.close();
     }
   }
 };
