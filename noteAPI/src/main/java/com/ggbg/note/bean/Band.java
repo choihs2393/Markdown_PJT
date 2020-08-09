@@ -27,8 +27,8 @@ public class Band implements Persistable<String>{
 	@Column(nullable = false, name = "band_name")
 	private String name;
 
-	@Column(nullable = false, name = "band_number")
-	private int number;
+	@Column(nullable = false, name = "band_master")
+	private int master;
 
 
 	@Override

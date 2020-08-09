@@ -70,10 +70,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		
         http
             .authorizeRequests()
-//            .antMatchers("/admin/**").hasAnyRole("ADMIN")
+            .antMatchers("/admin/**").hasAnyRole("ADMIN")
             .antMatchers("/nonmember/**").permitAll()
             .antMatchers("/token/**").permitAll()
-            .antMatchers("/account/**").hasAnyRole("USER")
+            .antMatchers("/account/**","/band/**").hasAnyRole("USER")
             .anyRequest().authenticated();
         
         http
