@@ -14,13 +14,14 @@ public class InterceptorConfig implements WebMvcConfigurer {
 	@Autowired
 	private VerifyAccountInterceptor verifyAccountInterceptor;
 	
-	@Autowired
-	private VerifyTokenInterceptor verifyTokenInterceptor;
+//	@Autowired
+//	private VerifyTokenInterceptor verifyTokenInterceptor;
 	
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(verifyAccountInterceptor)
-			.addPathPatterns("/account/v1/*");
+			.addPathPatterns("/account/v1/*")
+			.addPathPatterns("/band/v1/*");
 		
 //		registry.addInterceptor(verifyTokenInterceptor)
 //			.addPathPatterns("/token/v2/*");

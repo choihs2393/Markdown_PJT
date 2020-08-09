@@ -17,4 +17,6 @@ public interface BandRepo extends JpaRepository<Band, String> {
 			+ "FROM band "
 			+ "where band_no in (select band_no from account_band where account_no = ?1 and account_status != 2)", nativeQuery = true)
 	List<Band> findAllBandByAccountNo(int no);
+	
+	
 }

@@ -20,7 +20,6 @@ import com.ggbg.note.bean.Account;
 import com.ggbg.note.bean.Band;
 import com.ggbg.note.bean.SuccessResponse;
 import com.ggbg.note.service.IAccountService;
-import com.ggbg.note.util.JwtTokenUtil;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -46,8 +45,6 @@ public class AccountController {
 	@Autowired
 	private IAccountService accountService;
 
-	@Autowired
-	private JwtTokenUtil jwt;
 //	@ApiOperation(value = "logout", httpMethod = "GET", notes = "Hello this is logout")
 //	@GetMapping("/logout")
 //	public ResponseEntity logout(@RequestParam(required = true) String email) {
@@ -192,7 +189,7 @@ public class AccountController {
 	// accessToken을 보내주면 됨.
 	// 반환값은 name, email, group, status
 	@ApiOperation(value = "statusList", httpMethod = "POST", notes = "Hello this is statusList")
-	@PostMapping("/statusList")
+	@PostMapping("/v1/statusList")
 	public ResponseEntity statusList(HttpServletRequest request) {
 		ResponseEntity response = null;
 		final SuccessResponse result = new SuccessResponse();
