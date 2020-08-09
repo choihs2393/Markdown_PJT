@@ -1,9 +1,0 @@
-package com.ggbg.note.bean;
-
-import lombok.Data;
-
-@Data
-@Bean
-public class BandMemberDTO {
-
-}
