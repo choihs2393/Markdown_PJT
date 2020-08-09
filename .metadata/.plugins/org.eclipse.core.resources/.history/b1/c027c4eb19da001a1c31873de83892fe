@@ -1,5 +1,0 @@
-package com.ggbg.note.service;
-
-public class BandServiceImpl implements IBandService {
-
-}
