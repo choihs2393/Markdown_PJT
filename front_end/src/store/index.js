@@ -20,8 +20,12 @@ export default new Vuex.Store({
     refreshToken: localStorage.getItem('refresh-token'),
     refreshTokenExpiraionDate: localStorage.getItem('refresh-token-expiraion-date'),
 
+    // user info
     userEmail: '',
     userName: '소망이',
+    userGroup: [],
+    userStatus: [],
+    userAccountNo: -1,
 
     // auth_check
     isDuplicateChecked: false,
@@ -112,6 +116,21 @@ export default new Vuex.Store({
     // 초기 회원정보 저장
     SET_INIT_USER_INFO(state, info) {
       state.userName = info['name']
+      state.userEmail = info['email']
+      state.userGroup = info.group
+      state.userStatus = info['status']
+      state.userAccountNo = info.accountNo
+
+      console.log(info.group);
+      
+      console.log("userName: " + state.userName)
+      console.log("userEmail : " + state.userEmail)
+      console.log("userGroup : " + state.userGroup);
+      console.log("userStatus : " + state.userStatus)
+    },
+
+    SET_WORKSPACES(state, result) {
+      state.userGroup = result.group
     }
   },
 
@@ -129,7 +148,7 @@ export default new Vuex.Store({
 
           /* 무성 추가 부분 -> 로그인을 한 후에도 서버요청해서 이름 정보 가져와야 할 듯 싶어서 추가 */
           /* 로그인을 해도 소망이님이 뜨고, 로그인상태로 앱을 껏다 켜야 yb님이라고 뜸. 애초에 로그인 후에 바로 가져오는 게 맞을 것 같습니다. */
-          dispatch('initUserInfo');
+          // dispatch('initUserInfo');
         })
         .catch(err => {
           if (err.response.status===401) {
@@ -240,19 +259,48 @@ export default new Vuex.Store({
 
     // 초기 회원정보 세팅
     initUserInfo({ getters, commit, dispatch }) {
-      axios.post(SERVER.URL + SERVER.ROUTES.onLocalInit, null, getters.config)
+      axios.post(SERVER.URL + SERVER.ROUTES.onServerInit, null, getters.config)
         .then(res => {
-          console.log(res.data.map)
+          console.log("res : " , res);
+          console.log("res.data : " , res.data);
+          console.log("res.data.map : " , res.data.map)
           if (res.data['result'] === 'success') {
             commit('SET_INIT_USER_INFO', res.data.map)
           }
-
         })
         .catch(err => {
           console.error(err.response.data)
           dispatch('logout')
         })
     },
+
+    // 워크스페이스 생성
+    createWorkspace({ getters, commit }, workspaceName) {
+      console.log("Vuex내에 createWorkspace() 함수 진입.");
+      console.log("넘어온 그룹명 : " + workspaceName)
+
+      // axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, workspaceName, getters.config)
+      // .then(res => {
+      //   commit("SET_WORKSPACES", res.data.map)
+      // })
+      // .catch(err => {
+
+      // })
+    },
+
+    // 워크스페이스 제거
+    deleteWorkspace({ getters, commit }, workspaceName) {
+      console.log("Vuex내에 deleteWorkspace() 함수 진입.");
+      console.log("넘어온 그룹명 : " + workspaceName)
+
+      // axios.post(SERVER.URL + SERVER.ROUTES.deleteWorkspace, workspaceName, getters.config)
+      // .then(res => {
+      //   commit("SET_WORKSPACES", res.data.map)
+      // })
+      // .catch(err => {
+
+      // })
+    }
   },
   modules: {}
 });
