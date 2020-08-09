@@ -16,7 +16,7 @@
         </v-btn>
         <InviteModal />
 
-        <!-- SHARES 옆에 + 버튼을 눌렀을 때 보이는, 그룹원 추가하는 다이얼로그
+        <!-- SHARES 옆에 + 버튼을 눌렀을 때 보이는, 그룹원 추가하는 다이얼로그 -->
         <v-dialog v-model="memberDialog" max-width="600px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on">
@@ -44,7 +44,7 @@
               <v-btn color="blue darken-1" text @click="addMember()">Add</v-btn>
             </v-card-actions>
           </v-card>
-        </v-dialog> -->
+        </v-dialog>
       </v-toolbar>
     </v-card>
 
@@ -66,9 +66,12 @@
     </v-container>
 
     <ContextMenu ref="menu">
-      <template slot-scope="{ contextData }">
+      <template>
         <ContextMenuItem v-if="selected" @click.native="deleteWorkspace">
-          <v-icon>delete</v-icon>{{ contextData }}
+          <v-icon>delete</v-icon>delete
+        </ContextMenuItem>
+        <ContextMenuItem v-if="selected" @click.native="renameWorkspace">
+          <v-icon>autorenew</v-icon>rename
         </ContextMenuItem>
       </template>
     </ContextMenu>
@@ -105,6 +108,12 @@ import ContextMenuItem from './ContextMenuItem';
 import InviteModal from "./InviteModal.vue";
 
 export default {
+  mounted() {
+    // this.workspaces = this.$store.userGroup;
+    for(var i = 0; i < this.$store.state.userInfo.group.length; i++) {
+      this.workspaces.push(this.$store.state.userInfo.group[i]);
+    }
+  },
   data() {
     return {
       memberDialog: false,
@@ -126,17 +135,27 @@ export default {
     InviteModal,
   },
   methods: {
+    showSubmenu(){
+
+    },
     cancelCreateWorkspace() {
       this.selected = "";
       this.$refs.form_workspace.reset();
       this.workspaceDialog = false;
     },
+
+    // 워크스페이스 새로 추가하는 함수.
     createWorkspace() {
       this.workspaces.push({ name: this.workspaceName });
       this.selected = this.workspaceName;
+      console.log("this.workspaceName : " + this.workspaceName);
+      this.$store.dispatch("createWorkspace", this.workspaceName);
+
       this.$refs.form_workspace.reset();
+      
       this.workspaceDialog = false;
       this.$store.state.workspace = this.selected;
+
     },
     changeWorkspace(select) {
       if (select == "Add a workspace") {

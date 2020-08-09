@@ -30,6 +30,8 @@ export default {
   },
 
   mounted() {
+    console.log("mounted() 호출됨.");
+    
     if (localStorage.getItem('authorization')) {
       this.$store.dispatch('initUserInfo')
     }

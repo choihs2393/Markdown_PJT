@@ -12,6 +12,8 @@ export default {
         modify: '/account/v1/modify',
         delete: '/account/v1/delete',
 
-        onLocalInit: '/account/onLocalInit',
+        onServerInit: '/account/onServerInit',
+        createWorkspace: '/band/v1/addBand',
+        // deleteWorkspace: '/account/deleteWorkspace'
     }
 }
