@@ -2,8 +2,8 @@
   <v-app id="inspire">
 
     <NavBar />
-    <SideBar v-if="!$store.state.isServerMode" />
-    <SideBarShare v-if="$store.state.isServerMode" />
+    <SideBar v-if="!$store.state.isShareMode" />
+    <SideBarShare v-if="$store.state.isShareMode" />
     <Home />
     <!-- <router-view /> -->
   </v-app>
@@ -18,19 +18,26 @@ import Home from "./views/Home.vue"
 export default {
   name: "App",
 
-    components: {
-      NavBar,
-      SideBar,
-      SideBarShare,
-      Home,
-    },
+  components: {
+    NavBar,
+    SideBar,
+    SideBarShare,
+    Home,
+  },
+
+  created() {
+
+  },
 
   mounted() {
-    // console.log(localStorage.getItem('authorization'));
     if (localStorage.getItem('authorization')) {
       this.$store.dispatch('initUserInfo')
     }
   },
+
+  updated() {
+    console.log('updated() 실행')
+  }
  
   // updated(){
   //   var div = document.getElementById("compiledMarkdown");
@@ -42,7 +49,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
   html, body {
     margin: 0;
     height: 100%;

@@ -2,7 +2,7 @@
     <v-app-bar app elevate-on-scroll>
       <!-- <v-app-bar-nav-icon @click="$store.state.drawer = !$store.state.drawer"></v-app-bar-nav-icon> -->
       <v-app-bar-nav-icon @click="decideSideBar()"></v-app-bar-nav-icon>
-      <v-toolbar-title>Markdown</v-toolbar-title>
+      <v-toolbar-title class="mr-3">소망이 노트</v-toolbar-title>
       <v-spacer></v-spacer>
       
       <!-- 로그인 전 화면의 상단바 -->
@@ -14,7 +14,7 @@
 
     <!-- 로그인 후 화면의 상단바 -->
     <template v-if="isLoggedIn">
-      <v-toolbar-title>{{ $store.state.userName }}님</v-toolbar-title>
+      <v-toolbar-title class="mr-2">{{ $store.state.userInfo.name }}님</v-toolbar-title>
 
       <v-btn icon>
         <v-icon>mdi-bell</v-icon>
@@ -29,9 +29,6 @@
 
         <v-list>
           <v-list-item>
-            <v-switch class="mt-0" v-model="$store.state.isServerMode" hide-details label="Server"></v-switch>
-          </v-list-item>
-          <v-list-item>
             <v-switch class="mt-0" v-model="$vuetify.theme.dark" hide-details label="Dark"></v-switch>
           </v-list-item>
           <v-list-item @click="$store.state.isMypageModal = !$store.state.isMypageModal">
@@ -44,6 +41,7 @@
       </v-menu>
       <LogoutModal />
       <MypageModal />
+      <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share"></v-switch>
     </template>
 
 
@@ -87,11 +85,11 @@ export default {
   methods: {
       decideSideBar() {
         // 폴더트리를 보여주는 사이드바를 열어준다.
-        if(!!this.$store.state.isServerMode == false) {
+        if(!!this.$store.state.isShareMode == false) {
           this.$store.state.drawer = !this.$store.state.drawer;
         }
         // 그룹을 보여주는 사이드바를 열어준다.
-        else if(!!this.$store.state.isServerMode == true) {
+        else if(!!this.$store.state.isShareMode == true) {
           this.$store.state.drawerShare = !this.$store.state.drawerShare;
         }
       }

@@ -20,8 +20,10 @@ export default new Vuex.Store({
     refreshToken: localStorage.getItem('refresh-token'),
     refreshTokenExpiraionDate: localStorage.getItem('refresh-token-expiraion-date'),
 
-    userEmail: '',
-    userName: '소망이',
+    userInfo: {
+      email: '',
+      name: '소망이',
+    },
 
     // auth_check
     isDuplicateChecked: false,
@@ -38,7 +40,7 @@ export default new Vuex.Store({
     isInviteModal: false,
 
     // server_check
-    isServerMode: false,
+    isShareMode: false,
 
     // selected workspace in server mode
     workspace: undefined,
@@ -86,7 +88,7 @@ export default new Vuex.Store({
       state.accessTokenExpiraionDate = null
       state.refreshToken = null
       state.refreshTokenExpiraionDate = null
-      // state.userEmail = null
+      state.userInfo.name = null
     },
 
     // email 중복체크 결과 저장
@@ -111,7 +113,7 @@ export default new Vuex.Store({
 
     // 초기 회원정보 저장
     SET_INIT_USER_INFO(state, info) {
-      state.userName = info['name']
+      state.userInfo = info
     }
   },
 
@@ -121,7 +123,7 @@ export default new Vuex.Store({
   actions: {
 
     // 로그인
-    login({ dispatch, commit }, loginData) {
+    login({ commit, dispatch }, loginData) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
         .then(res => {
           commit('SET_TOKEN', res.headers)  // 토큰 저장
@@ -166,7 +168,7 @@ export default new Vuex.Store({
           
           /* 서버모드로 켜놓고, 로그아웃 하면 서버모드가 유지됩니다. */
           /* 로그아웃시 로컬모드만 사용할 수 있도록 false로 고정해놨습니다. */
-          this.state.isServerMode = false;
+          this.state.isShareMode = false;
         })
         .catch(err => console.error(err.response.data))
     },
@@ -214,6 +216,7 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.modify, userInfo, getters.config)
         .then(res => {
           commit('SET_MODIFY_RESULT', res.data['result'])
+          dispatch('initUserInfo');
         })
         .catch(err => {
           // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
@@ -242,7 +245,7 @@ export default new Vuex.Store({
     initUserInfo({ getters, commit, dispatch }) {
       axios.post(SERVER.URL + SERVER.ROUTES.onLocalInit, null, getters.config)
         .then(res => {
-          console.log(res.data.map)
+          // console.log(res.data.map)
           if (res.data['result'] === 'success') {
             commit('SET_INIT_USER_INFO', res.data.map)
           }
