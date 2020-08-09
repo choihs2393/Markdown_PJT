@@ -10,8 +10,13 @@
           <v-toolbar-title>SHARES</v-toolbar-title>
         </v-subheader>
         <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-btn icon @click="showInviteModal()">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+        <InviteModal />
 
-        <!-- SHARES 옆에 + 버튼을 눌렀을 때 보이는, 그룹원 추가하는 다이얼로그 -->
+        <!-- SHARES 옆에 + 버튼을 눌렀을 때 보이는, 그룹원 추가하는 다이얼로그
         <v-dialog v-model="memberDialog" max-width="600px">
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on">
@@ -39,7 +44,7 @@
               <v-btn color="blue darken-1" text @click="addMember()">Add</v-btn>
             </v-card-actions>
           </v-card>
-        </v-dialog>
+        </v-dialog> -->
       </v-toolbar>
     </v-card>
 
@@ -97,6 +102,7 @@
 import "material-design-icons-iconfont/dist/material-design-icons.css";
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
+import InviteModal from "./InviteModal.vue";
 
 export default {
   data() {
@@ -117,6 +123,7 @@ export default {
   components: {
     ContextMenu,
     ContextMenuItem,
+    InviteModal,
   },
   methods: {
     cancelCreateWorkspace() {
@@ -129,15 +136,27 @@ export default {
       this.selected = this.workspaceName;
       this.$refs.form_workspace.reset();
       this.workspaceDialog = false;
+      this.$store.state.workspace = this.selected;
     },
     changeWorkspace(select) {
       if (select == "Add a workspace") {
         this.workspaceDialog = true;
+      }else {
+        this.$store.state.workspace = select;
       }
     },
     deleteWorkspace() {
       this.$refs.menu.close();
-    }
+    },
+    showInviteModal() {
+      // console.log('여기', this.$store.state.workspace)
+      // console.log('여기', !!(this.$store.state.workspace))
+      if(!!(this.$store.state.workspace)){
+        this.$store.state.isInviteModal = !this.$store.state.isInviteModal;
+        }else{
+        alert('workspace부터 골라')
+      }
+    },
   }
 };
 </script>

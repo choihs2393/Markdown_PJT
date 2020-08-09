@@ -35,9 +35,13 @@ export default new Vuex.Store({
     isLogoutModal: false,
     isMypageModal: false,
     isDeleteModal: false,
+    isInviteModal: false,
 
     // server_check
     isServerMode: false,
+
+    // selected workspace in server mode
+    workspace: undefined,
 
     theme: '',
   },
