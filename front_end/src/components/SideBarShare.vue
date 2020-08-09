@@ -54,7 +54,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
       <v-row>
         <v-col cols="20">
           <v-select
@@ -75,11 +74,34 @@
         <ContextMenuItem v-if="selected" @click.native="deleteWorkspace">
           <v-icon>delete</v-icon>delete
         </ContextMenuItem>
-        <ContextMenuItem v-if="selected" @click.native="renameWorkspace">
+        <ContextMenuItem v-if="selected" @click.native="showRenameDialog">
           <v-icon>autorenew</v-icon>rename
         </ContextMenuItem>
       </template>
     </ContextMenu>
+
+        <!-- workspace rename dialog -->
+        <v-dialog v-model="workspaceRenameDialog" max-width="600px">
+      <v-card>
+        <v-card-title>
+          <span>Rename workspace</span>
+        </v-card-title>
+        <v-card-text>
+          <v-form ref="form_workspace_rename">
+            <v-row>
+              <v-col cols="12" sm="20" md="20">
+                <v-text-field label="rename *" required v-model="workspaceRename"></v-text-field>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="cancelCreateWorkspace">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="renameWorkspace">Rename</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-navigation-drawer>
 </template>
 
@@ -105,18 +127,20 @@ export default {
   data() {
     return {
       workspaceDialog: false,
+      workspaceRenameDialog: false,
       memberDialog: false,
       workspaceDialog: false,
       selected: "",
       workspaceName: "",
+      workspaceRename: "",
       memberEmail: "",
       workspaces: [
         { name: "Add workspace first" },
-        // { name: "[Sample] Workspace1" },
-        // { name: "[Sample] Workspace2" },
-        // { name: "[Sample] Workspace3" }
       ]
     };
+  },
+  updated(){
+    console.log("updated() 호출됨.")
   },
   components: {
     ContextMenu,
@@ -124,9 +148,6 @@ export default {
     InviteModal,
   },
   methods: {
-    showSubmenu(){
-
-    },
     cancelCreateWorkspace() {
       this.selected = "";
       this.$refs.form_workspace.reset();
@@ -145,6 +166,8 @@ export default {
       
       this.workspaceDialog = false;
       this.$store.state.workspace = this.selected;
+      this.workspaces = this.$store.state.userInfo.group
+
     },
     changeWorkspace(select) {
       if (select == "Add workspace first") {
@@ -155,6 +178,51 @@ export default {
     },
     deleteWorkspace() {
       this.$refs.menu.close();
+
+      var workspace = this.$store.state.userInfo.group.find(element => element.name == this.$store.state.workspace);
+      var idx = this.$store.state.userInfo.group.findIndex(element => element.name == this.$store.state.workspace);
+      var workspaceNo = workspace.no
+
+      console.log("workspaceNo : " + workspaceNo)
+      console.log("workspaceName : " + this.$store.state.workspace)
+      console.log("workspaceIdx : " + idx)
+
+      const deleteWorkspace = {
+        bandNo: workspaceNo,
+        accountNo: this.$store.state.userInfo.no,
+        workspaceIdx: idx
+      }
+
+      this.$store.dispatch("deleteWorkspace", deleteWorkspace);
+      this.selected = "";
+      this.workspaces = this.$store.state.userInfo.group;
+    },
+    showRenameDialog() {
+      this.workspaceRenameDialog = true;
+    },
+    renameWorkspace() {
+      this.workspaceRenameDialog = false;
+
+      var workspace = this.$store.state.userInfo.group.find(element => element.name == this.$store.state.workspace)
+      var workspaceNo = workspace.no
+      var idx = this.$store.state.userInfo.group.findIndex(element => element.name == this.$store.state.workspace);
+
+      console.log("selectedWorkspaceName : " + workspace.name)
+      console.log("workspaceNo : " + workspaceNo)
+      console.log("workspaceRename : " + this.workspaceRename)
+
+      const renameWorkspace = {
+        bandNo: workspaceNo,
+        accountNo: this.$store.state.userInfo.no,
+        newBandName: this.workspaceRename,
+        workspaceIdx: idx,
+      }
+
+      this.$store.dispatch("renameWorkspace", renameWorkspace)
+      this.workspaces = this.$store.state.userInfo.group;
+      // this.selected = this.workspaceRename
+      this.workspaceRename = ""
+      
     },
     showInviteModal() {
       // console.log('여기', this.$store.state.workspace)

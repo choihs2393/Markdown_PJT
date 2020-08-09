@@ -14,6 +14,7 @@ export default {
 
         onServerInit: '/account/onServerInit',
         createWorkspace: '/band/v1/addBand',
-        // deleteWorkspace: '/account/deleteWorkspace'
+        deleteWorkspace: '/band/v1/deleteBand',
+        renameWorkspace: '/band/v1/renameBand'
     }
 }

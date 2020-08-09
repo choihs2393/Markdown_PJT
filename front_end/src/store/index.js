@@ -47,7 +47,6 @@ export default new Vuex.Store({
 
     // selected workspace in server mode
     workspace: undefined,
-
     theme: '',
   },
 
@@ -122,6 +121,25 @@ export default new Vuex.Store({
     // 워크스페이스 저장
     SET_WORKSPACES(state, result) {
       state.userInfo.group.push(result);
+      console.log("state.userInfo.group : ", state.userInfo.group);
+    },
+    
+    DELETE_WORKSPACE(state, param) {
+      console.log("DELETE_WORKSPACE 호출됨.")
+      console.log(param)
+      console.log(param.workspaceIdx)
+      var idx = param.workspaceIdx;
+      console.log(idx + "번째 아이템 : " + state.userInfo.group[idx].name + "[삭제]");
+      state.userInfo.group.splice(idx, 1)
+    },
+
+    UPDATE_WORKSPACE(state, param) {
+      console.log("UPDATE_WORKSPACE 호출됨.")
+      console.log(param)
+      console.log(param.workspaceIdx)
+      var idx = param.workspaceIdx
+      console.log(idx + "번째 아이템 : " + state.userInfo.group[idx].name + "[변경]")
+      state.userInfo.group[idx].name = param.newBandName
     },
     
     SET_IS_SHARE(state, result) {
@@ -292,8 +310,11 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, map, getters.config)
       .then(res => {
         console.log("then구문 진입.");
-        
-        commit("SET_WORKSPACES", res.data.map)
+        console.log("res.data", res.data);
+        console.log("res.data.map", res.data.map);
+        console.log("res.data.map.band", res.data.map.band);
+
+        commit("SET_WORKSPACES", res.data.map.band)
       })
       .catch(err => {
 
@@ -301,17 +322,39 @@ export default new Vuex.Store({
     },
 
     // 워크스페이스 제거
-    deleteWorkspace({ getters, commit }, workspaceName) {
-      console.log("Vuex내에 deleteWorkspace() 함수 진입.");
-      console.log("넘어온 그룹명 : " + workspaceName)
+    deleteWorkspace({ getters, commit }, deleteWorkspace) {
+      console.log("Vuex내에 deleteWorkspace() 진입.");
+      console.log("넘어온 그룹 정보 (bandNo, accountNo) : ", deleteWorkspace)
+      
+      axios.post(SERVER.URL + SERVER.ROUTES.deleteWorkspace, deleteWorkspace, getters.config)
+      .then(res => {
+        console.log("res.data.result : ", res.data.result)
+        if(res.data.result == "success") {
+          console.log("success안에 들어옴.")
+          commit("DELETE_WORKSPACE", deleteWorkspace)
 
-      // axios.post(SERVER.URL + SERVER.ROUTES.deleteWorkspace, workspaceName, getters.config)
-      // .then(res => {
-      //   commit("SET_WORKSPACES", res.data.map)
-      // })
-      // .catch(err => {
+        } else if(res.data.result == "fail") {
 
-      // })
+        }
+      })
+      .catch(err => {
+
+      })
+    },
+
+    // 워크스페이스명 변경
+    renameWorkspace({ getters, commit}, renameWorkspace) {
+      console.log("Vuex내에 renameWorkspace() 진입")
+      console.log("넘어온 그룹 정보 (bandNo, accountNo, newBandName, workspaceIdx) :", renameWorkspace)
+
+      axios.post(SERVER.URL + SERVER.ROUTES.renameWorkspace, renameWorkspace, getters.config)
+      .then(res => {
+        console.log("res.data.result : ", res.data.result)
+        if(res.data.result == "success") {
+          commit("UPDATE_WORKSPACE", renameWorkspace)
+        }
+
+      })
     }
   },
   modules: {}

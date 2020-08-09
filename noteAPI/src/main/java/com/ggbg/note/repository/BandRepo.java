@@ -27,11 +27,11 @@ public interface BandRepo extends JpaRepository<Band, Long> {
 	
 	@Transactional
 	@Modifying
-	@Query(value = "delete from Band where band_no = :band_no", nativeQuery = true)
+	@Query(value = "delete from band where band_no = :band_no", nativeQuery = true)
 	int deleteBandByNo(int band_no);
 	
 	@Transactional
 	@Modifying
-	@Query(value = "update Band set band_name = :band_name where band_no = :band_no", nativeQuery = true)
+	@Query(value = "update band set band_name = :band_name where band_no = :band_no", nativeQuery = true)
 	int updateBandByNo(String band_name, int band_no);
 }
