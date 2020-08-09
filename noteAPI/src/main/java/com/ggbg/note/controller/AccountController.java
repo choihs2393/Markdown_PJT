@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ggbg.note.bean.Account;
-import com.ggbg.note.bean.Band;
-import com.ggbg.note.bean.SuccessResponse;
+import com.ggbg.note.domain.SuccessResponse;
+import com.ggbg.note.domain.dto.AccountDTO;
+import com.ggbg.note.domain.dto.BandDTO;
 import com.ggbg.note.service.IAccountService;
 
 import io.swagger.annotations.ApiOperation;
@@ -78,11 +78,11 @@ public class AccountController {
 		boolean isValidAccount = accountService.validAccountCheck(email, password);
 
 		if (isValidAccount) {
-			Account account = new Account();
-			account.setEmail(email);
-			account.setPassword(newPassword);
-			account.setName(newName);
-			boolean res = accountService.saveAccount(account);
+			AccountDTO accountDTO = new AccountDTO();
+			accountDTO.setEmail(email);
+			accountDTO.setPassword(newPassword);
+			accountDTO.setName(newName);
+			boolean res = accountService.saveAccount(accountDTO);
 			if (res) {
 				result.status = true;
 				result.result = "success";
@@ -112,7 +112,6 @@ public class AccountController {
 		boolean isValidAccount = accountService.validAccountCheck(email, password);
 
 		if (isValidAccount) {
-			Account account = new Account();
 			boolean res = accountService.deleteAccount(email);
 			if (res) {
 				result.status = true;
@@ -133,30 +132,30 @@ public class AccountController {
 
 	// Header에 accessToken을 보내주면 됨.
 	// 반환값은 name
-	@ApiOperation(value = "onLocalInit", httpMethod = "POST", notes = "Hello this is onLocalInit")
-	@PostMapping("/onLocalInit")
-	public ResponseEntity onLocalInit(HttpServletRequest request) {
-		ResponseEntity response = null;
-		final SuccessResponse result = new SuccessResponse();
-
-		String accessToken = request.getHeader("Authorization").substring(7);
-
-		Map<String, Object> map = accountService.onLocalInit(accessToken);
-		String name = (String) map.get("name");
-		if (name != null && !name.equals("")) {
-			result.status = true;
-			result.result = "success";
-			result.map = map;
-			response = new ResponseEntity<>(result, HttpStatus.OK);
-		} else {
-			result.status = false;
-			result.result = "fail";
-			response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
-		}
-
-
-		return response;
-	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+//	@ApiOperation(value = "onLocalInit", httpMethod = "POST", notes = "Hello this is onLocalInit")
+//	@PostMapping("/onLocalInit")
+//	public ResponseEntity onLocalInit(HttpServletRequest request) {
+//		ResponseEntity response = null;
+//		final SuccessResponse result = new SuccessResponse();
+//
+//		String accessToken = request.getHeader("Authorization").substring(7);
+//
+//		Map<String, Object> map = accountService.onLocalInit(accessToken);
+//		String name = (String) map.get("name");
+//		if (name != null && !name.equals("")) {
+//			result.status = true;
+//			result.result = "success";
+//			result.map = map;
+//			response = new ResponseEntity<>(result, HttpStatus.OK);
+//		} else {
+//			result.status = false;
+//			result.result = "fail";
+//			response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+//		}
+//
+//
+//		return response;
+//	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
 
 	// accessToken을 보내주면 됨.
 	// 반환값은 name, email, group, status
@@ -196,7 +195,7 @@ public class AccountController {
 
 		String accessToken = request.getHeader("Authorization").substring(7);
 
-		List<Band> list = accountService.statusList(accessToken);
+		List<BandDTO> list = accountService.statusList(accessToken);
 		
 		result.status = true;
 		if (!list.isEmpty()) {

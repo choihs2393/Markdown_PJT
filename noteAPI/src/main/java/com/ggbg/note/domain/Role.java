@@ -1,4 +1,4 @@
-package com.ggbg.note.bean;
+package com.ggbg.note.domain;
 
 public enum Role {
 	USER("ROLE_USER", "user"),

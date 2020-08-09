@@ -1,9 +1,9 @@
-package com.ggbg.note.bean;
+package com.ggbg.note.domain.dto;
 
 import lombok.Data;
 
 @Data
-public class LoginViewModel {
+public class LoginViewDTO {
 	private String email;
 	
 	private String password;

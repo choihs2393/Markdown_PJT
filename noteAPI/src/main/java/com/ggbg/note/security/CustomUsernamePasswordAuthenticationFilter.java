@@ -30,8 +30,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ggbg.note.bean.LoginViewModel;
-import com.ggbg.note.bean.Token;
+import com.ggbg.note.domain.Token;
+import com.ggbg.note.domain.dto.LoginViewDTO;
 import com.ggbg.note.util.JwtTokenUtil;
 
 /*
@@ -60,13 +60,13 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
 		System.out.println("[attemptAuthentication] entered..");
-		LoginViewModel loginViewModel = new LoginViewModel();
+		LoginViewDTO loginViewModel = new LoginViewDTO();
 		
 		if (!request.getMethod().equals("POST"))
 			throw new AuthenticationServiceException("Authentication method not supported " + request.getMethod());
 
 		try {
-			loginViewModel = new ObjectMapper().readValue(request.getInputStream(), LoginViewModel.class);
+			loginViewModel = new ObjectMapper().readValue(request.getInputStream(), LoginViewDTO.class);
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -138,7 +138,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 //		response.addCookie(refreshCookie);
 		// jwt
 
-		response.setHeader("Access-Control-Expose-Headers", "Authorization, RefreshToken, AccessTokenExpiraionDate, RefreshTokenExpiraionDate, UserEmail");
+		response.setHeader("Access-Control-Expose-Headers", "Authorization, RefreshToken, AccessTokenExpiraionDate, RefreshTokenExpiraionDate");
 		
 		response.addHeader("Authorization", "Bearer " + accessToken);
 		response.addHeader("RefreshToken", "Bearer " + refreshToken);

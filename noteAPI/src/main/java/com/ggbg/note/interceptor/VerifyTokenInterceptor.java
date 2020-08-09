@@ -15,7 +15,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import com.ggbg.note.bean.Token;
+import com.ggbg.note.domain.Token;
 import com.ggbg.note.util.JwtTokenUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;

@@ -7,11 +7,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.ggbg.note.bean.Account;
+import com.ggbg.note.domain.entity.AccountEntity;
 
 
-public interface AccountRepo extends JpaRepository<Account, String> {
-	Optional<Account> findAccountByEmail(String email);
+public interface AccountRepo extends JpaRepository<AccountEntity, String> {
+	Optional<AccountEntity> findAccountByEmail(String email);
 	
 	@Query(value = "SELECT account_email, account_name FROM account where account_email = :email", nativeQuery = true) 
     Map<String, Object> findInfoByEmail(@Param("email") String email);

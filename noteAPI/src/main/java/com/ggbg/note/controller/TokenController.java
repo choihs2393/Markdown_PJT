@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ggbg.note.bean.SuccessResponse;
+import com.ggbg.note.domain.SuccessResponse;
 import com.ggbg.note.service.ITokenService;
 
 import io.swagger.annotations.ApiOperation;
