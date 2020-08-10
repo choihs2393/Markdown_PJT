@@ -48,7 +48,6 @@ public class NoneMemberController {
 	@PostMapping("/email")
 	public ResponseEntity emailCheck(@RequestBody Map<String, String> map) {
 		logger.debug("=============== email check entered =============");
-		System.out.println("=============== email check entered =============");
 		ResponseEntity response = null;
 		final SuccessResponse result = new SuccessResponse();
 		boolean ret = nonMemberService.emailCheck(map.get("email"));
