@@ -15,6 +15,10 @@ export default {
         onServerInit: '/account/onServerInit',
         createWorkspace: '/band/v1/addBand',
         deleteWorkspace: '/band/v1/deleteBand',
-        renameWorkspace: '/band/v1/renameBand'
+        renameWorkspace: '/band/v1/renameBand',
+
+        getBandMember: '/accountBand/v1/getBandMember',
+        inviteBandMember: '/accountBand/v1/inviteBandMember',
+
     }
 }
