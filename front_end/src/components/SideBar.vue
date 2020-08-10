@@ -181,7 +181,7 @@ export default {
     },
 
     openFile(absoluteFilePath) {
-      console.log(absoluteFilePath);
+      // console.log(absoluteFilePath);
       fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
         // if(err) throw err;
         console.log(data);
@@ -238,4 +238,14 @@ export default {
   .theme--light.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled):hover {
     color: rgb(214, 198, 219) !important;
   }
+
+  /* .theme--dark.v-list-item:not(.v-list-item--active) {
+    color: #615f75 !important;
+    font-size:0.5em;
+  }
+
+  .theme--dark.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled):hover {
+    color: rgb(214, 198, 219) !important;
+  } */
+
 </style>

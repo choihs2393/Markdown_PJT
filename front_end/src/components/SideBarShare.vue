@@ -113,7 +113,7 @@ import InviteModal from "./InviteModal.vue";
 
 export default {
   mounted() {
-    console.log("SideBarShare.vue -> mounted() 호출됨.")
+    // console.log("SideBarShare.vue -> mounted() 호출됨.")
 
     if(this.$store.state.userInfo.group.length == 0) {
       

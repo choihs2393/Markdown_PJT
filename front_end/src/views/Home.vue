@@ -134,6 +134,10 @@ export default {
 </script>
 
 <style scoped>
+.v-container {
+  background-color: #333;
+}
+
 #editor_div {
   margin: 0;
   height: 100%;
