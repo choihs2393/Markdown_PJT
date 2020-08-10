@@ -252,8 +252,7 @@ export default new Vuex.Store({
     updateUserInfo({ commit, dispatch }, userInfo) {
       axios.post(SERVER.URL + SERVER.ROUTES.modify, userInfo, { headers: { email: userInfo.email } })
         .then(res => {
-          console.log('회원정보 수정!!');
-
+          
           if (res.data['result'] === 'success') {
             commit('SET_MODIFY_RESULT', false)
             dispatch('initUserInfo');
@@ -263,16 +262,7 @@ export default new Vuex.Store({
             commit('SET_MODIFY_RESULT', true)
           }
         })
-        .catch(err => {
-          console.log('회원정보 실패!!');
-          console.error(err.response.data);
-
-          // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
-          // if (err.response.status===401) {
-          //   // dispatch('logout')
-          //   console.log('회원정보 401 실패!!');
-          // }
-        })
+        .catch(err => console.error(err.response.data))
     },
 
     // 회원탈퇴
@@ -289,14 +279,7 @@ export default new Vuex.Store({
             commit('SET_MODIFY_RESULT', true)
           }
         })
-        .catch(err => {
-          console.error(err.response.data);
-
-          // // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
-          // if (err.response.status===401) {
-          //   dispatch('logout')
-          // }
-        })
+        .catch(err => console.error(err.response.data))
     },
 
     // 초기 회원정보 세팅
@@ -307,10 +290,7 @@ export default new Vuex.Store({
             commit('SET_INIT_USER_INFO', res.data.map)
           }
         })
-        .catch(err => {
-          console.error(err.response.data)
-          // dispatch('logout')
-        })
+        .catch(err => console.error(err.response.data))
     },
 
     // 워크스페이스 생성

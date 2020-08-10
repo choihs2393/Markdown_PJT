@@ -20,17 +20,6 @@
                 </v-text-field>
               </ValidationProvider>
 
-              <ValidationProvider
-                mode="eager" v-slot="{ errors }" name="Password" rules="required">
-                <v-text-field
-                  v-model="userInfo.password"
-                  :error-messages="errors"
-                  label="Password"
-                  name="password"
-                  type="password"
-                ></v-text-field>
-              </ValidationProvider>
-
               <ValidationProvider mode="eager" v-slot="{ errors }" name="Name" rules="required|max:10">
                 <v-text-field
                   v-model="userInfo.newName"
@@ -41,6 +30,16 @@
                 ></v-text-field>
               </ValidationProvider>
 
+              <ValidationProvider
+                mode="eager" v-slot="{ errors }" name="Password" rules="required">
+                <v-text-field
+                  v-model="userInfo.password"
+                  :error-messages="errors"
+                  label="Password"
+                  name="password"
+                  type="password"
+                ></v-text-field>
+              </ValidationProvider>
 
               <ValidationProvider
                 mode="eager" v-slot="{ errors }" name="NewPassword" vid="confirmation"
@@ -146,6 +145,9 @@ export default {
 
     submit() {
       this.$refs.observer.validate()
+      if (!this.$store.state.isModifyChecked) {
+        this.$store.state.isMypageModal = false
+      }
     },
 
     close() {
