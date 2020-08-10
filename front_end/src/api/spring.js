@@ -15,5 +15,8 @@ export default {
         onServerInit: '/account/onServerInit',
         createWorkspace: '/band/v1/addBand',
         // deleteWorkspace: '/account/deleteWorkspace'
+
+        newATBR: '/token/v2/newATBR',
+        newRTBR: '/token/v2/newRTBR'
     }
 }

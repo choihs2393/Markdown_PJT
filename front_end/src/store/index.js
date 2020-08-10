@@ -4,12 +4,10 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import SERVER from '@/api/spring'
 
-
-
 Vue.use(Vuex);
 
 export default new Vuex.Store({
-
+  
   // data의 집합(중앙 관리할 모든 데이터 === 상태)
   state: {
 
@@ -55,13 +53,13 @@ export default new Vuex.Store({
   getters: {
     isLoggedIn: state => !!state.authorization,
 
-    config: state => ({
-      headers: {
-        Authorization:  state.authorization,
-        RefreshToken: state.refreshToken,
-        Email: state.userInfo.email,
-      }
-    }),
+    // config: state => ({
+    //   headers: {
+    //     Authorization:  state.authorization,
+    //     RefreshToken: state.refreshToken,
+    //     Email: state.userInfo.email,
+    //   }
+    // }),
   },
 
   // state를 변경하는 함수들(mutations에 작성되지 않은 state 변경 코드는 모두 동작하지 않음.)
@@ -71,18 +69,16 @@ export default new Vuex.Store({
   mutations: {
 
     // 토큰 저장
-    SET_TOKEN(state, token) {      
+    SET_TOKEN(state, token) {
       state.authorization = token.authorization
       state.accessTokenExpiraionDate = token.accesstokenexpiraiondate
       state.refreshToken = token.refreshtoken
       state.refreshTokenExpiraionDate = token.refreshtokenexpiraiondate
-      // state.userEmail = token.useremail
 
       localStorage.setItem('authorization', state.authorization)
       localStorage.setItem('access-token-expiraion-date', state.accessTokenExpiraionDate)
       localStorage.setItem('refresh-token', state.refreshToken)
       localStorage.setItem('refresh-token-expiraion-date', state.refreshTokenExpiraionDate)
-      // localStorage.setItem('email', state.userEmail)
     },
 
     // 토큰 삭제
@@ -111,7 +107,7 @@ export default new Vuex.Store({
 
     // 회원정보 수정 결과 저장
     SET_MODIFY_RESULT(state, result) {
-      result==='success' ? state.isModifyChecked = false : state.isModifyChecked = true
+      state.isModifyChecked = result
     },
 
     // 초기 회원정보 저장
@@ -146,6 +142,7 @@ export default new Vuex.Store({
     login({ commit, dispatch }, loginData) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
         .then(res => {
+          // console.log(res.headers)
           commit('SET_TOKEN', res.headers)  // 토큰 저장
           commit('SET_PASSWORD_CHECKED', false)
 
@@ -155,6 +152,7 @@ export default new Vuex.Store({
           commit('SET_IS_SHARE', true);
         })
         .catch(err => {
+          console.error(err.response.data)
           if (err.response.status===401) {
             commit('SET_PASSWORD_CHECKED', true)
           }
@@ -175,8 +173,8 @@ export default new Vuex.Store({
     },
 
     // 로그아웃
-    logout({ getters, commit }) {
-      axios.post(SERVER.URL + SERVER.ROUTES.logout, null, getters.config)
+    logout({ commit }) {
+      axios.post(SERVER.URL + SERVER.ROUTES.logout)
         .then(() => {
           commit('DELETE_TOKEN')  // state 에서도 삭제
 
@@ -233,56 +231,75 @@ export default new Vuex.Store({
     },
 
     // 회원정보 수정
-    updateUserInfo({ getters, commit, dispatch }, userInfo) {
-      axios.post(SERVER.URL + SERVER.ROUTES.modify, userInfo, getters.config)
+    updateUserInfo({ commit, dispatch }, userInfo) {
+      axios.post(SERVER.URL + SERVER.ROUTES.modify, userInfo, { headers: { email: userInfo.email } })
         .then(res => {
-          commit('SET_MODIFY_RESULT', res.data['result'])
-          dispatch('initUserInfo');
+          console.log('회원정보 수정!!');
+
+          if (res.data['result'] === 'success') {
+            commit('SET_MODIFY_RESULT', false)
+            dispatch('initUserInfo');
+          }
+
+          else {
+            commit('SET_MODIFY_RESULT', true)
+          }
         })
         .catch(err => {
+          console.log('회원정보 실패!!');
+          console.error(err.response.data);
+
           // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
-          if (err.response.status===401) {
-            dispatch('logout')
-          }
+          // if (err.response.status===401) {
+          //   // dispatch('logout')
+          //   console.log('회원정보 401 실패!!');
+          // }
         })
     },
 
     // 회원탈퇴
-    deleteAccount({ getters, commit, dispatch }, userInfo) {
-      axios.post(SERVER.URL + SERVER.ROUTES.delete, userInfo, getters.config)
+    deleteAccount({ commit, dispatch }, userInfo) {
+      axios.post(SERVER.URL + SERVER.ROUTES.delete, userInfo, { headers: { email: userInfo.email } })
         .then(res => {
-          commit('SET_MODIFY_RESULT', res.data['result'])
-          dispatch('logout')
-        })
-        .catch(err => {
-          // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
-          if (err.response.status===401) {
+
+          if (res.data['result'] === 'success') {
+            commit('SET_MODIFY_RESULT', false)
             dispatch('logout')
           }
+
+          else {
+            commit('SET_MODIFY_RESULT', true)
+          }
+        })
+        .catch(err => {
+          console.error(err.response.data);
+
+          // // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+          // if (err.response.status===401) {
+          //   dispatch('logout')
+          // }
         })
     },
 
     // 초기 회원정보 세팅
-    initUserInfo({ getters, commit, dispatch }) {
-      axios.post(SERVER.URL + SERVER.ROUTES.onServerInit, null, getters.config)
+    initUserInfo({ commit }) {
+      axios.post(SERVER.URL + SERVER.ROUTES.onServerInit)
         .then(res => {
-          // console.log(res.data.map)
           if (res.data['result'] === 'success') {
-            console.log("res.data.map : " , res.data.map)
             commit('SET_INIT_USER_INFO', res.data.map)
           }
         })
         .catch(err => {
           console.error(err.response.data)
-          dispatch('logout')
+          // dispatch('logout')
         })
     },
 
     // 워크스페이스 생성
     createWorkspace({ getters, commit }, workspaceName) {
-      console.log("Vuex내에 createWorkspace() 함수 진입.");
-      console.log("bandName : " + workspaceName)
-      console.log("accountNo : " + this.state.userInfo.no);
+      // console.log("Vuex내에 createWorkspace() 함수 진입.");
+      // console.log("bandName : " + workspaceName)
+      // console.log("accountNo : " + this.state.userInfo.no);
 
       var map = {
         bandName: workspaceName,
@@ -291,7 +308,7 @@ export default new Vuex.Store({
     
       axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, map, getters.config)
       .then(res => {
-        console.log("then구문 진입.");
+        // console.log("then구문 진입.");
         
         commit("SET_WORKSPACES", res.data.map)
       })
