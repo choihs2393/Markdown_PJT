@@ -132,30 +132,30 @@ public class AccountController {
 
 	// Header에 accessToken을 보내주면 됨.
 	// 반환값은 name
-//	@ApiOperation(value = "onLocalInit", httpMethod = "POST", notes = "Hello this is onLocalInit")
-//	@PostMapping("/onLocalInit")
-//	public ResponseEntity onLocalInit(HttpServletRequest request) {
-//		ResponseEntity response = null;
-//		final SuccessResponse result = new SuccessResponse();
-//
-//		String accessToken = request.getHeader("Authorization").substring(7);
-//
-//		Map<String, Object> map = accountService.onLocalInit(accessToken);
-//		String name = (String) map.get("name");
-//		if (name != null && !name.equals("")) {
-//			result.status = true;
-//			result.result = "success";
-//			result.map = map;
-//			response = new ResponseEntity<>(result, HttpStatus.OK);
-//		} else {
-//			result.status = false;
-//			result.result = "fail";
-//			response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
-//		}
-//
-//
-//		return response;
-//	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+	@ApiOperation(value = "onLocalInit", httpMethod = "POST", notes = "Hello this is onLocalInit")
+	@PostMapping("/onLocalInit")
+	public ResponseEntity onLocalInit(HttpServletRequest request) {
+		ResponseEntity response = null;
+		final SuccessResponse result = new SuccessResponse();
+
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		Map<String, Object> map = accountService.onLocalInit(accessToken);
+		String name = (String) map.get("name");
+		if (name != null && !name.equals("")) {
+			result.status = true;
+			result.result = "success";
+			result.map = map;
+			response = new ResponseEntity<>(result, HttpStatus.OK);
+		} else {
+			result.status = false;
+			result.result = "fail";
+			response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+		}
+
+
+		return response;
+	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
 
 	// accessToken을 보내주면 됨.
 	// 반환값은 name, email, group, status
