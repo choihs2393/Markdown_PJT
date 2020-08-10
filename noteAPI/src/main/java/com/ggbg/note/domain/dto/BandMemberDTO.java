@@ -4,8 +4,17 @@ import lombok.Data;
 
 @Data
 public class BandMemberDTO {
-	private int accountNo;
-	private String accountEmail;
-	private String accountName;
-	private int accountStatus;
+	private int no;
+	private String email;
+	private String name;
+	private int status;
+	
+	public BandMemberDTO() {}
+	
+	public BandMemberDTO(int no, String email, String name, int status) {
+		this.no = no;
+		this.email = email;
+		this.name = name;
+		this.status = status;
+	}
 }
