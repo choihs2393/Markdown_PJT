@@ -23,7 +23,7 @@ public class VerifyAccountInterceptor implements HandlerInterceptor{
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		System.out.println("[v1_preHandle] entered..");
+		System.out.println("v1 handler");
 		String email = request.getHeader("Email");
 		String token = request.getHeader("Authorization").substring(7);
 		String emailByToken = "";

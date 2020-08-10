@@ -60,34 +60,7 @@ public class AccountBandController {
 	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
 	
 	
-	@ApiOperation(value = "inviteBandMember", httpMethod = "POST", notes = "Hello this is inviteBandMember")
-	@PostMapping("/v1/inviteBandMember")
-	public ResponseEntity inviteBandMember(HttpServletRequest request, 
-			@RequestBody(required = true) Map<String, String> map) {
-
-		ResponseEntity response = null;
-		final SuccessResponse result = new SuccessResponse();
-
-		String accessToken = request.getHeader("Authorization").substring(7);
-		String email = request.getHeader("email");
-		int bandNo = Integer.parseInt(map.get("bandNo"));
-		int accountNo = Integer.parseInt(map.get("accountNo"));
-		
-		BandMemberDTO bandMemberDTO = accountBandService.inviteBandMember(email, bandNo, accountNo);
-		
-		result.status = true;
-		if(bandMemberDTO != null) {
-			result.result = "success";
-			Map<String, Object> retMap = new HashMap<String, Object>();
-			retMap.put("bandMember", bandMemberDTO);
-			result.map = retMap;
-		}else {
-			result.result = "fail";
-		}
-		response = new ResponseEntity<>(result, HttpStatus.OK);
-
-		return response;
-	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+	
 	
 	@ApiOperation(value = "findAccountList", httpMethod = "POST", notes = "Hello this is findAccountList")
 	@PostMapping("/findAccountList")
@@ -108,6 +81,103 @@ public class AccountBandController {
 		} else {
 			result.result ="empty";
 			
+		}
+		response = new ResponseEntity<>(result, HttpStatus.OK);
+		return response;
+	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+	
+	@ApiOperation(value = "deleteMember", httpMethod = "POST", notes = "Hello this is deleteMember")
+	@PostMapping("/v1/deleteMember")
+	public ResponseEntity deleteMember(HttpServletRequest request, 
+			@RequestBody(required = true) Map<String, String> map) {
+
+		ResponseEntity response = null;
+		final SuccessResponse result = new SuccessResponse();
+
+		int masterNo = Integer.parseInt(map.get("masterNo"));
+		int accountNo = Integer.parseInt(map.get("accountNo"));
+		int bandNo = Integer.parseInt(map.get("bandNo"));
+		boolean ret = accountBandService.deleteMember(masterNo, accountNo, bandNo);
+		
+		result.status = true;
+		if (ret) {
+			result.result = "success";
+		} else {
+			result.result ="fail";
+			
+		}
+		response = new ResponseEntity<>(result, HttpStatus.OK);
+		return response;
+	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+	
+	@ApiOperation(value = "inviteBandMember", httpMethod = "POST", notes = "Hello this is inviteBandMember")
+	@PostMapping("/v1/inviteBandMember")
+	public ResponseEntity inviteBandMember(HttpServletRequest request, 
+			@RequestBody(required = true) Map<String, String> map) {
+
+		ResponseEntity response = null;
+		final SuccessResponse result = new SuccessResponse();
+
+		int masterNo = Integer.parseInt(map.get("masterNo"));
+		int bandNo = Integer.parseInt(map.get("bandNo"));
+		String email = map.get("email");
+		
+		BandMemberDTO bandMemberDTO = accountBandService.inviteBandMember(email, masterNo, bandNo);
+		
+		result.status = true;
+		if(bandMemberDTO != null) {
+			result.result = "success";
+			Map<String, Object> retMap = new HashMap<String, Object>();
+			retMap.put("bandMember", bandMemberDTO);
+			result.map = retMap;
+		}else {
+			result.result = "fail";
+		}
+		response = new ResponseEntity<>(result, HttpStatus.OK);
+
+		return response;
+	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+	
+	@ApiOperation(value = "acceptInvite", httpMethod = "POST", notes = "Hello this is acceptInvite")
+	@PostMapping("/v1/acceptInvite")
+	public ResponseEntity acceptInvite(HttpServletRequest request, 
+			@RequestBody(required = true) Map<String, String> map) {
+
+		ResponseEntity response = null;
+		final SuccessResponse result = new SuccessResponse();
+
+		int accountNo = Integer.parseInt(map.get("accountNo"));
+		int bandNo = Integer.parseInt(map.get("bandNo"));
+		boolean ret = accountBandService.acceptInvite(accountNo, bandNo);
+		
+		result.status = true;
+		if (ret) {
+			result.result = "success";
+		} else {
+			result.result ="fail"; // false 가 나오는경우는 업데이트가 안된경우 -> 그럼 얘는 탈퇴를 했다는것 -> 목록에서 지워버리면됨
+			
+		}
+		response = new ResponseEntity<>(result, HttpStatus.OK);
+		return response;
+	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+	
+	@ApiOperation(value = "declineInvite", httpMethod = "POST", notes = "Hello this is declineInvite")
+	@PostMapping("/v1/declineInvite")
+	public ResponseEntity declineInvite(HttpServletRequest request, 
+			@RequestBody(required = true) Map<String, String> map) {
+
+		ResponseEntity response = null;
+		final SuccessResponse result = new SuccessResponse();
+
+		int accountNo = Integer.parseInt(map.get("accountNo"));
+		int bandNo = Integer.parseInt(map.get("bandNo"));
+		boolean ret = accountBandService.declineInvite(accountNo, bandNo);
+		
+		result.status = true;
+		if (ret) {
+			result.result = "success";
+		} else {
+			result.result ="fail";// false 가 나오는경우는 지울게 없는경우 -> 그럼 그냥 지워버리면 됨
 		}
 		response = new ResponseEntity<>(result, HttpStatus.OK);
 		return response;
