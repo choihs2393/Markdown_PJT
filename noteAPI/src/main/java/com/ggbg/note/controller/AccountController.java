@@ -82,6 +82,7 @@ public class AccountController {
 			accountDTO.setEmail(email);
 			accountDTO.setPassword(newPassword);
 			accountDTO.setName(newName);
+			System.out.println(accountDTO.toString());
 			boolean res = accountService.saveAccount(accountDTO);
 			if (res) {
 				result.status = true;

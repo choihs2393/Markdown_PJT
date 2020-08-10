@@ -144,23 +144,17 @@ public class AccountServiceImpl implements IAccountService {
 	@Transactional
 	@Override
 	public boolean saveAccount(AccountDTO accountDTO) {
+		int ret = -1;
 		BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder(10);
-		accountDTO.setRole(Role.USER);
 		accountDTO.setPassword(bcryptPasswordEncoder.encode(accountDTO.getPassword()));
-
-		Date date = new Date();
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-		accountDTO.setCreateDate(simpleDateFormat.format(date));
-		accountRepo.save(AccountEntity.builder()
-					.email(accountDTO.getEmail())
-					.name(accountDTO.getName())
-					.password(accountDTO.getPassword())
-					.role(accountDTO.getRole())
-					.createDate(accountDTO.getCreateDate())
-					.build()
-				); // 만약 db가 꺠져서 저장이 안되던가 하는 상황에서는 에러처리를 어떻게 해야하는지 jpa search
-		return true;
+		
+		ret = accountRepo.updateAccount(accountDTO.getEmail(), accountDTO.getName(), accountDTO.getPassword());
+		System.out.println(ret);
+		if(ret == 1)
+			return true;
+		else
+			return false;
+		
 	}
 
 	@Transactional

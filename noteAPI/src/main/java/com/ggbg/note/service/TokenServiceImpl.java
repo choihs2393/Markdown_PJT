@@ -66,16 +66,16 @@ public class TokenServiceImpl implements ITokenService {
 		try {
 			Map<String, Object> parseInfo = jtu.getUserParseInfo(accessToken);
 			String emailFromAccessToken = String.valueOf(parseInfo.get("email"));
+			
 			List<String> rs = (List) parseInfo.get("role");
 			String authorityFromAccessToken = rs.get(0);
 			ValueOperations<String, Object> vop = redisTemplate.opsForValue();
-			Token token = (Token) vop.get(emailFromAccessToken);
+			Token token = (Token) vop.get("dkdlrnf0@gmail.com");
 			if(token != null) {
 				Map<String, Object> parseInfo2 = jtu.getUserParseInfo(token.getToken());
-				String emailFromRefreshToken = String.valueOf(parseInfo.get("email"));
+				String emailFromRefreshToken = String.valueOf(parseInfo2.get("email"));
 				List<String> rs2 = (List) parseInfo.get("role");
 				String authorityFromRefreshToken = rs.get(0);
-
 				boolean checkEmail = emailFromAccessToken.equals(emailFromRefreshToken) ? true : false;
 				boolean checkAuthority = authorityFromAccessToken.equals(authorityFromRefreshToken) ? true : false;
 
