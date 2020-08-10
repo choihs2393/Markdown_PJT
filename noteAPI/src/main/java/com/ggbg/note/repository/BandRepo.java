@@ -33,4 +33,7 @@ public interface BandRepo extends JpaRepository<BandEntity, Long> {
 	@Modifying
 	@Query(value = "update band set band_name = :band_name where band_no = :band_no", nativeQuery = true)
 	int updateBandByNo(String band_name, int band_no);
+	
+	@Query(value = "select band_master from band where band_no = :band_no", nativeQuery = true)
+	Integer findMasterNoByBandNo(int band_no);
 }
