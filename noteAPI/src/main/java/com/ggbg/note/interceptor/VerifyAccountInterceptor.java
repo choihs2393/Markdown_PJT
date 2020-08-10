@@ -41,7 +41,7 @@ public class VerifyAccountInterceptor implements HandlerInterceptor{
 		if(email.equals(emailByToken)) {
 			return true;
 		}else {
-			throw new UnAuthorizationException(email);
+			throw new UnAuthorizationException("AccessToken " + token);
 		}
 	}
 }
