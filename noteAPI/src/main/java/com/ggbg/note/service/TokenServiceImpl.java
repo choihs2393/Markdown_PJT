@@ -19,7 +19,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import com.ggbg.note.bean.Token;
+import com.ggbg.note.domain.Token;
 import com.ggbg.note.exception.ExpiredTokenException;
 import com.ggbg.note.exception.UnAuthorizationException;
 import com.ggbg.note.exception.UnknownException;

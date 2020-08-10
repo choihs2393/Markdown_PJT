@@ -13,7 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.ggbg.note.bean.Account;
+import com.ggbg.note.domain.entity.AccountEntity;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -25,7 +25,7 @@ public class JwtTokenUtil implements Serializable {
 
     private static final long serialVersionUID = -2550185165626007488L;
     public static final long JWT_ACCESS_TOKEN_VALIDITY = 30 * 60; //30분
-//    public static final long JWT_ACCESS_TOKEN_VALIDITY = 60; //1분
+//    public static final long JWT_ACCESS_TOKEN_VALIDITY = 10; //1분
     public static final long JWT_REFRESH_TOKEN_VALIDITY = 24 * 60 * 60 * 31; //한달
 //    public static final long JWT_REFRESH_TOKEN_VALIDITY = 60; // 1분
     public static final long JWT_EMAILAUTH_TOKEN_VALIDITY = 60;

@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.ggbg.note.bean.ExceptionResponse;
+import com.ggbg.note.domain.ExceptionResponse;
 import com.ggbg.note.util.HttpsConnection;
 
 @RestControllerAdvice

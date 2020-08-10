@@ -1,4 +1,4 @@
-package com.ggbg.note.bean;
+package com.ggbg.note.domain;
 
 import java.io.Serializable;
 

@@ -17,9 +17,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ggbg.note.bean.Account;
-import com.ggbg.note.bean.Role;
-import com.ggbg.note.bean.Token;
+import com.ggbg.note.domain.Role;
+import com.ggbg.note.domain.Token;
+import com.ggbg.note.domain.dto.AccountDTO;
+import com.ggbg.note.domain.entity.AccountEntity;
 import com.ggbg.note.exception.InternalServerException;
 import com.ggbg.note.repository.AccountRepo;
 import com.ggbg.note.util.JwtTokenUtil;
@@ -44,22 +45,30 @@ public class NonMemberServiceImpl implements INonMemberService {
 
 	@Transactional
 	@Override
-	public boolean signUp(Account account) {
+	public boolean signUp(AccountDTO accountDTO) {
 		BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder(10);
-		account.setRole(Role.USER);
-		account.setPassword(bcryptPasswordEncoder.encode(account.getPassword()));
+		accountDTO.setRole(Role.USER);
+		accountDTO.setPassword(bcryptPasswordEncoder.encode(accountDTO.getPassword()));
 
 		Date date = new Date();
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-		account.setCreateDate(simpleDateFormat.format(date));
-		accountRepo.save(account); // 만약 db가 꺠져서 저장이 안되던가 하는 상황에서는 에러처리를 어떻게 해야하는지 jpa search
+		accountDTO.setCreateDate(simpleDateFormat.format(date));
+		accountRepo.save(AccountEntity.builder()
+									.email(accountDTO.getEmail())
+									.name(accountDTO.getName())
+									.password(accountDTO.getPassword())
+									.role(accountDTO.getRole())
+									.createDate(accountDTO.getCreateDate())
+									.build()
+						);
+		
 		return true;
 	}
 
 	@Override
 	public boolean emailCheck(String email) {
-		Optional<Account> optional = accountRepo.findAccountByEmail(email);
+		Optional<AccountEntity> optional = accountRepo.findAccountByEmail(email);
 		if (optional.isPresent()) {
 			return false;
 		} else {

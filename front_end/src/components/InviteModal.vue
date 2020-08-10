@@ -9,7 +9,11 @@
     >
       <v-text-field
         v-model="search"
+<<<<<<< HEAD
         append-icon="mdi-magnify"
+=======
+        append-icon="mdi-plus"
+>>>>>>> 1fa6931b47d6c9cc576611b8af6c8a1cc2047065
         label="Search"
         single-line
         hide-details

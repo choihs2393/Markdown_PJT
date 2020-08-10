@@ -1,6 +1,8 @@
-package com.ggbg.note.bean;
+package com.ggbg.note.domain;
 
 import java.util.Map;
+
+import com.ggbg.note.domain.entity.AccountEntity;
 
 public class OAuthAttributes {
    private Map<String, Object> attributes;
@@ -110,8 +112,8 @@ public class OAuthAttributes {
 	   	return oAuthAttributes;
    }
 
-   public Account toEntity() {
-	   Account account = new Account();
+   public AccountEntity toEntity() {
+	   AccountEntity account = new AccountEntity();
 	   account.setEmail(email);
 	   account.setRole(Role.USER);
 	   return account;

@@ -2,41 +2,34 @@
     <v-app-bar app elevate-on-scroll>
       <!-- <v-app-bar-nav-icon @click="$store.state.drawer = !$store.state.drawer"></v-app-bar-nav-icon> -->
       <v-app-bar-nav-icon @click="decideSideBar()"></v-app-bar-nav-icon>
-      <v-toolbar-title>Markdown</v-toolbar-title>
+      <v-toolbar-title class="mr-3">소망이 노트</v-toolbar-title>
       <v-spacer></v-spacer>
       
       <!-- 로그인 전 화면의 상단바 -->
       <template v-if="!isLoggedIn">
         <LoginModal />
         <SignupModal />
+        <v-switch v-model="$vuetify.theme.dark" hide-details label="Dark"></v-switch>
       </template>
 
     <!-- 로그인 후 화면의 상단바 -->
     <template v-if="isLoggedIn">
-      <div>
-        <span>{{ $store.state.userName }}님</span>
-      </div>
+      <v-toolbar-title class="mr-2">{{ $store.state.userInfo.name }}님</v-toolbar-title>
 
-      <v-menu
-        left
-        bottom
-      >
+      <v-btn icon>
+        <v-icon>mdi-bell</v-icon>
+      </v-btn>
+
+      <v-menu left bottom>
         <template v-slot:activator="{ on, attrs }">
-          <v-btn
-            icon
-            v-bind="attrs"
-            v-on="on"
-          >
+          <v-btn icon v-bind="attrs" v-on="on">
             <v-icon>fas fa-ellipsis-h</v-icon>
           </v-btn>
         </template>
 
         <v-list>
           <v-list-item>
-              <v-switch
-                v-model="$vuetify.theme.dark"
-                label="Dark"
-              ></v-switch>
+            <v-switch class="mt-0" v-model="$vuetify.theme.dark" hide-details label="Dark"></v-switch>
           </v-list-item>
           <v-list-item @click="$store.state.isMypageModal = !$store.state.isMypageModal">
             <v-list-item-title>MyPage</v-list-item-title>
@@ -48,6 +41,7 @@
       </v-menu>
       <LogoutModal />
       <MypageModal />
+      <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share"></v-switch>
     </template>
 
 
@@ -66,7 +60,7 @@ export default {
   name: 'NavBar',
   data() {
     return {
-      theme: this.$vuetify.theme.dark,
+      // theme: this.$vuetify.theme.dark,
     }
   },
   components: {
@@ -81,37 +75,48 @@ export default {
   },
 
   updated(){
-    // var div = document.getElementById("compiledMarkdown");
-    // if(this.$vuetify.theme.dark == true)
-    //   div.style.color = "white";
-    // else
-    //   div.style.color = "black";
+    var div = document.getElementById("compiledMarkdown");
+    if(this.$vuetify.theme.dark == true)
+      div.style.color = "white";
+    else
+      div.style.color = "black";
+
+    if(!!this.$store.state.isShareMode == false) {
+      this.$store.commit('SET_IS_DRAWER_SHARE', false)
+      this.$store.commit('SET_IS_DRAWER', true)
+    }
+    else if(!!this.$store.state.isShareMode == true) {
+      this.$store.commit('SET_IS_DRAWER_SHARE', true)
+      this.$store.commit('SET_IS_DRAWER', false)
+    }
   },
+
   methods: {
       decideSideBar() {
-        console.log("햄버거 버튼 누름.");
+        // 폴더트리를 보여주는 사이드바를 열어준다.
+        if(!!this.$store.state.isShareMode == false) {
+          this.$store.commit('SET_IS_DRAWER', !this.$store.state.drawer)
 
-        // 로그인 안되어있으면, 폴더트리를 보여주는 사이드바를 열어준다.
-        if(!!this.$store.state.authorization == false) {
-          console.log("로그인 전");
-          this.$store.state.drawer = !this.$store.state.drawer;
         }
-        // 로그인 되어있으면, 그룹을 보여주는 사이드바를 열어준다.
-        else if(!!this.$store.state.authorization == true) {
-          console.log("로그인 후");
-          this.$store.state.drawerShare = !this.$store.state.drawerShare;
+        // 그룹을 보여주는 사이드바를 열어준다.
+        else if(!!this.$store.state.isShareMode == true) {
+          this.$store.commit('SET_IS_DRAWER_SHARE', !this.$store.state.drawerShare)
         }
-      }
+      },
+      // changeLocalShare() {
+      //   if(!!this.$store.state.isShareMode == false) {
+      //     this.$store.state.drawerShare = false
+      //     this.$store.state.drawer = true
+      //   }
+      //   else if(!!this.$store.state.isShareMode == true) {
+      //     this.$store.state.drawer = false
+      //     this.$store.state.drawerShare = true
+      //   }
+      // }
   }
 }
 </script>
 
 <style>
-  .theme--light.v-list-item:not(.v-list-item--active) {
-      color: #615f75 !important;
-      font-size:0.5em;
-  }
-  .theme--light.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled):hover {
-      color: rgb(214, 198, 219) !important;
-  }
+
 </style>
