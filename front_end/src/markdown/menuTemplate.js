@@ -1,5 +1,5 @@
 import { app, BrowserWindow, dialog } from "electron";
-import { createWindow } from "./background";
+import { createWindow } from "../background";
 const fs = require("fs");
 const isMac = process.platform === "darwin"
 

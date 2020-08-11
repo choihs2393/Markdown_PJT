@@ -33,8 +33,8 @@
 
 <script>
 // @ is an alias to /src
-import parse from "../parse";
-import sampleData from "../sampleData.js";
+import parse from "../markdown/parse";
+import sampleData from "../markdown/sampleData.js";
 
 import { remote, ipcRenderer } from "electron";
 import fs from "fs";
