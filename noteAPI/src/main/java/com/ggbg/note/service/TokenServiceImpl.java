@@ -5,26 +5,32 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JsonParseException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import com.ggbg.note.bean.Account;
-import com.ggbg.note.bean.Token;
+import com.ggbg.note.domain.Token;
+import com.ggbg.note.exception.ExpiredTokenException;
+import com.ggbg.note.exception.UnAuthorizationException;
+import com.ggbg.note.exception.UnknownException;
 import com.ggbg.note.repository.AccountRepo;
 import com.ggbg.note.util.JwtTokenUtil;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 public class TokenServiceImpl implements ITokenService {
 
@@ -43,6 +49,8 @@ public class TokenServiceImpl implements ITokenService {
 	@Autowired
 	private HttpServletResponse response;
 
+	private static final Logger logger = LoggerFactory.getLogger(TokenServiceImpl.class);
+
 	/*
 	 * AccessToken 으로 AccessToken 을 갱신하는 방법을 사용한 이유 : Session sliding 방식을 도입하며
 	 * access token 을 사용하고 있을 때 최대한 refreshtoken 에 대한 접근을 줄이고 보안성을 높이기위함. 사용자는 30분
@@ -54,20 +62,20 @@ public class TokenServiceImpl implements ITokenService {
 	 */
 	@Override
 	public boolean newAccessTokenByAccessToken(String accessToken) {
+		boolean ret = false;
 		try {
 			Map<String, Object> parseInfo = jtu.getUserParseInfo(accessToken);
 			String emailFromAccessToken = String.valueOf(parseInfo.get("email"));
+			
 			List<String> rs = (List) parseInfo.get("role");
 			String authorityFromAccessToken = rs.get(0);
-
 			ValueOperations<String, Object> vop = redisTemplate.opsForValue();
-			Token token = (Token) vop.get(emailFromAccessToken);
+			Token token = (Token) vop.get("dkdlrnf0@gmail.com");
 			if(token != null) {
 				Map<String, Object> parseInfo2 = jtu.getUserParseInfo(token.getToken());
-				String emailFromRefreshToken = String.valueOf(parseInfo.get("email"));
+				String emailFromRefreshToken = String.valueOf(parseInfo2.get("email"));
 				List<String> rs2 = (List) parseInfo.get("role");
 				String authorityFromRefreshToken = rs.get(0);
-
 				boolean checkEmail = emailFromAccessToken.equals(emailFromRefreshToken) ? true : false;
 				boolean checkAuthority = authorityFromAccessToken.equals(authorityFromRefreshToken) ? true : false;
 
@@ -84,21 +92,25 @@ public class TokenServiceImpl implements ITokenService {
 
 					response.addHeader("Authorization", "Bearer " + newAccessToken);
 					response.addHeader("AccessTokenExpiraionDate", newAccessTokenExpirationDate);
-
-					return true;
+					ret = true;
+				}else {
+					throw new UnAuthorizationException(emailFromAccessToken);
 				}
 			}else {
-				System.out.println("[newAccessTokenByAccessToken] failed by refreshToken expiration");
-				return false;
+				throw new UnAuthorizationException(emailFromAccessToken);
 			}
-			
 		} catch (ExpiredJwtException e) {
-			e.printStackTrace();
+			throw new ExpiredTokenException("AccessToken " + accessToken);
+		} catch (MalformedJwtException e) {
+			throw new UnAuthorizationException(accessToken);
 		}
-
-		System.out.println("[newAccessTokenByAccessToken] failed by accessToken expiration");
-		return false;
-
+		
+		if(ret) {
+			return true;
+		} else {
+			throw new UnknownException("newAccessTokenByAccessToken");
+		}
+		
 //		Cookie accessCookie = new Cookie("access-token", newAccessToken);
 //		accessCookie.setMaxAge(10 * 60 * 60); // 10분 * 60
 //		accessCookie.setPath("/");
@@ -108,7 +120,8 @@ public class TokenServiceImpl implements ITokenService {
 
 	@Override
 	public boolean newAccessTokenByRefreshToken(String refreshToken) {
-
+		boolean ret = false;
+		
 		try {
 			String email = jwtTokenUtil.getUsernameFromToken(refreshToken); // refresh token 이 만료된 상태라면 어차피 frontend에서
 																			// 재로그인을 요구할것임
@@ -135,26 +148,32 @@ public class TokenServiceImpl implements ITokenService {
 					
 					response.addHeader("Authorization", "Bearer " + newAccessToken);
 					response.addHeader("AccessTokenExpiraionDate", newAccessTokenExpirationDate);
-					return true;
+					ret = true;
 					//
 				} else {
-					System.out.println(
-							"[newAccessTokenByEmailFromRefreshToken] refreshToken이 변경되었습니다. accesstoken을 갱신할 수 없습니다.");
-					return false;
+					throw new UnAuthorizationException(email);
 				}
+			}else {
+				throw new UnAuthorizationException(email);
 			}
 		} catch (ExpiredJwtException e) {
-			e.printStackTrace();
+			throw new ExpiredTokenException("RefreshToken" + refreshToken);
+		} catch (MalformedJwtException e) {
+			throw new UnAuthorizationException(refreshToken);
 		}
-
-		System.out.println("[newAccessTokenByRefreshToken] failed by refreshToken expiration");
-		return false;
+		
+		if(ret) {
+			return true;
+		} else {
+			throw new UnknownException("newAccessTokenByRefreshToken");
+		}
 	}
 
 	@Override
 	public boolean newRefreshTokenByRefreshToken(String refreshToken) {
+		boolean ret = false;
+		
 		try {
-
 			String email = jwtTokenUtil.getUsernameFromToken(refreshToken);
 
 			ValueOperations<String, Object> vop = redisTemplate.opsForValue();
@@ -186,18 +205,23 @@ public class TokenServiceImpl implements ITokenService {
 					
 					response.addHeader("RefreshToken", "Bearer " + newRefreshToken);
 					response.addHeader("RefreshTokenExpiraionDate", newRefreshTokenExpirationDate);
-					return true;
+					ret = true;
 				} else {
-					System.out.println(
-							"[newAccessTokenByEmailFromRefreshToken] refreshToken이 변경되었습니다. accesstoken을 갱신할 수 없습니다.");
-					return false;
+					throw new UnAuthorizationException(email);
 				}
+			}else {
+				throw new UnAuthorizationException(email);
 			}
 		} catch (ExpiredJwtException e) {
-			e.printStackTrace();
+			throw new ExpiredTokenException("RefreshToken" + refreshToken);
+		} catch (MalformedJwtException e) {
+			throw new UnAuthorizationException(refreshToken);
 		}
-
-		System.out.println("[newRefreshTokenByRefreshToken] failed by refreshToken expiration");
-		return false;
+		
+		if(ret) {
+			return true;
+		} else {
+			throw new UnknownException("newRefreshTokenByRefreshToken");
+		}
 	}
 }

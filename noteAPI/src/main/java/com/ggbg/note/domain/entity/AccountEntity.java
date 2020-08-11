@@ -1,15 +1,18 @@
-package com.ggbg.note.bean;
+package com.ggbg.note.domain.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.springframework.data.domain.Persistable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.ggbg.note.domain.Role;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,9 +20,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "account")
-public class Account implements Persistable<String>{
+public class AccountEntity implements Persistable<String>{
 	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(nullable = false, name = "account_no")
+	private int no;
+	
 	@Column(nullable = false, name = "account_email")
 	private String email;
 
@@ -41,7 +49,7 @@ public class Account implements Persistable<String>{
 
 	@Override
 	public String getId() {
-		return this.email;
+		return this.no + "";
 	}
 
 	@Override

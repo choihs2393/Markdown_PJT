@@ -1,12 +1,14 @@
-package com.ggbg.note.bean;
+package com.ggbg.note.domain;
+
+import java.util.Map;
 
 import io.swagger.annotations.ApiModelProperty;
 
-public class BasicResponse {
+public class SuccessResponse {
     @ApiModelProperty(value = "status", position = 1)
     public boolean status;
     @ApiModelProperty(value = "result", position = 2)
     public String result;
-    @ApiModelProperty(value = "object", position = 3)
-    public Object object;
+    @ApiModelProperty(value = "map", position = 3)
+    public Map<String, Object> map;
 }

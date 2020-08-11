@@ -1,6 +1,10 @@
 package com.ggbg.note.service;
 
-import com.ggbg.note.bean.Account;
+import java.util.List;
+import java.util.Map;
+
+import com.ggbg.note.domain.dto.AccountDTO;
+import com.ggbg.note.domain.dto.BandDTO;
 
 public interface IAccountService {
 //	// authentication
@@ -10,9 +14,13 @@ public interface IAccountService {
 	
 	//modify account
 	public boolean validAccountCheck(String email, String password);
-	public boolean saveAccount(Account account);
-	
-	//delete account
+	public boolean saveAccount(AccountDTO accountDTO);
 	public boolean deleteAccount(String email);
 
+	//init
+	public Map<String, Object> onLocalInit(String accessToken);
+	public Map<String, Object> onServerInit(String accessToken);
+	
+	//statusList
+	public List<BandDTO> statusList(String accessToken);
 }

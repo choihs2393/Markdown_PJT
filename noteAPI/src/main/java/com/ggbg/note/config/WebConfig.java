@@ -28,7 +28,7 @@ public class WebConfig{
 		                            	HttpMethod.HEAD.name(),
 		                            	HttpMethod.POST.name(),
 		                            	HttpMethod.PUT.name(),
-		                            	HttpMethod.DELETE.name())
+                                        HttpMethod.DELETE.name())
                         .allowCredentials(false)
                         .maxAge(3600);
             }

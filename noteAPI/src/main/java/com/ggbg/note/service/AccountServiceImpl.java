@@ -1,7 +1,11 @@
 package com.ggbg.note.service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -16,11 +20,21 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ggbg.note.bean.Account;
-import com.ggbg.note.bean.Role;
-import com.ggbg.note.bean.Token;
+import com.ggbg.note.domain.Role;
+import com.ggbg.note.domain.Token;
+import com.ggbg.note.domain.dto.AccountDTO;
+import com.ggbg.note.domain.dto.BandDTO;
+import com.ggbg.note.domain.entity.AccountEntity;
+import com.ggbg.note.domain.entity.BandEntity;
+import com.ggbg.note.exception.ExpiredTokenException;
+import com.ggbg.note.exception.UnAuthorizationException;
 import com.ggbg.note.repository.AccountRepo;
+import com.ggbg.note.repository.BandRepo;
 import com.ggbg.note.util.JwtTokenUtil;
+import com.ggbg.note.util.MapperUtil;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 
 @Service
 public class AccountServiceImpl implements IAccountService {
@@ -28,6 +42,12 @@ public class AccountServiceImpl implements IAccountService {
 	@Autowired
 	private AccountRepo accountRepo;
 
+	@Autowired
+	private BandRepo bandRepo;
+	
+	@Autowired
+	private MapperUtil mapperUtil;
+	
 	@Autowired
 	RedisTemplate<String, Object> redisTemplate;
 
@@ -103,15 +123,13 @@ public class AccountServiceImpl implements IAccountService {
 	 * 발생 할 때 강제로 RefreshToken을 만료시키는 처리를 해주는 것이 좋습니다.
 	 */
 
-	
-
 	@Override
 	public boolean validAccountCheck(String email, String password) {
 		BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder(10);
-		Optional<Account> optional = accountRepo.findAccountByEmail(email);
-		Account account = new Account();
+		Optional<AccountEntity> optional = accountRepo.findAccountByEmail(email);
+		AccountEntity account = new AccountEntity();
 		boolean check = false;
-		
+
 		if (optional.isPresent()) {
 			account = optional.get();
 			check = bcryptPasswordEncoder.matches(password, account.getPassword());
@@ -119,34 +137,148 @@ public class AccountServiceImpl implements IAccountService {
 				return true;
 			}
 		}
-		
+
 		return false;
 	}
 
 	@Transactional
 	@Override
-	public boolean saveAccount(Account account) {
+	public boolean saveAccount(AccountDTO accountDTO) {
+		int ret = -1;
 		BCryptPasswordEncoder bcryptPasswordEncoder = new BCryptPasswordEncoder(10);
-		account.setRole(Role.USER);
-		account.setPassword(bcryptPasswordEncoder.encode(account.getPassword()));
-
-		Date date = new Date();
-		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-		account.setCreateDate(simpleDateFormat.format(date));
-		accountRepo.save(account); // 만약 db가 꺠져서 저장이 안되던가 하는 상황에서는 에러처리를 어떻게 해야하는지 jpa search
-		return true;
+		accountDTO.setPassword(bcryptPasswordEncoder.encode(accountDTO.getPassword()));
+		
+		ret = accountRepo.updateAccount(accountDTO.getEmail(), accountDTO.getName(), accountDTO.getPassword());
+		System.out.println(ret);
+		if(ret == 1)
+			return true;
+		else
+			return false;
+		
 	}
-	
+
 	@Transactional
 	@Override
 	public boolean deleteAccount(String email) {
 		accountRepo.deleteById(email); // 여기서 에러 나면 false 출력하게 어떻게?
-		
+
 		ValueOperations<String, Object> vop = redisTemplate.opsForValue();
 		Token token = (Token) vop.get(email);
-		if(token != null)
+		if (token != null)
 			redisTemplate.expire(email, 1, TimeUnit.MILLISECONDS);
 		return true;
 	}
+
+	@Override
+	public Map<String, Object> onLocalInit(String accessToken) {
+		String name = "";
+		String email = "";
+		int no = -1;
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			email = jwtTokenUtil.getUsernameFromToken(accessToken);
+		} catch (MalformedJwtException e) {
+			throw new UnAuthorizationException(accessToken);
+		} catch (ExpiredJwtException e) {
+			throw new ExpiredTokenException("AccessToken " + accessToken);
+		}
+		if (email == null || email.equals(""))
+			throw new UnAuthorizationException(accessToken);
+
+		Map<String, Object> map2 = accountRepo.findByEmail(email);
+		name = (String) map2.get("account_name");
+		no = (int) map2.get("account_no");
+		if (name == null || name.equals(""))
+			throw new UnAuthorizationException(email);
+
+		List<BandEntity> list = bandRepo.findAllBandStatusByAccountNo(no);
+
+		map.put("status", list);
+		map.put("email", email);
+		map.put("name", name);
+
+		// local 일때 반환하는 정보 : name, email, status(초대 현황)
+		return map;
+	}
+
+	@Override
+	public Map<String, Object> onServerInit(String accessToken) {
+		String name = "";
+		String email = "";
+		int no = -1;
+
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			email = jwtTokenUtil.getUsernameFromToken(accessToken);
+		} catch (MalformedJwtException e) {
+			throw new UnAuthorizationException(accessToken);
+		} catch (ExpiredJwtException e) {
+			throw new ExpiredTokenException("AccessToken " + accessToken);
+		}
+		if (email == null || email.equals(""))
+			throw new UnAuthorizationException(accessToken);
+
+		Map<String, Object> map2 = accountRepo.findByEmail(email);
+		name = (String) map2.get("account_name");
+		no = (int) map2.get("account_no");
+		if (name == null || name.equals(""))
+			throw new UnAuthorizationException(email);
+
+		List<BandEntity> list1 = bandRepo.findAllBandStatusByAccountNo(no);
+		List<BandEntity> list2 = bandRepo.findAllBandByAccountNo(no);
+
+		List<BandDTO> statusList = new ArrayList<BandDTO>();
+		List<BandDTO> groupList = new ArrayList<BandDTO>();
+
+		for(BandEntity be : list1) {
+			BandDTO bd = mapperUtil.convertToDTO(be, BandDTO.class);
+			statusList.add(bd);
+		}
+		
+		for(BandEntity be : list2) {
+			BandDTO bd = mapperUtil.convertToDTO(be, BandDTO.class);
+			groupList.add(bd);
+		}
+		
+		map.put("status", statusList);
+		map.put("group", groupList);
+		map.put("email", email);
+		map.put("name", name);
+		map.put("no", no);
+
+		// 서버일때 받아와야하는것
+		// email, name, group, status, no
+
+		return map;
+	}
+
+	@Override
+	public List<BandDTO> statusList(String accessToken) {
+		String email = "";
+		int no = -1;
+
+		email = jwtTokenUtil.getUsernameFromToken(accessToken);
+
+		Map<String, Object> map2 = accountRepo.findByEmail(email);
+
+		if (!map2.containsKey("account_no"))
+			throw new UnAuthorizationException(email);
+
+		no = (int) map2.get("account_no");
+
+		List<BandEntity> list = bandRepo.findAllBandStatusByAccountNo(no);
+
+		List<BandDTO> statusList = new ArrayList<BandDTO>();
+		
+		for(BandEntity be : list) {
+			BandDTO bd = mapperUtil.convertToDTO(be, BandDTO.class);
+			statusList.add(bd);
+		}
+		
+		return statusList;
+	}
+	
+	
+
 }

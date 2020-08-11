@@ -16,7 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import com.ggbg.note.bean.Account;
+import com.ggbg.note.domain.entity.AccountEntity;
 import com.ggbg.note.repository.AccountRepo;
 import com.ggbg.note.util.JwtTokenUtil;
 

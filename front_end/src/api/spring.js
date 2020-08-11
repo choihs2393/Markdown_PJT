@@ -3,11 +3,26 @@ export default {
     URL: 'http://localhost:8080/noteAPI',
     ROUTES: {
         signup: '/nonmember/signUp',
-        login: '/nonmember/login',
+        login: '/login',
         email: '/nonmember/email',
         authSend: '/nonmember/email/authSend',
         authCheck: '/nonmember/email/authCheck',
 
         logout: '/account/logout',
+        modify: '/account/v1/modify',
+        delete: '/account/v1/delete',
+
+        onServerInit: '/account/onServerInit',
+        createWorkspace: '/band/v1/addBand',
+        deleteWorkspace: '/band/v1/deleteBand',
+        renameWorkspace: '/band/v1/renameBand',
+        // deleteWorkspace: '/account/deleteWorkspace'
+
+        newATBR: '/token/v2/newATBR',
+        newRTBR: '/token/v2/newRTBR',
+
+        getBandMember: '/accountBand/v1/getBandMember',
+        inviteBandMember: '/accountBand/v1/inviteBandMember',
+
     }
 }

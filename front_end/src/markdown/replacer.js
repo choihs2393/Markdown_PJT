@@ -15,28 +15,28 @@ export default class Replacer {
         }
         return '<ul><li>' + group3 + '</li></ul>';
     }
-    static orderList(fullMatch, group1, group2, group3, group4) {
-        const tempRegex = /(\n){1}/g;
-        const tapRegex = /(\t){1}/g;
-        const exitRegex = /(\n\n)/g;
-        //const exitRegex = /<p><\/p>/g;
-        const tapReplacer = function() {
-            console.log('check');
-            return '</li><ol><li>';
-        }
-        const tempReplacer = function(group4) {
-            return '</li>' + group4 + '<li>\n';
-        }
-        const replaceRegex = function(regex, replacement){
-            return function(group4){
-                return group4.replace(regex, replacement);
-            }
-        }
-        const replacetemp = replaceRegex(tempRegex, tempReplacer);
-        const replaceTap = replaceRegex(tapRegex, tapReplacer);
-        const tmp = replaceTap(replacetemp(group4));
-        return '<ol><li>' + tmp.replace(exitRegex,'</li></ol><li>') + '</li></ol>';
-    }
+    // static orderList(fullMatch, group1, group2, group3, group4) {
+    //     const tempRegex = /(\n){1}/g;
+    //     const tapRegex = /(\t){1}/g;
+    //     const exitRegex = /(\n\n)/g;
+    //     //const exitRegex = /<p><\/p>/g;
+    //     const tapReplacer = function() {
+    //         console.log('check');
+    //         return '</li><ol><li>';
+    //     }
+    //     const tempReplacer = function(group4) {
+    //         return '</li>' + group4 + '<li>\n';
+    //     }
+    //     const replaceRegex = function(regex, replacement){
+    //         return function(group4){
+    //             return group4.replace(regex, replacement);
+    //         }
+    //     }
+    //     const replacetemp = replaceRegex(tempRegex, tempReplacer);
+    //     const replaceTap = replaceRegex(tapRegex, tapReplacer);
+    //     const tmp = replaceTap(replacetemp(group4));
+    //     return '<ol><li>' + tmp.replace(exitRegex,'</li></ol><li>') + '</li></ol>';
+    // }
     static heading(fullMatch, tagStart, tagContents){
         return '<h' + tagStart.trim().length + '>' + tagContents + '</h' + tagStart.trim().length + '>\n';
     }

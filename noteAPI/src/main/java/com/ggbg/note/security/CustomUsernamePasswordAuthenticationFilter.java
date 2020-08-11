@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.FilterChain;
@@ -29,8 +30,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ggbg.note.bean.LoginViewModel;
-import com.ggbg.note.bean.Token;
+import com.ggbg.note.domain.Token;
+import com.ggbg.note.domain.dto.LoginViewDTO;
 import com.ggbg.note.util.JwtTokenUtil;
 
 /*
@@ -59,13 +60,13 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
 			throws AuthenticationException {
 		System.out.println("[attemptAuthentication] entered..");
-		LoginViewModel loginViewModel = new LoginViewModel();
+		LoginViewDTO loginViewModel = new LoginViewDTO();
 		
 		if (!request.getMethod().equals("POST"))
 			throw new AuthenticationServiceException("Authentication method not supported " + request.getMethod());
 
 		try {
-			loginViewModel = new ObjectMapper().readValue(request.getInputStream(), LoginViewModel.class);
+			loginViewModel = new ObjectMapper().readValue(request.getInputStream(), LoginViewDTO.class);
 		} catch (JsonParseException e) {
 			e.printStackTrace();
 		} catch (JsonMappingException e) {
@@ -105,10 +106,10 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 		
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		
-		Calendar accessTokenCal = Calendar.getInstance();
+		Calendar accessTokenCal = Calendar.getInstance(Locale.KOREA);
 		accessTokenCal.add(Calendar.MINUTE, 30);
 
-		Calendar refrestTokenCal = Calendar.getInstance();
+		Calendar refrestTokenCal = Calendar.getInstance(Locale.KOREA);
 		refrestTokenCal.add(Calendar.DATE, 30);
 		
 		String accessTokenExpirationDate = simpleDateFormat.format(accessTokenCal.getTime()); 
@@ -122,7 +123,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 		vop.set(email, token); // 일주일
 		redisTemplate.expire(email, 60 * 60 * 24 * 31, TimeUnit.SECONDS); // 한달
 
-		// 로그인했을떄는 계속 refresh token 만들어주고 / refresh token 이 살아있는동안은 access token 과
+		// 로그인했을떄는 계속 refresh  token 만들어주고 / refresh token 이 살아있는동안은 access token 과
 		// refresh token 의 값을 이용해서 access token 갱신
 		// 그럼 쿠키에 담긴 access token 의 expire은 refresh token 과 같이 하는건지?
 
@@ -137,13 +138,12 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 //		response.addCookie(refreshCookie);
 		// jwt
 
-		response.setHeader("Access-Control-Expose-Headers", "Authorization, RefreshToken, AccessTokenExpiraionDate, RefreshTokenExpiraionDate, UserEmail");
+		response.setHeader("Access-Control-Expose-Headers", "Authorization, RefreshToken, AccessTokenExpiraionDate, RefreshTokenExpiraionDate");
 		
 		response.addHeader("Authorization", "Bearer " + accessToken);
 		response.addHeader("RefreshToken", "Bearer " + refreshToken);
 		response.addHeader("AccessTokenExpiraionDate", accessTokenExpirationDate);
 		response.addHeader("RefreshTokenExpiraionDate", refreshTokenExpirationDate);
-		response.addHeader("UserEmail", email);
 	}
 
 	@Override
@@ -151,7 +151,4 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 			AuthenticationException failed) throws IOException, ServletException {
 		super.unsuccessfulAuthentication(request, response, failed);
 	}
-	
-
-
 }

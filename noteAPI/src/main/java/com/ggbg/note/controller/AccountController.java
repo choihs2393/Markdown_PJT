@@ -1,5 +1,7 @@
 package com.ggbg.note.controller;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -9,25 +11,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ggbg.note.bean.Account;
-import com.ggbg.note.bean.BasicResponse;
+import com.ggbg.note.domain.SuccessResponse;
+import com.ggbg.note.domain.dto.AccountDTO;
+import com.ggbg.note.domain.dto.BandDTO;
 import com.ggbg.note.service.IAccountService;
-import com.ggbg.note.util.JwtTokenUtil;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
-@ApiResponses(value = { @ApiResponse(code = 401, message = "Unauthorized", response = BasicResponse.class),
-		@ApiResponse(code = 403, message = "Forbidden", response = BasicResponse.class),
-		@ApiResponse(code = 404, message = "Not Found", response = BasicResponse.class),
-		@ApiResponse(code = 500, message = "Failure", response = BasicResponse.class) })
 
 @RequestMapping("/account")
 @RestController
@@ -51,14 +45,12 @@ public class AccountController {
 	@Autowired
 	private IAccountService accountService;
 
-	@Autowired
-	private JwtTokenUtil jwt;
 //	@ApiOperation(value = "logout", httpMethod = "GET", notes = "Hello this is logout")
 //	@GetMapping("/logout")
 //	public ResponseEntity logout(@RequestParam(required = true) String email) {
 //		logger.debug("=============== signIn entered =============");
 //		ResponseEntity response = null;
-//		final BasicResponse result = new BasicResponse();
+//		final SuccessResponse result = new SuccessResponse();
 //		String msg = accountService.logout(email);
 //		if("msg".equals("success")) {
 //			result.status = true;
@@ -71,15 +63,13 @@ public class AccountController {
 //		return response;
 //	}
 
-	
 	// 받아야하는것 - access token , id, pw , new pw, new name + header에 Email
 	@ApiOperation(value = "accountModify", httpMethod = "POST", notes = "Hello this is accountModify")
 	@PostMapping("/v1/modify")
 	public ResponseEntity accountModify(HttpServletRequest request,
 			@RequestBody(required = true) Map<String, String> map) {
-		logger.debug("=============== accountModify =============");
 		ResponseEntity response = null;
-		final BasicResponse result = new BasicResponse();
+		final SuccessResponse result = new SuccessResponse();
 		String email = map.get("email");
 		String password = map.get("password");
 		String newPassword = map.get("newPassword");
@@ -88,17 +78,18 @@ public class AccountController {
 		boolean isValidAccount = accountService.validAccountCheck(email, password);
 
 		if (isValidAccount) {
-			Account account = new Account();
-			account.setEmail(email);
-			account.setPassword(newPassword);
-			account.setName(newName);
-			boolean res = accountService.saveAccount(account);
+			AccountDTO accountDTO = new AccountDTO();
+			accountDTO.setEmail(email);
+			accountDTO.setPassword(newPassword);
+			accountDTO.setName(newName);
+			System.out.println(accountDTO.toString());
+			boolean res = accountService.saveAccount(accountDTO);
 			if (res) {
 				result.status = true;
 				result.result = "success";
 				response = new ResponseEntity<>(result, HttpStatus.OK);
 			} else {
-				response = new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+				response = new ResponseEntity<>(null, HttpStatus.NOT_FOUND); // NOT_FOUND
 			}
 		} else { // 유효한 회원정보가 아닐경우
 			result.status = true;
@@ -110,20 +101,18 @@ public class AccountController {
 		return response;
 	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
 
-	// email, password 넘겨주면 됨  + header에 Email
+	// email, password 넘겨주면 됨 + header에 Email
 	@ApiOperation(value = "accountDelete", httpMethod = "POST", notes = "Hello this is accountDelete")
 	@PostMapping("/v1/delete")
 	public ResponseEntity accountDelete(HttpServletRequest request,
 			@RequestBody(required = true) Map<String, String> map) {
-		logger.debug("=============== accountModify =============");
 		ResponseEntity response = null;
-		final BasicResponse result = new BasicResponse();
+		final SuccessResponse result = new SuccessResponse();
 		String email = map.get("email");
 		String password = map.get("password");
 		boolean isValidAccount = accountService.validAccountCheck(email, password);
 
 		if (isValidAccount) {
-			Account account = new Account();
 			boolean res = accountService.deleteAccount(email);
 			if (res) {
 				result.status = true;
@@ -142,30 +131,86 @@ public class AccountController {
 		return response;
 	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
 
-	@ApiOperation(value = "test", httpMethod = "GET", notes = "Hello this is test")
-	@GetMapping("/test")
-	public ResponseEntity test(HttpServletRequest request) {
-//		Map<String, Object> parseInfo = jwt.getUserParseInfo(request.getHeader("RefreshToken").substring(7));
-//		List<String> rs = (List) parseInfo.get("role");
-//		List<GrantedAuthority> tmp = new ArrayList<>();
-//		System.out.println(parseInfo.get("email"));
-//		for (String a : rs) {
-//			System.out.println(a);
-//			tmp.add(new SimpleGrantedAuthority(a));
-//		}
-//		
-//		Map<String, Object> parseInfo2 = jwt.getUserParseInfo(request.getHeader("Authorization").substring(7));
-//		List<String> rs2 = (List) parseInfo2.get("role");
-//		List<GrantedAuthority> tmp2 = new ArrayList<>();
-//		System.out.println(parseInfo2.get("email"));
-//		for (String a : rs2) {
-//			System.out.println(a);
-//			tmp2.add(new SimpleGrantedAuthority(a));
-//		}
+	// Header에 accessToken을 보내주면 됨.
+	// 반환값은 name
+	@ApiOperation(value = "onLocalInit", httpMethod = "POST", notes = "Hello this is onLocalInit")
+	@PostMapping("/onLocalInit")
+	public ResponseEntity onLocalInit(HttpServletRequest request) {
 		ResponseEntity response = null;
-		final BasicResponse result = new BasicResponse();
+		final SuccessResponse result = new SuccessResponse();
+
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		Map<String, Object> map = accountService.onLocalInit(accessToken);
+		String name = (String) map.get("name");
+		if (name != null && !name.equals("")) {
+			result.status = true;
+			result.result = "success";
+			result.map = map;
+			response = new ResponseEntity<>(result, HttpStatus.OK);
+		} else {
+			result.status = false;
+			result.result = "fail";
+			response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+		}
+
 
 		return response;
-	}
+	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
 
+	// accessToken을 보내주면 됨.
+	// 반환값은 name, email, group, status
+	@ApiOperation(value = "onServerInit", httpMethod = "POST", notes = "Hello this is onServerInit")
+	@PostMapping("/onServerInit")
+	public ResponseEntity onServerInit(HttpServletRequest request) {
+		ResponseEntity response = null;
+		final SuccessResponse result = new SuccessResponse();
+
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		Map<String, Object> map = accountService.onServerInit(accessToken);
+		
+		String name = (String) map.get("name");
+		
+		if (name != null && !name.equals("")) {
+			result.status = true;
+			result.result = "success";
+			result.map = map;
+			response = new ResponseEntity<>(result, HttpStatus.OK);
+		} else { 
+			result.status = false;
+			result.result = "fail";
+			response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
+		}
+
+		return response;
+	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+	
+	// accessToken을 보내주면 됨.
+	// 반환값은 name, email, group, status
+	@ApiOperation(value = "statusList", httpMethod = "POST", notes = "Hello this is statusList")
+	@PostMapping("/v1/statusList")
+	public ResponseEntity statusList(HttpServletRequest request) {
+		ResponseEntity response = null;
+		final SuccessResponse result = new SuccessResponse();
+
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		List<BandDTO> list = accountService.statusList(accessToken);
+		
+		result.status = true;
+		if (!list.isEmpty()) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("status", list);
+			result.result = "success";
+			result.map = map;
+		} else { 
+			result.result = "emptyData";
+		}
+		response = new ResponseEntity<>(result, HttpStatus.OK);
+
+		return response;
+	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
+	
+	
 }

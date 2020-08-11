@@ -34,16 +34,87 @@
 
 <script>
 // @ is an alias to /src
-import parse from "../parse";
-import sampleData from "../sampleData.js";
+import parse from "../markdown/parse";
+import sampleData from "../markdown/sampleData.js";
+
+import { remote, ipcRenderer } from "electron";
+import fs from "fs";
+import path from "path"
 
 var data = sampleData;
 // var data = new Promise(function(resolve, reject) {
 //   resolve(sampleData);
 // });
 require('electron').ipcRenderer.on('ping', (event, message) => {
-  console.log(message);
-  data.input = message;
+  // console.log(message);
+  data.input = message['openedFileData'];
+});
+
+// 드래그 후 드랍을 하면,
+document.addEventListener('drop', (event) => {
+    var openedFileData = '';
+    var textingFileData = '';
+
+    event.preventDefault();
+    event.stopPropagation();
+    
+    remote.BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
+    .then(result => {
+        textingFileData = result;
+
+        // console.log(typeof fileData);
+        // console.log(fileData);
+
+        // 작성중인 텍스트가 있다면, 저장할건지 먼저 물어본다.
+        if(textingFileData.length > 0) {
+          const options = {
+              type: "question",
+              title: "Question",
+              message: "Are you sure you want to quit without saving?",
+              detail: "Click the save button if you want to save this text to your md file",
+              buttons: ["Cancel", "Save"],
+              defaultId: 1
+          };
+    
+          // 동기식으로 처리해야 할듯?
+          if(remote.dialog.showMessageBoxSync(options) == 1) {
+            remote.dialog.showSaveDialog(
+              {
+                title: "파일 저장하기!!!",
+                filters: [
+                  { name: 'Markdown', extensions: ['md'] },
+                ],
+                message: "TEST"
+              }
+            )
+            .then(result => {
+              var fileName = result.filePath;
+              fs.writeFile(fileName, textingFileData, (err) => {
+  
+              })
+            });
+          }
+        } // 작성중인 텍스트가 있다는 조건문
+    });
+
+    // 저장한 후에 열기.
+    for (const f of event.dataTransfer.files) { 
+      // Using the path attribute to get absolute file path 
+      // console.log('File Path of dragged files: ', f.path);
+      
+      fs.readFile(f.path, 'utf8', (err, data) => {
+        if(err) throw err;
+        // console.log('f.path', f.path)
+        // console.log(data);
+        // fileData = data;
+        let openedFileData = data;
+        // console.log("openedFileData : " + openedFileData);
+
+        let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': f.path};
+        let win = remote.BrowserWindow.getFocusedWindow();
+        win.webContents.send("ping", fileDataObject);
+      });
+    }
 });
 
 export default {
@@ -104,6 +175,10 @@ export default {
 </script>
 
 <style scoped>
+.v-container {
+  background-color: #333;
+}
+
 #editor_div {
   margin: 0;
   height: 100%;
@@ -225,8 +300,8 @@ Style with support for rainbow parens
   display: block;
   overflow-x: auto;
   padding: 0.5em;
-  background: #474949;
-  color: #d1d9e1;
+  background: #474949 !important;
+  color: #d1d9e1 !important;
 }
 
 

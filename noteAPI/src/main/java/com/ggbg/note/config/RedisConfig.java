@@ -12,7 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-import com.ggbg.note.bean.Token;
+import com.ggbg.note.domain.Token;
 
 
 @Configuration
@@ -23,16 +23,16 @@ public class RedisConfig {
 
     @Value("${spring.redis.port}")
     private int redisPort;
-	
-    @Value("${spring.redis.password}")
-    private String redisPw;
-	// Redis의 Lettuce 사용
+//	
+//    @Value("${spring.redis.password}")
+//    private String redisPw;
+//	 Redis의 Lettuce 사용
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration();
         redisStandaloneConfiguration.setHostName(redisHost);
         redisStandaloneConfiguration.setPort(redisPort);
-        redisStandaloneConfiguration.setPassword(RedisPassword.of(redisPw));
+//        redisStandaloneConfiguration.setPassword(RedisPassword.of(redisPw));
 		LettuceConnectionFactory lettuceConnectionFactory = new LettuceConnectionFactory(redisStandaloneConfiguration);
 		return lettuceConnectionFactory;
 	}

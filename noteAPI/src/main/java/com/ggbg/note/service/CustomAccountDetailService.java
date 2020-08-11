@@ -13,7 +13,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import com.ggbg.note.bean.Account;
+import com.ggbg.note.domain.entity.AccountEntity;
 import com.ggbg.note.repository.AccountRepo;
 
 @Component
@@ -24,8 +24,8 @@ public class CustomAccountDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Account> optional = accountRepo.findAccountByEmail(email);
-		Account account = new Account();
+        Optional<AccountEntity> optional = accountRepo.findAccountByEmail(email);
+		AccountEntity account = new AccountEntity();
 		if(optional.isPresent()) {
 			account = optional.get();
 		}else {
@@ -40,7 +40,6 @@ public class CustomAccountDetailService implements UserDetailsService {
             roles.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         } else {
             roles.add(new SimpleGrantedAuthority("ROLE_USER"));
-            roles.add(new SimpleGrantedAuthority("ROLE_HI"));
         }
         return new User(account.getEmail(), account.getPassword(), roles);
     }

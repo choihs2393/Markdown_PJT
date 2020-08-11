@@ -3,7 +3,7 @@
 import { app, protocol, BrowserWindow, Menu, dialog } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
-import menuTemplate from './menuTemplate.js';
+import menuTemplate from './markdown/menuTemplate.js';
 import fs from "fs";
 
 const isDevelopment = process.env.NODE_ENV !== "production";

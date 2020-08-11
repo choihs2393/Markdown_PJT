@@ -7,7 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import com.ggbg.note.exception.ExpiredTokenException;
+import com.ggbg.note.exception.UnAuthorizationException;
 import com.ggbg.note.util.JwtTokenUtil;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
 
 @Component
 public class VerifyAccountInterceptor implements HandlerInterceptor{
@@ -18,16 +23,25 @@ public class VerifyAccountInterceptor implements HandlerInterceptor{
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
 			throws Exception {
-		System.out.println("[v1_preHandle] entered..");
+		System.out.println("v1 handler");
 		String email = request.getHeader("Email");
 		String token = request.getHeader("Authorization").substring(7);
-		String emailByToken = jwtTokenUtil.getUsernameFromToken(token);
+		String emailByToken = "";
+		
+		try {
+			emailByToken = jwtTokenUtil.getUsernameFromToken(token);
+		}catch (MalformedJwtException e) {
+			throw new UnAuthorizationException(token);
+		}catch (ExpiredJwtException e) {
+			throw new ExpiredTokenException("AccessToken " + token);
+		}
+		if(email == null || email.equals(""))
+			throw new UnAuthorizationException(token);
+		
 		if(email.equals(emailByToken)) {
 			return true;
 		}else {
-			response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized");
-			return false;
+			throw new UnAuthorizationException("AccessToken " + token);
 		}
 	}
-
 }

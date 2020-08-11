@@ -13,7 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.ggbg.note.bean.Account;
+import com.ggbg.note.domain.entity.AccountEntity;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
