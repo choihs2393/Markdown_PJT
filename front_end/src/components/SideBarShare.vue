@@ -55,7 +55,7 @@
       </v-card>
     </v-dialog>
       <v-row>
-        <v-col cols="20">
+        <v-col cols="20" style="padding: 0">
           <v-select
             v-model="selected"
             :items="workspaces"
@@ -63,6 +63,7 @@
             @change="changeWorkspace"
             prepend-icon="folder"
             @mousedown.right="$refs.menu.open($event, selected)"
+            hide-details
           >
           </v-select>
         </v-col>
@@ -101,7 +102,13 @@
           <v-btn color="blue darken-1" text @click="renameWorkspace">Rename</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog> 
+    <v-btn text small style="padding: 0" color="grey darken-1" v-if="!!(this.$store.state.workspace)" absolute right tile @click="showInviteModal()">
+      <v-icon left>mdi-plus</v-icon>
+      invite
+    </v-btn>
+    <InviteModal />
+
   </v-navigation-drawer>
 </template>
 
@@ -225,13 +232,16 @@ export default {
       
     },
     showInviteModal() {
-      // console.log('여기', this.$store.state.workspace)
-      // console.log('여기', !!(this.$store.state.workspace))
-      if(!!(this.$store.state.workspace)){
-        this.$store.state.isInviteModal = !this.$store.state.isInviteModal;
-        }else{
-        alert('workspace부터 골라')
+      var workspaceNo = this.$store.state.userInfo.group.find(element => element.name == this.$store.state.workspace).no;
+      
+      // console.log("여기workspaceNo : " + workspaceNo);
+
+      const showGroupMembers = {
+        bandNo: workspaceNo,
+        email: this.$store.state.userInfo.email,
       }
+
+      this.$store.dispatch("showGroupMembers", showGroupMembers)
     },
   }
 };

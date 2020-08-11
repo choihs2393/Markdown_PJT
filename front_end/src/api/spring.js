@@ -19,6 +19,10 @@ export default {
         // deleteWorkspace: '/account/deleteWorkspace'
 
         newATBR: '/token/v2/newATBR',
-        newRTBR: '/token/v2/newRTBR'
+        newRTBR: '/token/v2/newRTBR',
+
+        getBandMember: '/accountBand/v1/getBandMember',
+        inviteBandMember: '/accountBand/v1/inviteBandMember',
+
     }
 }

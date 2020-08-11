@@ -45,6 +45,7 @@ export default new Vuex.Store({
 
     // selected workspace in server mode
     workspace: undefined,
+    workspaceMemberList: [],
     theme: '',
   },
 
@@ -138,6 +139,23 @@ export default new Vuex.Store({
       state.userInfo.group[idx].name = param.newBandName
     },
     
+    
+    //현재 WORKSPACE 내의 MEMBER LIST 가져오기
+    SHOW_GROUP_MEMBERS(state, result) {
+      console.log('result', result)
+      for (let i = 0; i < result.length; i += 1) {
+        if (typeof (result[i]) === 'object') {
+          try {
+            state.workspaceMemberList[i] = JSON.parse(JSON.stringify(result[i]));
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+      // state.workspaceMemberList.push(result)
+      console.log(state.workspaceMemberList)
+    },
+
     SET_IS_SHARE(state, result) {
       state.isShareMode = result
     },
@@ -355,7 +373,17 @@ export default new Vuex.Store({
         }
 
       })
-    }
+    },
+    // 워크스페이스 멤버 불러오기
+    showGroupMembers({ getters, commit}, showGroupMembers) {
+      // console.log(showGroupMembers)
+      axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, getters.config)
+      .then(res => {
+        console.log("res.data.result : ", res.data.result)
+        commit("SHOW_GROUP_MEMBERS", res.data.map.bandMemberList)
+        this.state.isInviteModal = !(this.state.isInviteModal)
+        })
+    },
   },
   modules: {}
 });
