@@ -51,10 +51,10 @@
 <script>
 import { mapGetters } from 'vuex';
 
-import LoginModal from "./LoginModal.vue"
-import SignupModal from "./SignupModal.vue"
-import LogoutModal from "./LogoutModal.vue"
-import MypageModal from "./MypageModal.vue"
+import LoginModal from "./modal/LoginModal.vue"
+import SignupModal from "./modal/SignupModal.vue"
+import LogoutModal from "./modal/LogoutModal.vue"
+import MypageModal from "./modal/MypageModal.vue"
 
 export default {
   name: 'NavBar',
