@@ -11,7 +11,8 @@
           v-model="input"
           id="editor_textarea"
           onkeydown=
-            "if(event.keyCode === 9) {
+            "
+            if(event.keyCode === 9) {
               var v=this.value, s=this.selectionStart, e=this.selectionEnd;
               this.value=v.substring(0, s)+'\t'+v.substring(e);
               this.selectionStart=this.selectionEnd=s+1;
@@ -37,7 +38,9 @@ import parse from "../parse";
 import sampleData from "../sampleData.js";
 
 var data = sampleData;
-
+// var data = new Promise(function(resolve, reject) {
+//   resolve(sampleData);
+// });
 require('electron').ipcRenderer.on('ping', (event, message) => {
   console.log(message);
   data.input = message;
@@ -46,19 +49,57 @@ require('electron').ipcRenderer.on('ping', (event, message) => {
 export default {
   name: "Home",
   components: {
+    
   },
   created() {
+    //data.then(function(tmp) {
+    //return this.input = tmp;
+   // })
+  //  data.then((tmp) => {
+  //     console.log(tmp);
+  //     this.input = tmp;
+    //}).then((tmp) => {
+   //   console.log(this.input);
+      
+      // return this.$store.state.parseData;
+      //return parse(this.input);
+    // });
+    
   },
   updated() {
+    
   },
+  mounted() {
+    console.log(data);
+    this.$store.state.parseData = parse(data);
+    console.log(this.$store.state.parseData);
+  },
+  
   computed: {
-    compiledMarkdown: function () {
-      return parse(this.input);
-    },
+   compiledMarkdown: function () {
+      // data.then((tmp) => {
+      // console.log(tmp);
+    //  this.input = tmp;
+    //}).then((tmp) => {
+   //   console.log(this.input);
+      // this.$store.state.parseData = parse(tmp);
+      return this.$store.state.parseData;
+      //return parse(this.input);
+    // });
+   },
+    
+
   },
+  // data: {
+  //   input: data
+  // },
   data () {
-    return data
+   return data;
   }
+  // data: async () => {
+  //   console.log(data);
+  //   return await data;
+  // }
 };
 </script>
 
