@@ -19,6 +19,6 @@ export default {
 
         getBandMember: '/accountBand/v1/getBandMember',
         inviteBandMember: '/accountBand/v1/inviteBandMember',
-
+        findAccountList: '/accountBand/findAccountList',
     }
 }

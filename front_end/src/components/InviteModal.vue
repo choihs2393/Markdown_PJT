@@ -1,5 +1,5 @@
 <template>
-<v-dialog v-model="$store.state.isInviteModal" max-width="500px">
+<v-dialog v-model="$store.state.isInviteModal" max-width="400px">
   <v-card 
     class="mx-auto"
   >
@@ -8,13 +8,18 @@
       dark
     >
       <v-text-field
-        v-model="search"
+        autofocus
+        v-model.lazy="search"
         append-icon="mdi-plus"
         label="Search Email"
-        single-line
         hide-details
+        @click:append = "inviteBandMember"
+        @keyup="$store.state.noSuchMemberAlert=false"
       ></v-text-field>
     </v-toolbar>
+      <v-alert class="ma-2" dense outlined persistent type="error" icon="mdi-cloud-alert" v-model="$store.state.noSuchMemberAlert">
+        가입된 회원이 아닙니다.
+      </v-alert>
     <v-list>
       <v-list-item
         v-for="item in $store.state.workspaceMemberList"
@@ -40,6 +45,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
     name: 'InviteModal',
     data () {
@@ -56,7 +63,13 @@ export default {
       }
     },
     methods: {
-      
+      inviteBandMember() {
+        const findAccountList = {
+          email: this.search
+        }
+        this.$store.dispatch("findAccountList", findAccountList)
+        this.search = ''
+      }
     },
 }
 </script>
