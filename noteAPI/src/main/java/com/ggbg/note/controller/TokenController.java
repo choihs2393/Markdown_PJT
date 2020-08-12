@@ -35,7 +35,7 @@ public class TokenController {
 		ResponseEntity response = null;
 		final SuccessResponse result = new SuccessResponse();
 
-		String accessToken = request.getHeader("Authorization").substring(7);
+		String accessToken = request.getHeader("Authorization").substring(7); // 7글자 이상일경우만 조사하도록 변경
 		boolean res = tokenService.newAccessTokenByAccessToken(accessToken);
 		result.status = true;
 		if (res) {
