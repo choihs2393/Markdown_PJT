@@ -139,7 +139,6 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 		// jwt
 
 		response.setHeader("Access-Control-Expose-Headers", "Authorization, RefreshToken, AccessTokenExpiraionDate, RefreshTokenExpiraionDate");
-		
 		response.addHeader("Authorization", "Bearer " + accessToken);
 		response.addHeader("RefreshToken", "Bearer " + refreshToken);
 		response.addHeader("AccessTokenExpiraionDate", accessTokenExpirationDate);

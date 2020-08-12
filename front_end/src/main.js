@@ -79,8 +79,8 @@ axios.interceptors.request.use(
           return axios.post(SERVER.URL + SERVER.ROUTES.newATBR, null, { headers: { RefreshToken: store.state.refreshToken } })
             .then(res => {
               
-              // console.log('기간 만료 후 토큰 갱신!!')
-              // console.log(res.headers)
+              console.log('기간 만료 후 토큰 갱신!!')
+              console.log(res.headers)
               store.commit('SET_TOKEN', res.headers)
               // console.log('errorAPI', errorAPI)
               return axios(errorAPI)
