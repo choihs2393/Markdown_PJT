@@ -8,6 +8,22 @@ import axios from 'axios'
 import SERVER from '@/api/spring'
 
 Vue.config.productionTip = false;
+
+Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
+  value: function() {
+    function pad2(n) {  // always returns a string
+      return (n < 10 ? '0' : '') + n;
+    }
+    
+    return this.getFullYear() +
+    pad2(this.getMonth() + 1) + 
+    pad2(this.getDate()) +
+    pad2(this.getHours()) +
+    pad2(this.getMinutes()) +
+    pad2(this.getSeconds());
+  }
+});
+
 // Vue.prototype.$http = axios;
 // axios.defaults.timeout = 10000;
 
@@ -16,21 +32,32 @@ axios.interceptors.request.use(
     // 요청을 보내기 전에 수행할 일
     // console.log('request interceptor!!');
     config.headers.Authorization = localStorage.getItem('authorization');
-
+    
     return config;
   },
   function (error) {
     // 오류 요청을 보내기전 수행할 일
     return Promise.reject(error);
   });
+  
+  
+  axios.interceptors.response.use(
+    function(response) {
+      // console.log('response interceptor success!!');
 
+      const nowTime = Number(new Date().YYYYMMDDHHMMSS())
+      const expiraionTime = Number(localStorage.getItem('access-token-expiraion-date'))
 
-axios.interceptors.response.use(
-  function(response) {
-    // console.log('response interceptor success!!');
-    return response
-  },
-  function(err) {
+      // console.log('nowTime:', nowTime)
+      // console.log('expiraionTime:', expiraionTime)
+      // console.log('expiraionTime - 5분:', expiraionTime - 500)
+      // console.log(nowTime > expiraionTime - 500 && nowTime < expiraionTime)
+
+      
+      
+      return response
+    },
+    function(err) {
     // console.log('response interceptor error!!');
 
     const errorAPI = err.config
@@ -43,9 +70,13 @@ axios.interceptors.response.use(
       if (!!localStorage.getItem('authorization')) {
         return axios.post(SERVER.URL + SERVER.ROUTES.newATBR, null, { headers: { RefreshToken: store.state.refreshToken } })
           .then(res => {
+            
             // console.log('토큰 갱신!!')
-            store.state.authorization = res.headers['authorization']
-            localStorage.setItem('authorization', store.state.authorization)
+            // console.log(res.headers)
+            store.commit('SET_TOKEN', res.headers)
+
+            // store.state.authorization = res.headers['authorization']
+            // localStorage.setItem('authorization', store.state.authorization)
             // console.log('errorAPI', errorAPI)
             return axios(errorAPI)
           })
