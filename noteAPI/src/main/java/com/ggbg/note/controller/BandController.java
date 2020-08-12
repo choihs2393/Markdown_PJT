@@ -43,7 +43,9 @@ public class BandController {
 		String accessToken = request.getHeader("Authorization").substring(7);
 		String bandName = map.get("bandName");
 		int accountNo = Integer.parseInt(map.get("accountNo"));
-		BandDTO band = bandService.addBand(bandName, accountNo);
+		String bandMasterName = map.get("bandMasterName");
+		
+		BandDTO band = bandService.addBand(bandName, accountNo, bandMasterName);
 		Map<String, Object> retMap = new HashMap<String, Object>();
 		retMap.put("band", band);
 		result.status = true;
@@ -102,5 +104,4 @@ public class BandController {
 
 		return response;
 	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
-
 }

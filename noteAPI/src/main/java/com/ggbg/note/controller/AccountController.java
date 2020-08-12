@@ -182,7 +182,6 @@ public class AccountController {
 			result.result = "fail";
 			response = new ResponseEntity<>(result, HttpStatus.UNAUTHORIZED);
 		}
-
 		return response;
 	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
 	

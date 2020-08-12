@@ -59,6 +59,7 @@ export default new Vuex.Store({
   // state를 (가공해서)가져올 함수들. === computed
   getters: {
     isLoggedIn: state => !!state.authorization,
+    status: state => state.userInfo.status
     // getWorkspaceMemberList: state => {
     //   return state.workspaceMemberList
     // },
@@ -207,7 +208,9 @@ export default new Vuex.Store({
           /* 무성 추가 부분 -> 로그인을 한 후에도 서버요청해서 이름 정보 가져와야 할 듯 싶어서 추가 */
           /* 로그인을 해도 소망이님이 뜨고, 로그인상태로 앱을 껏다 켜야 yb님이라고 뜸. 애초에 로그인 후에 바로 가져오는 게 맞을 것 같습니다. */
           dispatch('initUserInfo');
-          commit('SET_IS_SHARE', true);
+          setTimeout(function(){
+            commit('SET_IS_SHARE', true);
+            }, 70);
         })
         .catch(err => {
           console.error(err.response.data)
@@ -327,6 +330,7 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.onServerInit)
         .then(res => {
           if (res.data['result'] === 'success') {
+            console.log("################# res.data.map", res.data.map)
             commit('SET_INIT_USER_INFO', res.data.map)
           }
         })
@@ -341,10 +345,11 @@ export default new Vuex.Store({
 
       var map = {
         bandName: workspaceName,
-        accountNo: this.state.userInfo.no
+        accountNo: this.state.userInfo.no,
+        bandMasterName: this.state.userInfo.name
       }
-      console.log('여기여기')
-      axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, map, { headers: { email: this.state.userInfo.email} })
+    
+      axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, map, { headers: { email: this.state.userInfo.email }})
       .then(res => {
         console.log("then구문 진입.");
         console.log("res.data", res.data);
@@ -354,7 +359,7 @@ export default new Vuex.Store({
         commit("SET_WORKSPACES", res.data.map.band)
         // console.log("then구문 진입.");
         
-        commit("SET_WORKSPACES", res.data.map)
+        // commit("SET_WORKSPACES", res.data.map)
       })
       .catch(err => {
 
@@ -366,7 +371,7 @@ export default new Vuex.Store({
       console.log("Vuex내에 deleteWorkspace() 진입.");
       console.log("넘어온 그룹 정보 (bandNo, accountNo) : ", deleteWorkspace)
       
-      axios.post(SERVER.URL + SERVER.ROUTES.deleteWorkspace, deleteWorkspace, getters.config)
+      axios.post(SERVER.URL + SERVER.ROUTES.deleteWorkspace, deleteWorkspace, { headers: { email: this.state.userInfo.email }})
       .then(res => {
         console.log("res.data.result : ", res.data.result)
         if(res.data.result == "success") {
@@ -387,7 +392,7 @@ export default new Vuex.Store({
       console.log("Vuex내에 renameWorkspace() 진입")
       console.log("넘어온 그룹 정보 (bandNo, accountNo, newBandName, workspaceIdx) :", renameWorkspace)
 
-      axios.post(SERVER.URL + SERVER.ROUTES.renameWorkspace, renameWorkspace, getters.config)
+      axios.post(SERVER.URL + SERVER.ROUTES.renameWorkspace, renameWorkspace, { headers: { email: this.state.userInfo.email }})
       .then(res => {
         console.log("res.data.result : ", res.data.result)
         if(res.data.result == "success") {
@@ -399,7 +404,7 @@ export default new Vuex.Store({
     // 워크스페이스 멤버 불러오기
     showGroupMembers({ getters, commit}, showGroupMembers) {
       // console.log(showGroupMembers)
-      axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, { headers: { email: this.state.userInfo.email} })
+      axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, { headers: { email: this.state.userInfo.email }})
       .then(res => {
         console.log("res.data.result : ", res.data.result)
         commit("SHOW_GROUP_MEMBERS", res.data.map.bandMemberList)
@@ -409,15 +414,17 @@ export default new Vuex.Store({
 
     // 가입된 회원인지 확인
     findAccountList({getters, dispatch}, findAccountList) {
-      axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, findAccountList)
+      axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, findAccountList, { headers: { email: this.state.userInfo.email }})
       .then(res => {
-        console.log('결과', res)
+        this.state.newMemberInfo.no = res.data.map.primitiveAccountList[0].no; // 초대받을 사람의 account_no를 보관.
+        // console.log("res.data.map.primitiveAccountList[0].no : ", res.data.map.primitiveAccountList[0].no);
         if (res.data.result === "success") {
           const inviteBandMember = {
             bandNo: this.state.userInfo.group.find(element => element.name == this.state.workspace).no,
             email: findAccountList.email,
             masterNo: this.state.userInfo.group.find(element => element.name == this.state.workspace).master,
           }
+          // console.log("[inviteBandMember] findAccountList()", inviteBandMember)
           dispatch("inviteBandMember", inviteBandMember)
         } else {
           this.state.noSuchMemberAlert = !(this.state.noSuchMemberAlert)
@@ -427,7 +434,8 @@ export default new Vuex.Store({
 
     // 워크스페이스에 멤버 초대하기
     inviteBandMember({ getters, commit}, inviteBandMember) {
-      console.log(inviteBandMember)
+      console.log("[inviteBandMember] inviteBandMember()", inviteBandMember);
+
       this.state.noSuchMemberAlert = false;
       axios.post(SERVER.URL + SERVER.ROUTES.inviteBandMember, inviteBandMember, { headers: { email: this.state.userInfo.email} })
       .then(res => {
@@ -435,6 +443,24 @@ export default new Vuex.Store({
         commit("GET_NEW_MEMBER_INFO", res.data.map.bandMember)
       })
     },
+
+    // 워크스페이스 초대 수락
+    acceptInvite({}, info) {
+      console.log("[acceptInvite] info : ", info)
+      axios.post(SERVER.URL + SERVER.ROUTES.acceptInvite, info, { headers: { email: this.state.userInfo.email }})
+      .then(res => {
+        console.log("초대 수락 확인")
+      }) 
+    },
+
+    // 워크스페이스 초대 거절
+    declineInvite({}, info) {
+      console.log("[declineInvite] info : ", info)
+      axios.post(SERVER.URL + SERVER.ROUTES.declineInvite, info, { headers: { email: this.state.userInfo.email }})
+      .then(res => {
+        console.log("초대 거부 확인")
+      })
+    }
   },
   modules: {}
 });

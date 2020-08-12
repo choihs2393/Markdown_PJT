@@ -25,5 +25,8 @@ export default {
         getBandMember: '/accountBand/v1/getBandMember',
         inviteBandMember: '/accountBand/v1/inviteBandMember',
         findAccountList: '/accountBand/findAccountList',
+
+        acceptInvite: '/accountBand/v1/acceptInvite',
+        declineInvite: '/accountBand/v1/declineInvite'
     }
 }

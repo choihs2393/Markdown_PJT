@@ -1,73 +1,126 @@
 <template>
-<v-dialog v-model="$store.state.isInviteModal" max-width="400px">
-  <v-card 
-    class="mx-auto"
-  >
-    <v-toolbar
-      color="rgb(255, 179, 102)"
-      dark
-    >
-      <v-text-field
-        autofocus
-        v-model.lazy="search"
-        append-icon="mdi-plus"
-        label="Search Email"
-        hide-details
-        @click:append = "inviteBandMember"
-        @keyup="$store.state.noSuchMemberAlert=false"
-      ></v-text-field>
-    </v-toolbar>
-      <v-alert class="ma-2" dense outlined persistent type="error" icon="mdi-cloud-alert" v-model="$store.state.noSuchMemberAlert">
-        가입된 회원이 아닙니다.
-      </v-alert>
-    <v-list>
-      <v-list-item
-        v-for="item in $store.state.workspaceMemberList"
-        :key="item.no"
-      >
-        <v-list-item-icon>
-          <v-icon v-if="!(item.status)" color="pink">mdi-star</v-icon>
-        </v-list-item-icon>
+  <v-dialog v-model="$store.state.isInviteModal" max-width="400px">
+    <v-card class="mx-auto">
+      <v-toolbar color="rgb(255, 179, 102)" dark>
+        <v-text-field
+          autofocus
+          v-model.lazy="search"
+          append-icon="mdi-plus"
+          label="Search Email"
+          hide-details
+          @click:append="inviteBandMember"
+          @keyup="$store.state.noSuchMemberAlert=false"
+        ></v-text-field>
+      </v-toolbar>
+      <v-alert
+        class="ma-2"
+        dense
+        outlined
+        persistent
+        type="error"
+        icon="mdi-cloud-alert"
+        v-model="$store.state.noSuchMemberAlert"
+      >가입된 회원이 아닙니다.</v-alert>
+      <v-list>
+        <v-list-item v-for="item in $store.state.workspaceMemberList" :key="item.no">
+          <v-list-item-icon>
+            <v-icon v-if="!(item.status)" color="pink">mdi-star</v-icon>
+          </v-list-item-icon>
 
-        <v-list-item-content>
-          <v-list-item-title v-text="item.name"></v-list-item-title>
-        </v-list-item-content>
+          <v-list-item-content>
+            <v-list-item-title v-text="item.name"></v-list-item-title>
+          </v-list-item-content>
 
-        <v-list-item-group v-model="isOwner">
-        <v-chip small color="orange" rounded filter dark v-if="item.status===2" style="margin-right: 1em">수락 대기 중</v-chip>
+          <v-list-item-group v-model="isOwner">
+            <v-chip
+              small
+              color="orange"
+              rounded
+              filter
+              dark
+              v-if="item.status===2"
+              style="margin-right: 1em"
+            >수락 대기 중</v-chip>
 
-        <v-btn small color="orange" rounded outlined v-if="item.status!=0">내보내기</v-btn>
-      </v-list-item-group>
-      </v-list-item>
-    </v-list>
-  </v-card>
-</v-dialog>
+            <v-btn small color="orange" rounded outlined v-if="item.status!=0">내보내기</v-btn>
+          </v-list-item-group>
+        </v-list-item>
+      </v-list>
+    </v-card>
+  </v-dialog>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
+// 소켓 관련 모듈
+import SockJS from "sockjs-client";
+import Stomp from "webstomp-client";
+
 export default {
-    name: 'InviteModal',
-    data () {
-      return {
-        search: '',
-        isOwner: false,
+  name: "InviteModal",
+  data() {
+    return {
+      connected: false,
+      search: "",
+      isOwner: false
+    };
+  },
+  mounted() {
+    if (this.$store.state.isInviteModal) {
+      if (
+        this.$store.state.workspaceMemberList.find(
+          element => element.no === this.$store.state.userInfo.no
+        ).status === 0
+      ) {
+        isOwner = true;
       }
-    },
-    mounted() {
-      if(this.$store.state.isInviteModal){
-        if(this.$store.state.workspaceMemberList.find(element => element.no === this.$store.state.userInfo.no).status === 0){
-          isOwner = true;
-        }
+    }
+  },
+  methods: {
+    inviteBandMember() {
+      const findAccountList = {
+        email: this.search
+      };
+      this.$store.dispatch("findAccountList", findAccountList);
+      this.search = "";
+
+      const serverURL = "http://localhost:8080/noteAPI/ws";
+      let socket = new SockJS(serverURL);
+      this.stompClient = Stomp.over(socket);
+
+      if (!this.connected) {
+        this.stompClient.connect(
+          { Authorization: this.$store.state.authorization },
+          frame => {
+            // 소켓 연결 성공
+            this.connected = true;
+            console.log("[InviteModal] 소켓 연결 성공", frame);
+            // this.stompClient.send("/receive", JSON.stringify(findAccountList.email));
+            console.log("[Send 내용]")
+
+            console.log("fromEmail : " + this.$store.state.userInfo.email)
+            console.log("fromName : " + this.$store.state.userInfo.name)
+            console.log("toEmail : " + findAccountList.email)
+            console.log("toNo : " + this.$store.state.newMemberInfo.no)
+            console.log("groupName : " + this.$store.state.workspace)
+
+            this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, {
+              fromEmail: this.$store.state.userInfo.email,
+              fromName: this.$store.state.userInfo.name,
+              toEmail: findAccountList.email,
+              toNo: this.$store.state.newMemberInfo.no,
+              groupName: this.$store.state.workspace
+            });
+          },
+          error => {
+            // 소켓 연결 실패
+            console.log("[InviteModal] 소켓 연결 실패", error);
+            this.connected = false;
+          }
+        );
       }
-    },
-    methods: {
-      inviteBandMember() {
-        const findAccountList = {
-          email: this.search
-        }
-        this.$store.dispatch("findAccountList", findAccountList)
-        this.search = ''
-      }
-    },
-}
+    }
+  }
+};
 </script>
