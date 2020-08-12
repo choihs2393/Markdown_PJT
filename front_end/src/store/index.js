@@ -80,15 +80,22 @@ export default new Vuex.Store({
 
     // 토큰 저장
     SET_TOKEN(state, token) {
-      state.authorization = token.authorization
-      state.accessTokenExpiraionDate = token.accesstokenexpiraiondate
-      state.refreshToken = token.refreshtoken
-      state.refreshTokenExpiraionDate = token.refreshtokenexpiraiondate
-
-      localStorage.setItem('authorization', state.authorization)
-      localStorage.setItem('access-token-expiraion-date', state.accessTokenExpiraionDate)
-      localStorage.setItem('refresh-token', state.refreshToken)
-      localStorage.setItem('refresh-token-expiraion-date', state.refreshTokenExpiraionDate)
+      if (!!token.authorization) {
+        state.authorization = token.authorization
+        localStorage.setItem('authorization', state.authorization)
+      }
+      if (!!token.accesstokenexpiraiondate) {
+        state.accessTokenExpiraionDate = token.accesstokenexpiraiondate
+        localStorage.setItem('access-token-expiraion-date', state.accessTokenExpiraionDate)
+      }
+      if (!!token.refreshtoken) {
+        state.refreshToken = token.refreshtoken
+        localStorage.setItem('refresh-token', state.refreshToken)
+      }
+      if (!!token.refreshtokenexpiraiondate) {
+        state.refreshTokenExpiraionDate = token.refreshtokenexpiraiondate
+        localStorage.setItem('refresh-token-expiraion-date', state.refreshTokenExpiraionDate)
+      }
     },
 
     // 토큰 삭제
