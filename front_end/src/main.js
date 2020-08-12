@@ -85,6 +85,9 @@ axios.interceptors.request.use(
               // console.log('errorAPI', errorAPI)
               return axios(errorAPI)
             })
+            .catch(err => {
+              store.dispatch('logout')
+            })
         }
       }
       return Promise.reject(err)
