@@ -39,6 +39,7 @@ export default new Vuex.Store({
     isMypageModal: false,
     isDeleteModal: false,
     isInviteModal: false,
+    noSuchMemberAlert: false,
 
     // server_check
     isShareMode: false,
@@ -46,12 +47,21 @@ export default new Vuex.Store({
     // selected workspace in server mode
     workspace: undefined,
     workspaceMemberList: [],
+    newMemberInfo: {
+      email: '',
+      name: '',
+      status: '',
+      no: ''
+    },
     theme: '',
   },
 
   // state를 (가공해서)가져올 함수들. === computed
   getters: {
     isLoggedIn: state => !!state.authorization,
+    // getWorkspaceMemberList: state => {
+    //   return state.workspaceMemberList
+    // },
 
     // config: state => ({
     //   headers: {
@@ -153,6 +163,11 @@ export default new Vuex.Store({
         }
       }
       // state.workspaceMemberList.push(result)
+      console.log(state.workspaceMemberList)
+    },
+
+    GET_NEW_MEMBER_INFO(state, result) {
+      state.workspaceMemberList.push(result);
       console.log(state.workspaceMemberList)
     },
 
@@ -383,6 +398,35 @@ export default new Vuex.Store({
         commit("SHOW_GROUP_MEMBERS", res.data.map.bandMemberList)
         this.state.isInviteModal = !(this.state.isInviteModal)
         })
+    },
+
+    // 가입된 회원인지 확인
+    findAccountList({getters, dispatch}, findAccountList) {
+      axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, findAccountList, getters.config)
+      .then(res => {
+        console.log(res)
+        if (res.data.result === "success") {
+          const inviteBandMember = {
+            bandNo: this.state.userInfo.group.find(element => element.name == this.state.workspace).no,
+            email: findAccountList.email,
+            masterNo: this.state.userInfo.group.find(element => element.name == this.state.workspace).master,
+          }
+          dispatch("inviteBandMember", inviteBandMember)
+        } else {
+          this.state.noSuchMemberAlert = !(this.state.noSuchMemberAlert)
+        }
+      })
+    },
+
+    // 워크스페이스에 멤버 초대하기
+    inviteBandMember({ getters, commit}, inviteBandMember) {
+      console.log(inviteBandMember)
+      this.state.noSuchMemberAlert = false;
+      axios.post(SERVER.URL + SERVER.ROUTES.inviteBandMember, inviteBandMember, getters.config)
+      .then(res => {
+        console.log("res.data.result : ", res.data.map.bandMember)
+        commit("GET_NEW_MEMBER_INFO", res.data.map.bandMember)
+      })
     },
   },
   modules: {}
