@@ -18,6 +18,7 @@ export default {
         renameWorkspace: '/band/v1/renameBand',
         // deleteWorkspace: '/account/deleteWorkspace'
 
+        newATBA: '/token/v2/newATBA',
         newATBR: '/token/v2/newATBR',
         newRTBR: '/token/v2/newRTBR',
 
