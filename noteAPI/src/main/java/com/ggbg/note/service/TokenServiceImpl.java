@@ -70,7 +70,7 @@ public class TokenServiceImpl implements ITokenService {
 			List<String> rs = (List) parseInfo.get("role");
 			String authorityFromAccessToken = rs.get(0);
 			ValueOperations<String, Object> vop = redisTemplate.opsForValue();
-			Token token = (Token) vop.get("dkdlrnf0@gmail.com");
+			Token token = (Token) vop.get(emailFromAccessToken);
 			if(token != null) {
 				Map<String, Object> parseInfo2 = jtu.getUserParseInfo(token.getToken());
 				String emailFromRefreshToken = String.valueOf(parseInfo2.get("email"));
