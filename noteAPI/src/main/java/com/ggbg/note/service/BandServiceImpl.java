@@ -36,17 +36,19 @@ public class BandServiceImpl implements IBandService {
 	
 	
 	@Override
-	public BandDTO addBand(String bandName, int accountNo) {
+	public BandDTO addBand(String bandName, int accountNo, String bandMasterName) {
 		// band add
 		BandDTO bandDTO = new BandDTO();
 		bandDTO.setName(bandName);
 		bandDTO.setMaster(accountNo);
+		bandDTO.setBandMasterName(bandMasterName);
 		
 		int bandNo = -1;
 		bandNo = bandRepo.save(BandEntity.builder()
 							.no(bandDTO.getNo())
 							.name(bandDTO.getName())
 							.master(bandDTO.getMaster())
+							.masterName(bandDTO.getBandMasterName())
 							.build()
 				).getNo();
 		

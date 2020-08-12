@@ -7,4 +7,5 @@ public class BandDTO {
 	private int no;
 	private String name;
 	private int master;
+	private String bandMasterName;
 }

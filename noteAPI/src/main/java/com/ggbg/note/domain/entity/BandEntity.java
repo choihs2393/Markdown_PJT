@@ -33,8 +33,10 @@ public class BandEntity implements Persistable<String>{
 
 	@Column(nullable = false, name = "band_master")
 	private int master;
-
-
+	
+	@Column(nullable = false, name = "band_master_name")
+	private String masterName;
+	
 	@Override
 	public String getId() {
 		return this.no + "";
