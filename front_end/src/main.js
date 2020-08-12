@@ -71,7 +71,7 @@ axios.interceptors.request.use(
         return axios.post(SERVER.URL + SERVER.ROUTES.newATBR, null, { headers: { RefreshToken: store.state.refreshToken } })
           .then(res => {
             
-            // console.log('토큰 갱신!!')
+            console.log('토큰 갱신!!')
             // console.log(res.headers)
             store.commit('SET_TOKEN', res.headers)
 
