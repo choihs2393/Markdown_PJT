@@ -343,8 +343,8 @@ export default new Vuex.Store({
         bandName: workspaceName,
         accountNo: this.state.userInfo.no
       }
-    
-      axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, map, getters.config)
+      console.log('여기여기')
+      axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, map, { headers: { email: this.state.userInfo.email} })
       .then(res => {
         console.log("then구문 진입.");
         console.log("res.data", res.data);
@@ -399,7 +399,7 @@ export default new Vuex.Store({
     // 워크스페이스 멤버 불러오기
     showGroupMembers({ getters, commit}, showGroupMembers) {
       // console.log(showGroupMembers)
-      axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, getters.config)
+      axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, { headers: { email: this.state.userInfo.email} })
       .then(res => {
         console.log("res.data.result : ", res.data.result)
         commit("SHOW_GROUP_MEMBERS", res.data.map.bandMemberList)
@@ -409,9 +409,9 @@ export default new Vuex.Store({
 
     // 가입된 회원인지 확인
     findAccountList({getters, dispatch}, findAccountList) {
-      axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, findAccountList, getters.config)
+      axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, findAccountList)
       .then(res => {
-        console.log(res)
+        console.log('결과', res)
         if (res.data.result === "success") {
           const inviteBandMember = {
             bandNo: this.state.userInfo.group.find(element => element.name == this.state.workspace).no,
@@ -429,7 +429,7 @@ export default new Vuex.Store({
     inviteBandMember({ getters, commit}, inviteBandMember) {
       console.log(inviteBandMember)
       this.state.noSuchMemberAlert = false;
-      axios.post(SERVER.URL + SERVER.ROUTES.inviteBandMember, inviteBandMember, getters.config)
+      axios.post(SERVER.URL + SERVER.ROUTES.inviteBandMember, inviteBandMember, { headers: { email: this.state.userInfo.email} })
       .then(res => {
         console.log("res.data.result : ", res.data.map.bandMember)
         commit("GET_NEW_MEMBER_INFO", res.data.map.bandMember)
