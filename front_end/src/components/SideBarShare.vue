@@ -5,16 +5,9 @@
         prominent
         src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2089&q=80"
       >
-        <v-subheader class="sidesubheader">
-          <v-toolbar-title>SHARES</v-toolbar-title>
-        </v-subheader>
-        <v-spacer></v-spacer>
-        <v-spacer></v-spacer>
-        <v-btn icon @click="showInviteModal()">
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-        <InviteModal />
-      </v-toolbar>
+      <v-subheader class="sidesubheader">
+        <v-toolbar-title>SHARES</v-toolbar-title>
+      </v-subheader>
     </v-card>
 
     <v-container>
@@ -173,7 +166,7 @@ export default {
       workspaceDialog: false,
       workspaceRenameDialog: false,
       memberDialog: false,
-      workspaceDialog: false,
+      // workspaceDialog: false,
       selected: "",
       workspaceName: "",
       workspaceRename: "",
@@ -212,7 +205,7 @@ export default {
       this.$refs.form_workspace.reset();
       
       this.workspaceDialog = false;
-      this.$store.state.workspace = this.selected;
+      this.$store.commit('SELET_WORKSPACE', this.selected)
       this.workspaces = this.$store.state.userInfo.group
 
     },
@@ -220,7 +213,7 @@ export default {
       if (select == "Add workspace first") {
         this.workspaceDialog = true;
       }else {
-        this.$store.state.workspace = select;
+        this.$store.commit('SELET_WORKSPACE', select)
       }
     },
     deleteWorkspace() {

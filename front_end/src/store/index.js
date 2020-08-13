@@ -151,6 +151,11 @@ export default new Vuex.Store({
       state.userInfo.group.push(result);
       console.log("state.userInfo.group : ", state.userInfo.group);
     },
+
+    // 선택한 워크스페이스
+    SELET_WORKSPACE(state, payload) {
+      state.workspace = payload
+    },
     
     DELETE_WORKSPACE(state, param) {
       console.log("DELETE_WORKSPACE 호출됨.")
