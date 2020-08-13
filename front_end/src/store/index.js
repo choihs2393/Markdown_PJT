@@ -58,16 +58,19 @@ export default new Vuex.Store({
         no: 1,
         bandNo: 1,
         title: '낄낄.md',
+        contents: '# 낄낄\n넘모좋군  낄낄'
       },
       {
         no: 2,
         bandNo: 1,
-        title: '깔깔.md'
+        title: '깔깔.md',
+        contents: '# 깔깔\n넘모좋군  깔깔'
       },
       {
         no: 3,
         bandNo: 1,
-        title: '꼴깔.md'
+        title: '꼴깔.md',
+        contents: '# 꼴깔\n넘모좋군  꼴깔꼴깔'
       },
     ],
 

@@ -72,7 +72,7 @@
         <!-- <v-subheader >
           <v-toolbar-title>FILES</v-toolbar-title>
         </v-subheader> -->
-        <v-list-item v-for="file in this.$store.state.fileList" :key="file.no" @click="()=>{}">
+        <v-list-item v-for="file in this.$store.state.fileList" :key="file.no" @click="openFile(file.contents)">
           <v-list-item-content>
             <v-list-item-title>{{ file.title }}</v-list-item-title>
           </v-list-item-content>
@@ -121,11 +121,14 @@
 </template>
 
 <script>
-import "material-design-icons-iconfont/dist/material-design-icons.css";
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
 import InviteModal from "./InviteModal.vue";
 import CreateFileModal from './CreateFileModal.vue'
+
+import "material-design-icons-iconfont/dist/material-design-icons.css";
+import fs from "fs";
+import { remote } from "electron";
 
 // import { mapActions } from 'vuex'
 
@@ -274,6 +277,15 @@ export default {
 
       this.$store.dispatch("showGroupMembers", showGroupMembers)
     },
+
+    openFile(data) {
+        const openedFileData = data;
+        // console.log(openedFileData);
+
+        const fileDataObject = {'openedFileData': openedFileData};
+        const win = remote.BrowserWindow.getFocusedWindow();
+        win.webContents.send("ping", fileDataObject);
+    }
   }
 };
 </script>

@@ -7,7 +7,7 @@
     </v-btn>
 
     <v-row justify="center">
-      <v-dialog v-model="isCreateFileModal" persistent max-width="290">
+      <v-dialog v-model="isCreateFileModal" persistent max-width="500">
         <v-card>
           <v-card-title class="headline">Create Markdown</v-card-title>
           <v-card-text>
