@@ -5,7 +5,6 @@
     <SideBar v-if="!$store.state.isShareMode" />
     <SideBarShare v-if="$store.state.isShareMode" />
     <Home />
-    <!-- <router-view /> -->
   </v-app>
 </template>
 

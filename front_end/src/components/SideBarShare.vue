@@ -1,5 +1,4 @@
 <template>
-
   <v-navigation-drawer v-model="$store.state.drawerShare" app>
     <v-card>
       <v-toolbar
@@ -9,12 +8,6 @@
         <v-subheader class="sidesubheader">
           <v-toolbar-title>SHARES</v-toolbar-title>
         </v-subheader>
-        <v-spacer></v-spacer>
-        <v-spacer></v-spacer>
-        <v-btn icon @click="showInviteModal()">
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-        <InviteModal />
       </v-toolbar>
     </v-card>
 
@@ -23,7 +16,7 @@
       <!-- 워크스페이스 추가 다이얼로그 -->
           <!-- Add a workspace를 눌렀을 때 보이는 다이얼로그 -->
     <v-dialog v-model="workspaceDialog" max-width="600px">
-             <template v-slot:activator="{ on, attrs }">
+      <template v-slot:activator="{ on, attrs }">
         <v-btn
           color="rgb(255, 179, 102)"
           dark
@@ -81,8 +74,8 @@
       </template>
     </ContextMenu>
 
-        <!-- workspace rename dialog -->
-        <v-dialog v-model="workspaceRenameDialog" max-width="600px">
+    <!-- workspace rename dialog -->
+    <v-dialog v-model="workspaceRenameDialog" max-width="600px">
       <v-card>
         <v-card-title>
           <span>Rename workspace</span>
@@ -109,6 +102,27 @@
     </v-btn>
     <InviteModal />
 
+    <v-list subheader flat>
+      <v-subheader >FILES</v-subheader>
+
+      <v-list-item v-for="file in this.$store.state.fileList" :key="file.no" @click="openFile(file.fileFullPath)">
+          <!-- <v-list-item-avatar>
+          <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
+        </v-list-item-avatar> -->
+        <v-list-item-content>
+          <v-list-item-title>{{ file.title }}</v-list-item-title>
+
+          <!-- <v-list-item-subtitle>{{ file.subtitle }}</v-list-item-subtitle> -->
+        </v-list-item-content>
+
+        <!-- <v-list-item-action>
+          <v-btn icon ripple @click="openFile(file.fileFullPath)">
+            <v-icon color="grey lighten-1">mdi-information</v-icon>
+          </v-btn>
+        </v-list-item-action> -->
+      </v-list-item>
+    </v-list>
+
   </v-navigation-drawer>
 </template>
 
@@ -119,8 +133,20 @@ import ContextMenuItem from './ContextMenuItem';
 import InviteModal from "./InviteModal.vue";
 
 export default {
+  name: "SideBarShare",
+
+  components: {
+    ContextMenu,
+    ContextMenuItem,
+    InviteModal,
+  },
+
+  computed: {
+    
+  },
+
   mounted() {
-    // console.log("SideBarShare.vue -> mounted() 호출됨.")
+    console.log("SideBarShare.vue -> mounted() 호출됨.")
 
     if(this.$store.state.userInfo.group.length == 0) {
       
@@ -131,29 +157,37 @@ export default {
     //   this.workspaces.push(this.$store.state.userInfo.group[i]);
     // }
   },
+
+    updated(){
+      console.log("SideBarShare.vue -> mounted() 호출됨.")
+    },
+  
   data() {
     return {
       workspaceDialog: false,
       workspaceRenameDialog: false,
       memberDialog: false,
-      workspaceDialog: false,
+      // workspaceDialog: false,
       selected: "",
       workspaceName: "",
       workspaceRename: "",
       memberEmail: "",
       workspaces: [
         { name: "Add workspace first" },
-      ]
+      ],
+      // files: [
+      //   {
+      //     title: '낄낄.md',
+      //   },
+      //   {
+      //     title: '깔깔.md'
+      //   }
+      // ],
     };
   },
-  updated(){
-    console.log("updated() 호출됨.")
-  },
-  components: {
-    ContextMenu,
-    ContextMenuItem,
-    InviteModal,
-  },
+
+
+
   methods: {
     cancelCreateWorkspace() {
       this.selected = "";
@@ -172,7 +206,7 @@ export default {
       this.$refs.form_workspace.reset();
       
       this.workspaceDialog = false;
-      this.$store.state.workspace = this.selected;
+      this.$store.commit('SELET_WORKSPACE', this.selected)
       this.workspaces = this.$store.state.userInfo.group
 
     },
@@ -180,7 +214,7 @@ export default {
       if (select == "Add workspace first") {
         this.workspaceDialog = true;
       }else {
-        this.$store.state.workspace = select;
+        this.$store.commit('SELET_WORKSPACE', select)
       }
     },
     deleteWorkspace() {
