@@ -107,7 +107,7 @@ public class CustomUsernamePasswordAuthenticationFilter extends UsernamePassword
 		SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
 		
 		Calendar accessTokenCal = Calendar.getInstance(Locale.KOREA);
-		accessTokenCal.add(Calendar.MINUTE, 30);
+		accessTokenCal.add(Calendar.MINUTE, 5);
 
 		Calendar refrestTokenCal = Calendar.getInstance(Locale.KOREA);
 		refrestTokenCal.add(Calendar.DATE, 30);
