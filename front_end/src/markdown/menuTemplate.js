@@ -39,7 +39,7 @@ const template = [
                 label: 'Save As ...',
                 accelerator: 'CommandOrControl+S',
                 click() {
-                    saveFile();
+                    saveFileWithOtherName();
                 }
             },
             {
@@ -135,7 +135,7 @@ function openNewWindow() {
     createWindow();
 }
 
-function saveFile() {
+function saveFileWithOtherName() {
     var fileData = '';
 
     BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
@@ -229,6 +229,7 @@ function openFile() {
                 let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': absoluteFilePath};
                 let win = BrowserWindow.getFocusedWindow();
                 win.webContents.send("ping", fileDataObject);
+                ipcRenderer.send("ping", fileDataObject);
             });
         });
     });

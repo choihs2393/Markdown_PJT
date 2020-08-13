@@ -4,7 +4,7 @@ import Replacer  from './replacer.js';
 //import { replace } from 'core-js/fn/symbol';
 import { hljs } from './highlight.pack.js';
 hljs.initHighlightingOnLoad();
-
+import store from '../store';
 //참조링크 배열
 // 참조링크가 지워지면 array에서도 지워지도록 수정해야함.
 // input 값이 변화할때마다 parse 함수를 불러오도록 짜여져 있어 수정에 어려움이 있음.
@@ -72,6 +72,8 @@ const replaceMarkdown = function(str) {
 	return str;
 } 
 const parse = function(str) {
+	store.commit('SET_INPUT_DATA', str);
+	// console.log(store.state.inputData);
 	return replaceMarkdown(str);
 }
 

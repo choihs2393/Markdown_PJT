@@ -184,11 +184,13 @@ export default {
         console.log(data);
         // fileData = data;
         let openedFileData = data;
-        // console.log(openedFileData);
+        console.log('요기',openedFileData);
+        console.log('------------------')
 
         let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': absoluteFilePath};
         let win = remote.BrowserWindow.getFocusedWindow();
         win.webContents.send("ping", fileDataObject);
+        ipcRenderer.send("mainping", openedFileData);
         // console.log('absolutefilepath', absoluteFilePath);
       });
     }

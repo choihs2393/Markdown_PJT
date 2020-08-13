@@ -54,6 +54,9 @@ export default new Vuex.Store({
       no: ''
     },
     theme: '',
+
+    //작성하는 텍스트
+    inputData: '',
   },
 
   // state를 (가공해서)가져올 함수들. === computed
@@ -78,7 +81,9 @@ export default new Vuex.Store({
   // commit 을 통해 실행함.
   // mutations은 첫 번째 인자로 state를 받아야함.
   mutations: {
-
+    SET_INPUT_DATA(state, param) {
+      state.inputData = param;
+    },
     // 토큰 저장
     SET_TOKEN(state, token) {
       if (!!token.authorization) {
@@ -161,6 +166,7 @@ export default new Vuex.Store({
     //현재 WORKSPACE 내의 MEMBER LIST 가져오기
     SHOW_GROUP_MEMBERS(state, result) {
       console.log('result요기', result)
+      state.workspaceMemberList= []
       for (let i = 0; i < result.length; i += 1) {
         if (typeof (result[i]) === 'object') {
           try {

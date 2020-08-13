@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, Menu, dialog } from "electron";
+import { app, protocol, BrowserWindow, Menu, dialog, ipcMain } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 import menuTemplate from './markdown/menuTemplate.js';
@@ -15,7 +15,11 @@ const isDevelopment = process.env.NODE_ENV !== "production";
 let win;
 
 // let win: Electron.BrowserWindow | null;
-
+let openedFileData;
+ipcMain.on("mainping", (event, message)=>{
+    openedFileData = message;
+  }
+)
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -61,18 +65,24 @@ function createWindow() {
       buttons: ["Cancel", "Save"],
       defaultId: 1
     };
-
+    var fileData = '';
+    BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
+    .then(result => {
+      fileData = result;
+    if (fileData === openedFileData){
+      BrowserWindow.getFocusedWindow().destroy();
+    }else{
+      console.log('fileData')
+      console.log(fileData)
+      console.log('openedFileData') 
+      console.log(openedFileData) 
+      console.log('----------------')
     dialog.showMessageBox(options)
     .then(result => {
 
       // 1 : Save
       if(result.response == 1) {
-        var fileData = '';
 
-        BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
-        .then(result => {
-            fileData = result;
-        });
 
         dialog.showSaveDialog(
             {
@@ -100,6 +110,8 @@ function createWindow() {
         BrowserWindow.getFocusedWindow().destroy();
       }
     });
+  }
+});
   });
 
   win.on("closed", () => {

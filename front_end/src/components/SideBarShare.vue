@@ -232,7 +232,7 @@ export default {
       
     },
     showInviteModal() {
-      // console.log("전체 워크스페이스", this.$store.state.userInfo.group)
+      // console.log("워크스페이스", this.$store.state.workspace)
       var workspaceNo = this.$store.state.userInfo.group.find(element => element.name == this.$store.state.workspace).no;
       
       // console.log("여기workspaceNo : " + workspaceNo);

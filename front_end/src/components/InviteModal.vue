@@ -88,9 +88,9 @@ export default {
       const findAccountList = {
         email: this.search
       };
+      console.log('워크스페이스 멤버 리스트', this.$store.state.workspaceMemberList);
       this.$store.dispatch("findAccountList", findAccountList);
       this.search = "";
-
       const serverURL = "http://localhost:8080/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
