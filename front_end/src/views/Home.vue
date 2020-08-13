@@ -161,7 +161,6 @@ export default {
       // this.$store.state.parseData = parse(tmp);
       
     //  this.$store.commit('setParseData', parse(this.input));
-      console.log(this.$store.state.parseData);
       return this.$store.state.parseData;
       //return parse(this.input);
     // });
@@ -183,8 +182,18 @@ export default {
   // }
   methods: {
     whenKeyUp() {
+      var tmp = event.target.value;
+      var getTempData = this.$store.state.tempData;
+      var getStore = this.$store; 
+      if(this.$store.state.syncCheck === false) { 
+        this.$store.commit('setSyncCheck',true);
+        var timer = setTimeout(function() {
+          clearTimeout(getTempData);
+          parse(tmp);
+          getStore.commit('setSyncCheck',false);
+        }, 800);
+      }
       clearTimeout(this.$store.state.tempData);
-      var tmp = event.target.value
       //parse(event.target.value);
       var timeOut = setTimeout(function() {
         parse(tmp);
