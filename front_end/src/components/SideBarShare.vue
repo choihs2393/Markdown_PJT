@@ -5,9 +5,10 @@
         prominent
         src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2089&q=80"
       >
-      <v-subheader class="sidesubheader">
-        <v-toolbar-title>SHARES</v-toolbar-title>
-      </v-subheader>
+        <v-subheader class="sidesubheader">
+          <v-toolbar-title>SHARES</v-toolbar-title>
+        </v-subheader>
+      </v-toolbar>
     </v-card>
 
     <v-container>
