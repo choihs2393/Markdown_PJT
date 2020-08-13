@@ -20,10 +20,10 @@ public class InviteController {
 	@Autowired
 	private IAccountService accountService;
 	
-	@MessageMapping("/ws/receive/{toNo}")
+	@MessageMapping("/receive/{toNo}")
 	@SendTo("/send/{toNo}")
 //	public Map<String, String> getIntivationList(@RequestBody(required = true) Map<String, String> map) {
-	public Map<String, String> getIntivationList(@DestinationVariable("toNo") String toNo, @RequestBody(required = true) Map<String, String> map) {
+	public Map<String, String> getIntivationList(@DestinationVariable("toNo") String toNo, Map<String, String> map) {
 		System.out.println(map);
 		System.out.println(map.get("fromEmail"));
 		System.out.println(map.get("fromName"));

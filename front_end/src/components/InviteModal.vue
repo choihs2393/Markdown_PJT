@@ -103,7 +103,6 @@ export default {
             // 소켓 연결 성공
             this.connected = true;
             console.log("[InviteModal] 소켓 연결 성공", frame);
-            // this.stompClient.send("/receive", JSON.stringify(findAccountList.email));
             console.log("[Send 내용]")
 
             console.log("fromEmail : " + this.$store.state.userInfo.email)
@@ -112,13 +111,22 @@ export default {
             console.log("toNo : " + this.$store.state.newMemberInfo.no)
             console.log("groupName : " + this.$store.state.workspace)
 
-            this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, {
-              fromEmail: this.$store.state.userInfo.email,
-              fromName: this.$store.state.userInfo.name,
-              toEmail: findAccountList.email,
-              toNo: this.$store.state.newMemberInfo.no,
-              groupName: this.$store.state.workspace
-            });
+            var map = {
+              'fromEmail': this.$store.state.userInfo.email,
+              'fromName': this.$store.state.userInfo.name,
+              'toEmail': findAccountList.email,
+              'toNo': this.$store.state.newMemberInfo.no,
+              'groupName': this.$store.state.workspace
+            }
+
+            this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, JSON.stringify(map));
+            // this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, {
+            //   'fromEmail': this.$store.state.userInfo.email,
+            //   'fromName': this.$store.state.userInfo.name,
+            //   'toEmail': findAccountList.email,
+            //   'toNo': this.$store.state.newMemberInfo.no,
+            //   'groupName': this.$store.state.workspace
+            // });
           },
           error => {
             // 소켓 연결 실패
