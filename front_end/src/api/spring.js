@@ -27,6 +27,8 @@ export default {
         findAccountList: '/accountBand/findAccountList',
 
         acceptInvite: '/accountBand/v1/acceptInvite',
-        declineInvite: '/accountBand/v1/declineInvite'
+        declineInvite: '/accountBand/v1/declineInvite',
+
+        fileList: '/fileList',
     }
 }

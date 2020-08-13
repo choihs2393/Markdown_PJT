@@ -209,10 +209,10 @@ export default new Vuex.Store({
       state.drawerShare = result
     },
 
-    // workspaceFileList 저장
-    // SET_WORKSPACE_FILES(state, payload) {
-    //   state.workspaceFileList
-    // }
+    // 초기 fileList 정보 저장
+    INIT_FILE_LIST(state, payload) {
+      state.fileList = payload
+    }
   },
 
   // 범용적인 함수들. mutations에 정의한 함수를 actions에서 실행 가능.
@@ -496,8 +496,16 @@ export default new Vuex.Store({
     // },
 
     // fileList 조회
-    showFileList({ state }, ) {
-      bandNo: state.userInfo.group.find(element => element.name == state.workspace).no
+    showFileList({ state, commit }, workspaceName) {
+      const info = {
+        bandNo: state.userInfo.group.find(element => element.name === workspaceName).no,
+        accountNo: state.userInfo.no
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.fileList, info, { headers: { email: this.state.userInfo.email }})
+      .then(res => {
+        commit('INIT_FILE_LIST', res.data)
+      })
+      .catch(err => console.error(err.response.data))
     }
   },
   modules: {}

@@ -105,7 +105,7 @@
     <v-list subheader flat>
       <v-subheader >FILES</v-subheader>
 
-      <v-list-item v-for="file in this.$store.state.fileList" :key="file.no" @click="openFile(file.fileFullPath)">
+      <v-list-item v-for="file in this.$store.state.fileList" :key="file.no" @click="()=>{}">
           <!-- <v-list-item-avatar>
           <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
         </v-list-item-avatar> -->
@@ -131,6 +131,8 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
 import InviteModal from "./InviteModal.vue";
+
+// import { mapActions } from 'vuex'
 
 export default {
   name: "SideBarShare",
@@ -186,8 +188,6 @@ export default {
     };
   },
 
-
-
   methods: {
     cancelCreateWorkspace() {
       this.selected = "";
@@ -215,6 +215,7 @@ export default {
         this.workspaceDialog = true;
       }else {
         this.$store.commit('SELET_WORKSPACE', select)
+        this.$store.dispatch('showFileList', select)
       }
     },
     deleteWorkspace() {
