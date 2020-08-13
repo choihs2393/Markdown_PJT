@@ -3,7 +3,7 @@ import Replacer from './replacer.js';
 //import { emojiArray } from './emoji.js';
 //import { replace } from 'core-js/fn/symbol';
 import { hljs } from './highlight.pack.js';
-import store from './store';
+import store from '../store';
 hljs.initHighlightingOnLoad();
 
 //참조링크 배열
@@ -51,7 +51,7 @@ const replaceMarkdown = function(str) {
 	return new Promise((resolve, reject) => {
 //		str.then(function(data) {
 //			console.log(data);
-			str = str.input.replace(Regex.emoji, Replacer.emoji)
+			str = str.replace(Regex.emoji, Replacer.emoji)
 	.replace(Regex.codeblock, Replacer.codeblock)
 	.replace(Regex.img, Replacer.img)
 	.replace(Regex.video, Replacer.video)
@@ -82,7 +82,9 @@ const parse =  function(str) {
 	replaceMarkdown(str).then(function(returnV) {
 		// resolve()의 결과 값이 여기로 전달됨
 		console.log(returnV);
-		store.$store.state.parseData = returnV;
+		
+		//store.state.parseData = returnV;
+		store.commit('setParseData', returnV);
 		console.log('test1: ' + store.state.parseData);
 	});
 	

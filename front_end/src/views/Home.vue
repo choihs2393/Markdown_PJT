@@ -10,6 +10,7 @@
           ref="textarea"
           v-model="input"
           id="editor_textarea"
+          @keyup.native="whenKeyUp"
           onkeydown=
             "
             if(event.keyCode === 9) {
@@ -36,6 +37,8 @@
 // @ is an alias to /src
 import parse from "../markdown/parse";
 import sampleData from "../markdown/sampleData.js";
+
+import { mapGetters } from 'vuex';
 
 import { remote, ipcRenderer } from "electron";
 import fs from "fs";
@@ -138,12 +141,14 @@ export default {
     
   },
   updated() {
-    
+    //this.$store.commit('setParseData', parse(this.input)); 
   },
   mounted() {
-    console.log(data);
-    this.$store.state.parseData = parse(data);
-    console.log(this.$store.state.parseData);
+    // console.log(data);
+    // this.$store.state.inputData = data.input;
+    // this.$store.state.parseData = parse(data);
+    this.$store.commit('setParseData', parse(this.input)); 
+    // console.log(this.$store.state.parseData);
   },
   
   computed: {
@@ -154,10 +159,15 @@ export default {
     //}).then((tmp) => {
    //   console.log(this.input);
       // this.$store.state.parseData = parse(tmp);
+      
+    //  this.$store.commit('setParseData', parse(this.input));
+      console.log(this.$store.state.parseData);
       return this.$store.state.parseData;
       //return parse(this.input);
     // });
    },
+
+  //  ...mapGetters(['inputData']),
     
 
   },
@@ -166,11 +176,23 @@ export default {
   // },
   data () {
    return data;
-  }
+  },
   // data: async () => {
   //   console.log(data);
   //   return await data;
   // }
+  methods: {
+    whenKeyUp() {
+      clearTimeout(this.$store.state.tempData);
+      var tmp = event.target.value
+      //parse(event.target.value);
+      var timeOut = setTimeout(function() {
+        parse(tmp);
+      }, 200);
+      this.$store.commit('setTempData',timeOut);
+    }
+
+  }
 };
 </script>
 
