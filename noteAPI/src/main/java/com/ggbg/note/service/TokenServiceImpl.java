@@ -90,6 +90,7 @@ public class TokenServiceImpl implements ITokenService {
 					newAccessTokenCal.add(Calendar.MINUTE, 30);
 					String newAccessTokenExpirationDate = simpleDateFormat.format(newAccessTokenCal.getTime());
 
+					// response.setHeader("Access-Control-Expose-Headers", "Authorization, AccessTokenExpiraionDate");
 					response.addHeader("Authorization", "Bearer " + newAccessToken);
 					response.addHeader("AccessTokenExpiraionDate", newAccessTokenExpirationDate);
 					ret = true;

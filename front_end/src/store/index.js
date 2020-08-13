@@ -201,7 +201,7 @@ export default new Vuex.Store({
     login({ commit, dispatch }, loginData) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
         .then(res => {
-          // console.log(res.headers)
+          console.log(res.headers)
           commit('SET_TOKEN', res.headers)  // 토큰 저장
           commit('SET_PASSWORD_CHECKED', false)
 
