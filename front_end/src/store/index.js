@@ -56,13 +56,18 @@ export default new Vuex.Store({
     fileList: [
       {
         no: 1,
-        band_no: 1,
-        title: '낄낄',
+        bandNo: 1,
+        title: '낄낄.md',
       },
       {
         no: 2,
-        band_no: 1,
-        title: '깔깔'
+        bandNo: 1,
+        title: '깔깔.md'
+      },
+      {
+        no: 3,
+        bandNo: 1,
+        title: '꼴깔.md'
       },
     ],
 
@@ -212,7 +217,12 @@ export default new Vuex.Store({
     // 초기 fileList 정보 저장
     INIT_FILE_LIST(state, payload) {
       state.fileList = payload
-    }
+    },
+
+    // FileList 에 File 추가하기
+    SET_FILE_INFO(state, payload) {
+      state.fileList.push(payload);
+    },
   },
 
   // 범용적인 함수들. mutations에 정의한 함수를 actions에서 실행 가능.
@@ -470,7 +480,7 @@ export default new Vuex.Store({
     // 워크스페이스 초대 수락
     acceptInvite({}, info) {
       console.log("[acceptInvite] info : ", info)
-      axios.post(SERVER.URL + SERVER.ROUTES.acceptInvite, info, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.acceptInvite, info, { headers: { email: this.state.userInfo.email } })
       .then(res => {
         console.log("초대 수락 확인")
       }) 
@@ -479,7 +489,7 @@ export default new Vuex.Store({
     // 워크스페이스 초대 거절
     declineInvite({}, info) {
       console.log("[declineInvite] info : ", info)
-      axios.post(SERVER.URL + SERVER.ROUTES.declineInvite, info, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.declineInvite, info, { headers: { email: this.state.userInfo.email } })
       .then(res => {
         console.log("초대 거부 확인")
       })
@@ -496,17 +506,47 @@ export default new Vuex.Store({
     // },
 
     // fileList 조회
-    showFileList({ state, commit }, workspaceName) {
+    showFileList({ state, commit }, seletedBandName) {
       const info = {
-        bandNo: state.userInfo.group.find(element => element.name === workspaceName).no,
-        accountNo: state.userInfo.no
+        accountNo: state.userInfo.no,
+        bandNo: state.userInfo.group.find(element => element.name === seletedBandName).no,
       }
-      axios.post(SERVER.URL + SERVER.ROUTES.fileList, info, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.fileList, info, { headers: { email: state.userInfo.email } })
       .then(res => {
         commit('INIT_FILE_LIST', res.data)
       })
       .catch(err => console.error(err.response.data))
-    }
+    },
+
+    // file 추가
+    createFile({ state, commit }, fileData) {
+      const info = {
+        accountNo: state.userInfo.no,
+        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
+        // bandNo: 1,
+        title: fileData,
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.createFile, info, { headers: { email: state.userInfo.email } })
+      .then(res => {
+        commit('SET_FILE_INFO', res.data)
+      })
+      .catch(err => console.error(err.response.data))
+    },
+
+
+    deleteFile({ state, commit }, fileData) {
+      const info = {
+        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
+        // bandNo: 1,
+        accountNo: state.userInfo.no,
+        title: fileData,
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.createFile, info, { headers: { email: state.userInfo.email } })
+      .then(res => {
+        commit('SET_FILE_INFO', res.data)
+      })
+      .catch(err => console.error(err.response.data))
+    },
   },
   modules: {}
 });

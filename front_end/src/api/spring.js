@@ -30,5 +30,6 @@ export default {
         declineInvite: '/accountBand/v1/declineInvite',
 
         fileList: '/fileList',
+        createFile: '/createFile',
     }
 }
