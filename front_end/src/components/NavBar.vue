@@ -157,7 +157,8 @@ export default {
       }
     },
     socketConnect() {
-      const serverURL = "http://localhost:8080/noteAPI/ws";
+      // const serverURL = "http://localhost:8080/noteAPI/ws";
+      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
 
