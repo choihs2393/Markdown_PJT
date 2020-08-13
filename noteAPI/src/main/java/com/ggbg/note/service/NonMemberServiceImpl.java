@@ -95,7 +95,10 @@ public class NonMemberServiceImpl implements INonMemberService {
 			mimeMessageHelper.setTo(tomail);
 			mimeMessageHelper.setSubject(title);
 			mimeMessageHelper.setText(content);
+			
+			System.out.println("========== mailSender.send() 전 ==========");
 			mailSender.send(mimeMessage);
+			System.out.println("========== mailSender.send() 후 ==========");
 
 			/*
 			 * redis save part

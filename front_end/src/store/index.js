@@ -485,7 +485,6 @@ export default new Vuex.Store({
       })
     },
 
-<<<<<<< HEAD
     //워크스페이스 멤버 내보내기
     kickOutBandMember({commit}, kickOutBandMemberNo) {
       const workspaceNo = this.state.userInfo.group.find(element => element.name == this.state.workspace).no;
@@ -500,21 +499,6 @@ export default new Vuex.Store({
         commit("REMOVE_DELETE_MEMBER_INFO", kickOutBandMember)
         }
       })
-=======
-    // showGroupMembers({ commit }, showGroupMembers) {
-    //   // console.log(showGroupMembers)
-    //   axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, { headers: { email: this.state.userInfo.email }})
-    //   .then(res => {
-    //     console.log("res.data.result : ", res.data.result)
-    //     commit("SHOW_GROUP_MEMBERS", res.data.map.bandMemberList)
-    //     this.state.isInviteModal = !(this.state.isInviteModal)
-    //     })
-    // },
-
-    // fileList 조회
-    showFileList({ state }, ) {
-      bandNo: state.userInfo.group.find(element => element.name == state.workspace).no
->>>>>>> feature/S03P13B104-59_Share-front-CRUD
     }
   },
   modules: {}
