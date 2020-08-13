@@ -199,7 +199,7 @@ export default new Vuex.Store({
     
     //현재 WORKSPACE 내의 MEMBER LIST 가져오기
     SHOW_GROUP_MEMBERS(state, result) {
-      console.log('result요기', result)
+      state.workspaceMemberList=[]
       for (let i = 0; i < result.length; i += 1) {
         if (typeof (result[i]) === 'object') {
           try {
