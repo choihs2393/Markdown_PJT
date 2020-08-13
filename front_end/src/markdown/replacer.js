@@ -81,7 +81,6 @@ export default class Replacer {
     }
     static async img(fullMatch, tagStart, tagContents) {
         var src = await convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1));
-        console.log(src);
         return '<img src="' + src + '"/>';
         // convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1), function (result) {
         //         asdf = result;

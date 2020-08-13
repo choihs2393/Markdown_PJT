@@ -47,7 +47,6 @@ const Regex = {
 	return str;
 }*/
 const replaceMarkdown = function(str) {
-	console.log(str);
 	return new Promise((resolve, reject) => {
 //		str.then(function(data) {
 //			console.log(data);
@@ -81,11 +80,9 @@ const replaceMarkdown = function(str) {
 const parse =  function(str) {
 	replaceMarkdown(str).then(function(returnV) {
 		// resolve()의 결과 값이 여기로 전달됨
-		console.log(returnV);
 		
 		//store.state.parseData = returnV;
 		store.commit('setParseData', returnV);
-		console.log('test1: ' + store.state.parseData);
 	});
 	
 }

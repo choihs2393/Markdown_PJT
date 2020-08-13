@@ -72,6 +72,7 @@ export default new Vuex.Store({
     parseData: '',
     inputData: '',
     tempData: '',
+    syncCheck: false,
   },
 
   // state를 (가공해서)가져올 함수들. === computed
@@ -89,7 +90,7 @@ export default new Vuex.Store({
     //     Email: state.userInfo.email,
     //   }
     // }),
-    inputData: state=> state.inputData
+   // inputData: state=> state.inputData
   },
 
   // state를 변경하는 함수들(mutations에 작성되지 않은 state 변경 코드는 모두 동작하지 않음.)
@@ -101,6 +102,9 @@ export default new Vuex.Store({
     //모아서처리를 위한 스케쥴링 데이터
     setTempData(state, param) {
       state.tempData = param;
+    },
+    setSyncCheck(state, param) {
+      state.syncCheck = param;
     },
     //파싱되는 데이터 저장
     setParseData(state, param) {
