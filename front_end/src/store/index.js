@@ -160,7 +160,7 @@ export default new Vuex.Store({
     
     //현재 WORKSPACE 내의 MEMBER LIST 가져오기
     SHOW_GROUP_MEMBERS(state, result) {
-      console.log('result', result)
+      console.log('result요기', result)
       for (let i = 0; i < result.length; i += 1) {
         if (typeof (result[i]) === 'object') {
           try {
@@ -190,6 +190,11 @@ export default new Vuex.Store({
     SET_IS_DRAWER_SHARE(state, result) {
       state.drawerShare = result
     },
+
+    REMOVE_DELETE_MEMBER_INFO(state, result) {
+      const idx = state.workspaceMemberList.findIndex(function(item) {return item.no === result.accountNo}) // findIndex = find + indexOf 
+      state.workspaceMemberList.splice(idx, 1)
+    }
   },
 
   // 범용적인 함수들. mutations에 정의한 함수를 actions에서 실행 가능.
@@ -459,6 +464,22 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.declineInvite, info, { headers: { email: this.state.userInfo.email }})
       .then(res => {
         console.log("초대 거부 확인")
+      })
+    },
+
+    //워크스페이스 멤버 내보내기
+    kickOutBandMember({commit}, kickOutBandMemberNo) {
+      const workspaceNo = this.state.userInfo.group.find(element => element.name == this.state.workspace).no;
+      const kickOutBandMember = {
+        accountNo: kickOutBandMemberNo.accountNo,
+        bandNo: workspaceNo, 
+        masterNo: this.state.userInfo.no
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.deleteMember, kickOutBandMember, { headers: { email: this.state.userInfo.email }})
+      .then(res => {
+        if(res.data.result == "success") {
+        commit("REMOVE_DELETE_MEMBER_INFO", kickOutBandMember)
+        }
       })
     }
   },
