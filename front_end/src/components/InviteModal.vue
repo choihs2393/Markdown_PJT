@@ -42,7 +42,13 @@
               style="margin-right: 1em"
             >수락 대기 중</v-chip>
 
-            <v-btn small color="orange" rounded outlined v-if="item.status!=0">내보내기</v-btn>
+            <v-btn 
+            small 
+            color="orange" 
+            @click="kickOutBandMember(item.no)" 
+            rounded 
+            outlined 
+            v-if="item.status!=0">내보내기</v-btn>
           </v-list-item-group>
         </v-list-item>
       </v-list>
@@ -120,6 +126,12 @@ export default {
           }
         );
       }
+    },
+    kickOutBandMember(no) {
+      const kickOutBandMemberNo = {
+        accountNo: no
+      };
+      this.$store.dispatch("kickOutBandMember", kickOutBandMemberNo);
     }
   }
 };

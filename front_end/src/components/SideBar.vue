@@ -18,9 +18,6 @@
             <v-btn icon @click="showOpenDialog()">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
-            <v-btn icon>
-              <v-icon>mdi-magnify</v-icon>
-            </v-btn>
         </v-toolbar>
 
         <v-list subheader flat>
