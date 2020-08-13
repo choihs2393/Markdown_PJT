@@ -1,6 +1,6 @@
 export default {
-    URL: 'http://i3b104.p.ssafy.io:80/noteAPI',
-    // URL: 'http://localhost:8080/noteAPI',
+    // URL: 'http://i3b104.p.ssafy.io:80/noteAPI',
+    URL: 'http://localhost:8080/noteAPI',
     ROUTES: {
         signup: '/nonmember/signUp',
         login: '/login',
@@ -28,6 +28,6 @@ export default {
         deleteMember: '/accountBand/v1/deleteMember',
 
         acceptInvite: '/accountBand/v1/acceptInvite',
-        declineInvite: '/accountBand/v1/declineInvite'
+        declineInvite: '/accountBand/v1/declineInvite',
     }
 }

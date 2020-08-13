@@ -20,7 +20,7 @@ export default new Vuex.Store({
     // user info
     userInfo: {
       email: '',
-      name: '소망이',
+      name: '',
       group: [],
       status: [],
       no: ''
@@ -45,7 +45,7 @@ export default new Vuex.Store({
     isShareMode: false,
 
     // selected workspace in server mode
-    workspace: undefined,
+    workspace: '',
     workspaceMemberList: [],
     newMemberInfo: {
       email: '',
@@ -53,6 +53,19 @@ export default new Vuex.Store({
       status: '',
       no: ''
     },
+    fileList: [
+      {
+        no: 1,
+        band_no: 1,
+        title: '낄낄',
+      },
+      {
+        no: 2,
+        band_no: 1,
+        title: '깔깔'
+      },
+    ],
+
     theme: '',
 
     // 파싱되는 데이터 저장.
@@ -155,6 +168,11 @@ export default new Vuex.Store({
       state.userInfo.group.push(result);
       console.log("state.userInfo.group : ", state.userInfo.group);
     },
+
+    // 선택한 워크스페이스
+    SELET_WORKSPACE(state, payload) {
+      state.workspace = payload
+    },
     
     DELETE_WORKSPACE(state, param) {
       console.log("DELETE_WORKSPACE 호출됨.")
@@ -223,7 +241,7 @@ export default new Vuex.Store({
     login({ commit, dispatch }, loginData) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
         .then(res => {
-          // console.log(res.headers)
+          console.log(res.headers)
           commit('SET_TOKEN', res.headers)  // 토큰 저장
           commit('SET_PASSWORD_CHECKED', false)
 
@@ -360,7 +378,7 @@ export default new Vuex.Store({
     },
 
     // 워크스페이스 생성
-    createWorkspace({ getters, commit }, workspaceName) {
+    createWorkspace({ commit }, workspaceName) {
       // console.log("Vuex내에 createWorkspace() 함수 진입.");
       // console.log("bandName : " + workspaceName)
       // console.log("accountNo : " + this.state.userInfo.no);
@@ -389,7 +407,7 @@ export default new Vuex.Store({
     },
 
     // 워크스페이스 제거
-    deleteWorkspace({ getters, commit }, deleteWorkspace) {
+    deleteWorkspace({ commit }, deleteWorkspace) {
       console.log("Vuex내에 deleteWorkspace() 진입.");
       console.log("넘어온 그룹 정보 (bandNo, accountNo) : ", deleteWorkspace)
       
@@ -410,7 +428,7 @@ export default new Vuex.Store({
     },
 
     // 워크스페이스명 변경
-    renameWorkspace({ getters, commit}, renameWorkspace) {
+    renameWorkspace({ commit }, renameWorkspace) {
       console.log("Vuex내에 renameWorkspace() 진입")
       console.log("넘어온 그룹 정보 (bandNo, accountNo, newBandName, workspaceIdx) :", renameWorkspace)
 
@@ -424,7 +442,7 @@ export default new Vuex.Store({
       })
     },
     // 워크스페이스 멤버 불러오기
-    showGroupMembers({ getters, commit}, showGroupMembers) {
+    showGroupMembers({ commit }, showGroupMembers) {
       // console.log(showGroupMembers)
       axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, { headers: { email: this.state.userInfo.email }})
       .then(res => {
@@ -435,7 +453,7 @@ export default new Vuex.Store({
     },
 
     // 가입된 회원인지 확인
-    findAccountList({getters, dispatch}, findAccountList) {
+    findAccountList({ dispatch }, findAccountList) {
       axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, findAccountList, { headers: { email: this.state.userInfo.email }})
       .then(res => {
         this.state.newMemberInfo.no = res.data.map.primitiveAccountList[0].no; // 초대받을 사람의 account_no를 보관.
@@ -455,7 +473,7 @@ export default new Vuex.Store({
     },
 
     // 워크스페이스에 멤버 초대하기
-    inviteBandMember({ getters, commit}, inviteBandMember) {
+    inviteBandMember({ commit }, inviteBandMember) {
       console.log("[inviteBandMember] inviteBandMember()", inviteBandMember);
 
       this.state.noSuchMemberAlert = false;
