@@ -30,8 +30,8 @@ export default {
         acceptInvite: '/accountBand/v1/acceptInvite',
         declineInvite: '/accountBand/v1/declineInvite',
 
-        fileList: '/fileList',
-        createFile: '/createFile',
-        deleteFile: '/deleteFile',
+        fileList: '/note/fileList',
+        createFile: '/note/createFile',
+        deleteFile: '/note/deleteFile',
     }
 }
