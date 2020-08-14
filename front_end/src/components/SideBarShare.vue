@@ -100,7 +100,7 @@
 
     <ContextMenu ref="fileMenu">
       <template>
-        <ContextMenuItem @click.native="()=>{}">
+        <ContextMenuItem @click.native="openDeleteFileModal()">
           <v-icon>delete</v-icon>delete
         </ContextMenuItem>
         <ContextMenuItem @click.native="openRenameFileModal()">
@@ -300,6 +300,10 @@ export default {
 
     openRenameFileModal() {
       this.$store.commit('SET_IS_RENAME_FILE_MODAL', true)
+    },
+
+    openDeleteFileModal() {
+      this.$store.commit('SET_IS_DELETE_FILE_MODAL', true)
     }
   }
 };

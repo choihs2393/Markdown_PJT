@@ -17,7 +17,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="green darken-1" text @click="renameFile(fileTitle)">Create</v-btn>
+        <v-btn color="green darken-1" text @click="renameFile(fileTitle)">Rename</v-btn>
         <v-btn color="green darken-1" text @click="close()">Close</v-btn>
       </v-card-actions>
     </v-card>
@@ -25,16 +25,20 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 export default {
   name: 'RenameFileModal',
 
   data() {
     return {
-      fileTitle: this.store.state.file.title,
+      fileTitle: this.store.state.fileList.title,
     }
   },
 
   methods: {
+    ...mapActions(['renameFile']),
+
     close() {
       this.$store.commit('SET_IS_RENAME_FILE_MODAL', false)
     },
