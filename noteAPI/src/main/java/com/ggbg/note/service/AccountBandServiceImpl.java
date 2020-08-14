@@ -64,8 +64,9 @@ public class AccountBandServiceImpl implements IAccountBandService{
 			bandMemberDTO.setName(accountEntity.getName());
 			bandMemberDTO.setEmail(accountEntity.getEmail());
 			bandMemberDTO.setStatus(2);
-			
-			if(accountBandRepo.findAccountBandByAccountNoAndBandNo(bandMemberDTO.getNo(), bandNo) != 0) {
+			Integer ret = -1;
+			ret = accountBandRepo.findAccountBandByAccountNoAndBandNo(bandMemberDTO.getNo(), bandNo);
+			if(ret == -1 || ret == 0 || ret == null) {
 				return null;
 			}
 		}

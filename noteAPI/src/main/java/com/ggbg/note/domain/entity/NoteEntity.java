@@ -12,8 +12,8 @@ import lombok.Data;
 public class NoteEntity {
 	@Id
 	private int _id;
-	private List<String> note;
-	public NoteEntity(int _id, List<String> note) {
+	private List<NoteDetailEntity> note;
+	public NoteEntity(int _id, List<NoteDetailEntity> note) {
 		this._id = _id;
 		this.note = note;
 	}
