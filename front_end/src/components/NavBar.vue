@@ -19,7 +19,13 @@
       <v-dialog v-model="invitationDialog" max-width="600px">
         <template v-slot:activator="{ on, attrs }">
           <v-btn icon v-bind="attrs" v-on="on" @click="bellClicked">
-            <v-icon>mdi-bell</v-icon>
+            <v-tab>
+              <v-badge color="red" :content="badgeContent" v-if="badgeContent">
+              <!-- <v-badge color="red" :content="1" > -->
+                <v-icon id="bell">mdi-bell</v-icon>
+              </v-badge>
+              <v-icon id="bell" v-if="!badgeContent">mdi-bell</v-icon>
+            </v-tab>
           </v-btn>
         </template>
         <v-card>
@@ -97,9 +103,8 @@ export default {
   data() {
     return {
       invitationDialog: false,
-      connected: false
-      // status: this.$store.state.userInfo.status
-      // theme: this.$vuetify.theme.dark,
+      connected: false,
+      connectionCount: 0,
     };
   },
   components: {
@@ -110,14 +115,23 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["isLoggedIn", "status"])
+    ...mapGetters(["isLoggedIn", "status"]),
+    badgeContent() {
+      return this.$store.state.userInfo.status.length
+    }
   },
 
   created() {
-    console.log("NavBar.vue -> created() 호출됨.");
   },
 
   updated() {
+    if (this.$store.getters.isLoggedIn) {
+        this.socketConnect();
+       
+      } else {
+        this.socketDisconnect();
+      }
+
     var div = document.getElementById("compiledMarkdown");
     if (this.$vuetify.theme.dark == true) div.style.color = "white";
     else div.style.color = "black";
@@ -133,15 +147,8 @@ export default {
 
   methods: {
     bellClicked() {
-      console.log("bell누름!!!!!!!!!!!!!!!!!!!!!!");
-      if (this.$store.getters.isLoggedIn) {
-        console.log("로그인된 상태");
-        this.socketConnect();
-      } else {
-        console.log("로그아웃된 상태");
-        this.socketDisconnect();
-      }
-      console.log("@@@@초대 목록 : ", this.$store.state.userInfo.status);
+      document.getElementById("bell").removeAttribute("color")
+
     },
     decideSideBar() {
       // 폴더트리를 보여주는 사이드바를 열어준다.
@@ -157,42 +164,49 @@ export default {
       }
     },
     socketConnect() {
-      // const serverURL = "http://localhost:8080/noteAPI/ws";
-      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
-      let socket = new SockJS(serverURL);
-      this.stompClient = Stomp.over(socket);
+      // console.log("socketConnect() 호출됨.")
 
-      if (!this.connected) {
+      if (this.connectionCount == 0 && !this.connected) {
+        this.connectionCount = 1;
+      
+        // const serverURL = "http://localhost:8080/noteAPI/ws";
+        const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+        let socket = new SockJS(serverURL);
+        this.stompClient = Stomp.over(socket);
+
         this.stompClient.connect(
           { Authorization: this.$store.state.authorization },
           frame => {
-            // 소켓 연결 성공
             this.connected = true;
-            console.log("소켓 연결 성공", frame);
             this.stompClient.subscribe(
               "/send/" + this.$store.state.userInfo.no,
               res => {
-                console.log(">>> 소켓으로 받은 메세지", res);
-                this.$store.userInfo.status.push({
-                  no: "",
-                  name: "groupName",
-                  master: "",
-                  bandMasterName: "fromName"
+                const receivedMsg = JSON.parse(res.body);
+
+                this.$store.state.userInfo.status.push({
+                  no: receivedMsg.groupNo,
+                  name: receivedMsg.groupName,
+                  master: receivedMsg.fromNo,
+                  bandMasterName: receivedMsg.fromName
                 });
+
+                document.getElementById("bell").setAttribute("color", "red")
               }
             );
           },
           error => {
-            // 소켓 연결 실패
-            console.log("소켓 연결 실패", error);
             this.connected = false;
           }
         );
       }
     },
+
     socketDisconnect() {
       this.stompClient.disconnect();
+      this.connected = false;
+      this.connectionCount = 0;
     },
+
     send(flag, groupNo) {
       // 수락
       if (flag == 1) {
@@ -223,16 +237,6 @@ export default {
         this.$store.state.userInfo.status.splice(idx, 1);
       }
     }
-    // changeLocalShare() {
-    //   if(!!this.$store.state.isShareMode == false) {
-    //     this.$store.state.drawerShare = false
-    //     this.$store.state.drawer = true
-    //   }
-    //   else if(!!this.$store.state.isShareMode == true) {
-    //     this.$store.state.drawer = false
-    //     this.$store.state.drawerShare = true
-    //   }
-    // }
   }
 };
 </script>
