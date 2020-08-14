@@ -48,10 +48,11 @@ var data = sampleData;
 // var data = new Promise(function(resolve, reject) {
 //   resolve(sampleData);
 // });
-require('electron').ipcRenderer.on('ping', (event, message) => {
+ipcRenderer.on('ping', (event, message) => {
   // console.log(message);
   data.input = message['openedFileData'];
 });
+
 
 // 드래그 후 드랍을 하면,
 document.addEventListener('drop', (event) => {
