@@ -56,27 +56,8 @@ export default new Vuex.Store({
       status: '',
       no: ''
     },
-    fileList: [
-      // {
-      //   no: 1,
-      //   bandNo: 1,
-      //   title: '낄낄.md',
-      //   contents: '# 낄낄\n넘모좋군  낄낄'
-      // },
-      // {
-      //   no: 2,
-      //   bandNo: 1,
-      //   title: '깔깔.md',
-      //   contents: '# 깔깔\n넘모좋군  깔깔'
-      // },
-      // {
-      //   no: 3,
-      //   bandNo: 1,
-      //   title: '꼴깔.md',
-      //   contents: '# 꼴깔\n넘모좋군  꼴깔꼴깔'
-      // },
-    ],
-
+    fileList: [],
+    selectedNoteNo: '',
     theme: '',
 
     // 파싱되는 데이터 저장.
@@ -265,10 +246,19 @@ export default new Vuex.Store({
       state.fileList.push(file);
     },
 
+    SELECTED_FILE_NO(state, fileNo) {
+      state.selectedNoteNo = fileNo
+    },
+
+    // File 이름 변경
+    RENAME_FILE_TITLE(state, rename) {
+      state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].subject = rename
+    },
+
     // FileList 에 File 삭제하기
     DELETE_FILE_INFO(state, fileNo) {
       const idx = state.fileList.findIndex(file => file.no===fileNo)
-      state.fileList.splice(fileNo, 1);
+      state.fileList.splice(idx, 1);
     },
   },
 
@@ -566,8 +556,13 @@ export default new Vuex.Store({
       }
       axios.post(SERVER.URL + SERVER.ROUTES.fileList, info, { headers: { email: state.userInfo.email } })
       .then(res => {
-        console.log(res.data.map.noteDetailDTOList)
-        commit('INIT_FILE_LIST', res.data.map.noteDetailDTOList)
+        console.log(res.data)
+        if (res.data.result==='success') {
+          console.log(res.data.map.noteDetailDTOList)
+          commit('INIT_FILE_LIST', res.data.map.noteDetailDTOList)
+        } else if (res.data.result==='empty') {
+          commit('INIT_FILE_LIST', [])
+        }
       })
       .catch(err => console.error(err.response.data))
     },
@@ -590,15 +585,16 @@ export default new Vuex.Store({
     },
 
     // file 삭제
-    deleteFile({ state, commit }, fileNo) {
+    deleteFile({ state, commit, dispatch }, fileNo) {
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
-        no: fileNo,
+        noteNo: fileNo,
       }
       axios.post(SERVER.URL + SERVER.ROUTES.deleteFile, info, { headers: { email: state.userInfo.email } })
       .then(() => {
         commit('DELETE_FILE_INFO', fileNo)
+        dispatch('showFileList', state.workspace)
       })
       .catch(err => console.error(err.response.data))
     },
@@ -608,12 +604,12 @@ export default new Vuex.Store({
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
-        no: fileNo,
-        title: fileTitle,
+        no: state.selectedNoteNo,
+        subject: fileTitle,
       }
       axios.post(SERVER.URL + SERVER.ROUTES.renameFile, info, { headers: { email: state.userInfo.email } })
       .then(() => {
-        commit('_FILE_INFO', fileTitle)
+        commit('RENAME_FILE_TITLE', fileTitle)
       })
       .catch(err => console.error(err.response.data))
     },

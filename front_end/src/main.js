@@ -90,7 +90,7 @@ axios.interceptors.request.use(
         errorAPI.retry = true
 
         if (!!localStorage.getItem('authorization')) {
-          return axios.post(SERVER.URL + SERVER.ROUTES.newATBR, null, { headers: { RefreshToken: store.state.refreshToken } })
+          return axios.post(SERVER.URL + SERVER.ROUTES.newATBR, null, { headers: { RefreshToken: localStorage.getItem('refresh-token') } })
             .then(res => {
               
               // console.log('기간 만료 후 토큰 갱신!!')
