@@ -108,7 +108,7 @@ axios.interceptors.request.use(
         }
       } else {
       // } else if (err.response.status===401) {
-        store.dispatch('logout')
+        // store.dispatch('logout')
       }
       return Promise.reject(err)
     })

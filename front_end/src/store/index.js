@@ -56,24 +56,24 @@ export default new Vuex.Store({
       no: ''
     },
     fileList: [
-      {
-        no: 1,
-        bandNo: 1,
-        title: '낄낄.md',
-        contents: '# 낄낄\n넘모좋군  낄낄'
-      },
-      {
-        no: 2,
-        bandNo: 1,
-        title: '깔깔.md',
-        contents: '# 깔깔\n넘모좋군  깔깔'
-      },
-      {
-        no: 3,
-        bandNo: 1,
-        title: '꼴깔.md',
-        contents: '# 꼴깔\n넘모좋군  꼴깔꼴깔'
-      },
+      // {
+      //   no: 1,
+      //   bandNo: 1,
+      //   title: '낄낄.md',
+      //   contents: '# 낄낄\n넘모좋군  낄낄'
+      // },
+      // {
+      //   no: 2,
+      //   bandNo: 1,
+      //   title: '깔깔.md',
+      //   contents: '# 깔깔\n넘모좋군  깔깔'
+      // },
+      // {
+      //   no: 3,
+      //   bandNo: 1,
+      //   title: '꼴깔.md',
+      //   contents: '# 꼴깔\n넘모좋군  꼴깔꼴깔'
+      // },
     ],
 
     theme: '',
@@ -561,7 +561,8 @@ export default new Vuex.Store({
       }
       axios.post(SERVER.URL + SERVER.ROUTES.fileList, info, { headers: { email: state.userInfo.email } })
       .then(res => {
-        commit('INIT_FILE_LIST', res.data)
+        console.log(res.data.map.noteDetailDTOList)
+        commit('INIT_FILE_LIST', res.data.map.noteDetailDTOList)
       })
       .catch(err => console.error(err.response.data))
     },
@@ -571,12 +572,14 @@ export default new Vuex.Store({
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
-        // bandNo: 1,
-        title: fileTitle,
+        subject: fileTitle,
       }
       axios.post(SERVER.URL + SERVER.ROUTES.createFile, info, { headers: { email: state.userInfo.email } })
       .then(res => {
-        commit('SET_FILE_INFO', res.data)
+        // console.log(res.data.map)
+        info.no = res.data.map.no
+        // console.log(info)
+        commit('SET_FILE_INFO', info)
       })
       .catch(err => console.error(err.response.data))
     },

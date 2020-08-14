@@ -78,7 +78,7 @@
           @click="openFile(file.contents)"
           @mousedown.right="$refs.fileMenu.open($event, file.no)">
           <v-list-item-content>
-            <v-list-item-title>{{ file.title }}</v-list-item-title>
+            <v-list-item-title>{{ file.subject }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
