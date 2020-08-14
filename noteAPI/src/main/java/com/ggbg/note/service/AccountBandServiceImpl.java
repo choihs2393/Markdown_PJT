@@ -96,7 +96,7 @@ public class AccountBandServiceImpl implements IAccountBandService{
 		System.out.println(masterNo);
 		if(retMaster == null)
 			throw new InternalServerException("InviteBandMember exception");
-		if(retMaster != accountNo)
+		if(retMaster != masterNo)
 			throw new UnAuthorizationException(masterNo + " :this account is not a master");
 		
 		ret = accountBandRepo.deleteAccountBandByNo(accountNo, bandNo);
