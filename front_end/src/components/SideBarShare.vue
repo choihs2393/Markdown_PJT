@@ -72,7 +72,10 @@
         <!-- <v-subheader >
           <v-toolbar-title>FILES</v-toolbar-title>
         </v-subheader> -->
-        <v-list-item v-for="file in this.$store.state.fileList" :key="file.no" @click="openFile(file.contents)">
+        <v-list-item
+          v-for="file in this.$store.state.fileList"
+          :key="file.no"
+          @click="openFile(file.contents)">
           <v-list-item-content>
             <v-list-item-title>{{ file.title }}</v-list-item-title>
           </v-list-item-content>
@@ -83,7 +86,7 @@
       </v-row>
     </v-container>
 
-    <ContextMenu ref="menu">
+    <ContextMenu refs="menu">
       <template>
         <ContextMenuItem v-if="selected" @click.native="deleteWorkspace">
           <v-icon>delete</v-icon>delete
