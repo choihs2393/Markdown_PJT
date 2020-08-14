@@ -41,6 +41,7 @@ export default new Vuex.Store({
     isDeleteModal: false,
     isInviteModal: false,
     noSuchMemberAlert: false,
+    isRenameFileModal: false,
 
     // server_check
     isShareMode: false,
@@ -57,13 +58,21 @@ export default new Vuex.Store({
     fileList: [
       {
         no: 1,
-        band_no: 1,
-        title: '낄낄',
+        bandNo: 1,
+        title: '낄낄.md',
+        contents: '# 낄낄\n넘모좋군  낄낄'
       },
       {
         no: 2,
-        band_no: 1,
-        title: '깔깔'
+        bandNo: 1,
+        title: '깔깔.md',
+        contents: '# 깔깔\n넘모좋군  깔깔'
+      },
+      {
+        no: 3,
+        bandNo: 1,
+        title: '꼴깔.md',
+        contents: '# 꼴깔\n넘모좋군  꼴깔꼴깔'
       },
     ],
 
@@ -235,7 +244,27 @@ export default new Vuex.Store({
     REMOVE_DELETE_MEMBER_INFO(state, result) {
       const idx = state.workspaceMemberList.findIndex(function(item) {return item.no === result.accountNo}) // findIndex = find + indexOf 
       state.workspaceMemberList.splice(idx, 1)
-    }
+    },
+    
+    SET_IS_RENAME_FILE_MODAL(state, payload) {
+      state.isRenameFileModal = payload
+    },
+
+    // 초기 fileList 정보 저장
+    INIT_FILE_LIST(state, fileList) {
+      state.fileList = fileList
+    },
+
+    // FileList 에 File 추가하기
+    SET_FILE_INFO(state, file) {
+      state.fileList.push(file);
+    },
+
+    // FileList 에 File 삭제하기
+    DELETE_FILE_INFO(state, fileNo) {
+      const idx = state.fileList.findIndex(file => file.no===fileNo)
+      state.fileList.splice(fileNo, 1);
+    },
   },
 
   // 범용적인 함수들. mutations에 정의한 함수를 actions에서 실행 가능.
@@ -493,7 +522,7 @@ export default new Vuex.Store({
     // 워크스페이스 초대 수락
     acceptInvite({}, info) {
       console.log("[acceptInvite] info : ", info)
-      axios.post(SERVER.URL + SERVER.ROUTES.acceptInvite, info, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.acceptInvite, info, { headers: { email: this.state.userInfo.email } })
       .then(res => {
         console.log("초대 수락 확인")
       }) 
@@ -502,7 +531,7 @@ export default new Vuex.Store({
     // 워크스페이스 초대 거절
     declineInvite({}, info) {
       console.log("[declineInvite] info : ", info)
-      axios.post(SERVER.URL + SERVER.ROUTES.declineInvite, info, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.declineInvite, info, { headers: { email: this.state.userInfo.email } })
       .then(res => {
         console.log("초대 거부 확인")
       })
@@ -522,7 +551,63 @@ export default new Vuex.Store({
         commit("REMOVE_DELETE_MEMBER_INFO", kickOutBandMember)
         }
       })
-    }
+    },
+    
+    // fileList 조회
+    showFileList({ state, commit }, seletedBandName) {
+      const info = {
+        accountNo: state.userInfo.no,
+        bandNo: state.userInfo.group.find(element => element.name === seletedBandName).no,
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.fileList, info, { headers: { email: state.userInfo.email } })
+      .then(res => {
+        commit('INIT_FILE_LIST', res.data)
+      })
+      .catch(err => console.error(err.response.data))
+    },
+
+    // file 추가
+    createFile({ state, commit }, fileTitle) {
+      const info = {
+        accountNo: state.userInfo.no,
+        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
+        // bandNo: 1,
+        title: fileTitle,
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.createFile, info, { headers: { email: state.userInfo.email } })
+      .then(res => {
+        commit('SET_FILE_INFO', res.data)
+      })
+      .catch(err => console.error(err.response.data))
+    },
+
+    // file 삭제
+    deleteFile({ state, commit }, fileNo) {
+      const info = {
+        accountNo: state.userInfo.no,
+        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
+        no: fileNo,
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.deleteFile, info, { headers: { email: state.userInfo.email } })
+      .then(() => {
+        commit('DELETE_FILE_INFO', fileNo)
+      })
+      .catch(err => console.error(err.response.data))
+    },
+
+    // file 삭제
+    deleteFile({ state, commit }, fileNo) {
+      const info = {
+        accountNo: state.userInfo.no,
+        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
+        no: fileNo,
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.deleteFile, info, { headers: { email: state.userInfo.email } })
+      .then(() => {
+        commit('DELETE_FILE_INFO', fileNo)
+      })
+      .catch(err => console.error(err.response.data))
+    },
   },
   modules: {}
 });

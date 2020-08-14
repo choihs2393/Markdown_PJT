@@ -23,47 +23,47 @@
         <v-list subheader flat>
           <v-subheader >FOLDERS</v-subheader>
 
-            <v-list-item 
-              v-for="folder in folders" 
-              :key="folder.title"
-              disabled>
+          <v-list-item 
+            v-for="folder in folders" 
+            :key="folder.title"
+            disabled>
+            <!-- <v-list-item-avatar>
+              <v-icon :class="[folder.iconClass]">{{ folder.icon }}</v-icon>
+            </v-list-item-avatar> -->
+            <v-list-item-content>
+              <v-list-item-title>{{ folder.title }}</v-list-item-title>
+
+              <v-list-item-subtitle>{{ folder.subtitle }}</v-list-item-subtitle>
+            </v-list-item-content>
+
+            <!-- <v-list-item-action>
+              <v-btn icon>
+                <v-icon color="grey lighten-1">mdi-information</v-icon>
+              </v-btn>
+            </v-list-item-action> -->
+          </v-list-item>
+
+          <v-divider ></v-divider>
+
+          <v-subheader >FILES</v-subheader>
+
+          <v-list-item v-for="file in files" :key="file.title" @click="openFile(file.fileFullPath)">
               <!-- <v-list-item-avatar>
-                <v-icon :class="[folder.iconClass]">{{ folder.icon }}</v-icon>
-              </v-list-item-avatar> -->
-              <v-list-item-content>
-                <v-list-item-title>{{ folder.title }}</v-list-item-title>
+              <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
+            </v-list-item-avatar> -->
+            <v-list-item-content>
+              <v-list-item-title>{{ file.title }}</v-list-item-title>
 
-                <v-list-item-subtitle>{{ folder.subtitle }}</v-list-item-subtitle>
-              </v-list-item-content>
+              <v-list-item-subtitle>{{ file.subtitle }}</v-list-item-subtitle>
+            </v-list-item-content>
 
-              <!-- <v-list-item-action>
-                <v-btn icon>
-                  <v-icon color="grey lighten-1">mdi-information</v-icon>
-                </v-btn>
-              </v-list-item-action> -->
-            </v-list-item>
-
-            <v-divider ></v-divider>
-
-            <v-subheader >FILES</v-subheader>
-
-            <v-list-item v-for="file in files" :key="file.title" @click="openFile(file.fileFullPath)">
-                <!-- <v-list-item-avatar>
-                <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
-              </v-list-item-avatar> -->
-              <v-list-item-content>
-                <v-list-item-title>{{ file.title }}</v-list-item-title>
-
-                <v-list-item-subtitle>{{ file.subtitle }}</v-list-item-subtitle>
-              </v-list-item-content>
-
-              <!-- <v-list-item-action>
-                <v-btn icon ripple @click="openFile(file.fileFullPath)">
-                  <v-icon color="grey lighten-1">mdi-information</v-icon>
-                </v-btn>
-              </v-list-item-action> -->
-            </v-list-item>
-          </v-list>
+            <!-- <v-list-item-action>
+              <v-btn icon ripple @click="openFile(file.fileFullPath)">
+                <v-icon color="grey lighten-1">mdi-information</v-icon>
+              </v-btn>
+            </v-list-item-action> -->
+          </v-list-item>
+        </v-list>
 
         <v-dialog v-model="dialog" max-width="500px">
           <v-card>

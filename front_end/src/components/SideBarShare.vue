@@ -14,52 +14,76 @@
     <v-container>
       <v-subheader>My Workspace</v-subheader>
       <!-- 워크스페이스 추가 다이얼로그 -->
-          <!-- Add a workspace를 눌렀을 때 보이는 다이얼로그 -->
-    <v-dialog v-model="workspaceDialog" max-width="600px">
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          color="rgb(255, 179, 102)"
-          dark
-          v-bind="attrs"
-          v-on="on"
-          block
-        >
-          Add workspace
-        </v-btn>
-      </template>
-      <v-card>
-        <v-card-title>
-          <span>New workspace</span>
-        </v-card-title>
-        <v-card-text>
-          <v-form ref="form_workspace">
-            <v-row>
-              <v-col cols="12" sm="20" md="20">
-                <v-text-field label="workspace *" required v-model="workspaceName"></v-text-field>
-              </v-col>
-            </v-row>
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="cancelCreateWorkspace">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="createWorkspace">Create</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-      <v-row>
-        <v-col cols="20" style="padding: 0">
-          <v-select
-            v-model="selected"
-            :items="workspaces"
-            item-text="name"
-            @change="changeWorkspace"
-            prepend-icon="folder"
-            @mousedown.right="$refs.menu.open($event, selected)"
-            hide-details
+      <!-- Add a workspace를 눌렀을 때 보이는 다이얼로그 -->
+      <v-dialog v-model="workspaceDialog" max-width="600px">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            color="rgb(255, 179, 102)"
+            dark
+            v-bind="attrs"
+            v-on="on"
+            block
           >
-          </v-select>
-        </v-col>
+            Add workspace
+          </v-btn>
+        </template>
+        <v-card>
+          <v-card-title>
+            <span>New workspace</span>
+          </v-card-title>
+          <v-card-text>
+            <v-form ref="form_workspace">
+              <v-row>
+                <v-col cols="12" sm="20" md="20">
+                  <v-text-field label="workspace *" required v-model="workspaceName"></v-text-field>
+                </v-col>
+              </v-row>
+            </v-form>
+          </v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="blue darken-1" text @click="cancelCreateWorkspace">Cancel</v-btn>
+            <v-btn color="blue darken-1" text @click="createWorkspace">Create</v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+      <v-row>
+        <v-select
+          class="ma-2"
+          v-model="selected"
+          :items="workspaces"
+          item-text="name"
+          @change="changeWorkspace"
+          prepend-icon="folder"
+          @mousedown.right="$refs.menu.open($event, selected)"
+          hide-details
+        >
+        </v-select>
+      </v-row>
+      <v-row>
+        <v-spacer></v-spacer>
+        <v-btn text color="grey darken-1" v-if="!!(this.$store.state.workspace)" right tile @click="showInviteModal()">
+        <!-- <v-btn text color="grey darken-1" v-if="true" right tile @click="showInviteModal()"> -->
+          <v-icon left>mdi-plus</v-icon>
+          invite
+        </v-btn>
+      </v-row>
+      <v-list subheader flat>
+        <!-- <v-subheader >
+          <v-toolbar-title>FILES</v-toolbar-title>
+        </v-subheader> -->
+        <v-list-item
+          v-for="file in this.$store.state.fileList"
+          :key="file.no"
+          @click="openFile(file.contents)"
+          @mousedown.right="$refs.fileMenu.open($event, file.no)">
+          <v-list-item-content>
+            <v-list-item-title>{{ file.title }}</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+      </v-list>
+      <v-row justify="end">
+        <CreateFileModal />
       </v-row>
     </v-container>
 
@@ -74,6 +98,20 @@
       </template>
     </ContextMenu>
 
+    <ContextMenu ref="fileMenu">
+      <template>
+        <ContextMenuItem @click.native="()=>{}">
+          <v-icon>delete</v-icon>delete
+        </ContextMenuItem>
+        <ContextMenuItem @click.native="openRenameFileModal()">
+          <v-icon>autorenew</v-icon>rename
+        </ContextMenuItem>
+      </template>
+    </ContextMenu>
+
+    <RenameFileModal />
+
+    <InviteModal />
     <!-- workspace rename dialog -->
     <v-dialog v-model="workspaceRenameDialog" max-width="600px">
       <v-card>
@@ -95,42 +133,22 @@
           <v-btn color="blue darken-1" text @click="renameWorkspace">Rename</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog> 
-    <v-btn text small style="padding: 0" color="grey darken-1" v-if="!!(this.$store.state.workspace)" absolute right tile @click="showInviteModal()">
-      <v-icon left>mdi-plus</v-icon>
-      invite
-    </v-btn>
-    <InviteModal />
-
-    <v-list subheader flat>
-      <v-subheader >FILES</v-subheader>
-
-      <v-list-item v-for="file in this.$store.state.fileList" :key="file.no" @click="openFile(file.fileFullPath)">
-          <!-- <v-list-item-avatar>
-          <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
-        </v-list-item-avatar> -->
-        <v-list-item-content>
-          <v-list-item-title>{{ file.title }}</v-list-item-title>
-
-          <!-- <v-list-item-subtitle>{{ file.subtitle }}</v-list-item-subtitle> -->
-        </v-list-item-content>
-
-        <!-- <v-list-item-action>
-          <v-btn icon ripple @click="openFile(file.fileFullPath)">
-            <v-icon color="grey lighten-1">mdi-information</v-icon>
-          </v-btn>
-        </v-list-item-action> -->
-      </v-list-item>
-    </v-list>
-
+    </v-dialog>
   </v-navigation-drawer>
 </template>
 
 <script>
-import "material-design-icons-iconfont/dist/material-design-icons.css";
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
 import InviteModal from "./InviteModal.vue";
+import CreateFileModal from './mdfile_modal/CreateFileModal.vue'
+import RenameFileModal from './mdfile_modal/RenameFileModal.vue'
+
+import "material-design-icons-iconfont/dist/material-design-icons.css";
+import fs from "fs";
+import { remote } from "electron";
+
+// import { mapActions } from 'vuex'
 
 export default {
   name: "SideBarShare",
@@ -139,10 +157,11 @@ export default {
     ContextMenu,
     ContextMenuItem,
     InviteModal,
+    CreateFileModal,
+    RenameFileModal,
   },
 
   computed: {
-    
   },
 
   mounted() {
@@ -175,18 +194,8 @@ export default {
       workspaces: [
         { name: "Add workspace first" },
       ],
-      // files: [
-      //   {
-      //     title: '낄낄.md',
-      //   },
-      //   {
-      //     title: '깔깔.md'
-      //   }
-      // ],
     };
   },
-
-
 
   methods: {
     cancelCreateWorkspace() {
@@ -215,6 +224,7 @@ export default {
         this.workspaceDialog = true;
       }else {
         this.$store.commit('SELET_WORKSPACE', select)
+        this.$store.dispatch('showFileList', select)
       }
     },
     deleteWorkspace() {
@@ -278,6 +288,19 @@ export default {
 
       this.$store.dispatch("showGroupMembers", showGroupMembers)
     },
+
+    openFile(data) {
+        const openedFileData = data;
+        // console.log(openedFileData);
+
+        const fileDataObject = {'openedFileData': openedFileData};
+        const win = remote.BrowserWindow.getFocusedWindow();
+        win.webContents.send("ping", fileDataObject);
+    },
+
+    openRenameFileModal() {
+      this.$store.commit('SET_IS_RENAME_FILE_MODAL', true)
+    }
   }
 };
 </script>
