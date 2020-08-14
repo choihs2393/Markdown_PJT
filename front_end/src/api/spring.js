@@ -29,12 +29,9 @@ export default {
 
         acceptInvite: '/accountBand/v1/acceptInvite',
         declineInvite: '/accountBand/v1/declineInvite',
-<<<<<<< HEAD
-=======
 
         fileList: '/fileList',
         createFile: '/createFile',
         deleteFile: '/deleteFile',
->>>>>>> feature/S03P13B104-59_Share-front-CRUD
     }
 }
