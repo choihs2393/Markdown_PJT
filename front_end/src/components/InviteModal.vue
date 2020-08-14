@@ -62,6 +62,7 @@ import { mapGetters } from "vuex";
 // 소켓 관련 모듈
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
+import { integer } from 'vee-validate/dist/rules';
 
 export default {
   name: "InviteModal",
@@ -71,6 +72,9 @@ export default {
       search: "",
       isOwner: false
     };
+  },
+  props: {
+    workspaceNo: integer
   },
   mounted() {
     if (this.$store.state.isInviteModal) {
@@ -96,7 +100,7 @@ export default {
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
 
-      if (!this.connected) {
+      // if (!this.connected) {
         this.stompClient.connect(
           { Authorization: this.$store.state.authorization },
           frame => {
@@ -105,21 +109,20 @@ export default {
             console.log("[InviteModal] 소켓 연결 성공", frame);
             console.log("[Send 내용]")
 
-            console.log("fromEmail : " + this.$store.state.userInfo.email)
-            console.log("fromName : " + this.$store.state.userInfo.name)
-            console.log("toEmail : " + findAccountList.email)
-            console.log("toNo : " + this.$store.state.newMemberInfo.no)
-            console.log("groupName : " + this.$store.state.workspace)
+            console.log("workspaceNo : " + this.workspaceNo)
 
             var map = {
-              'fromEmail': this.$store.state.userInfo.email,
-              'fromName': this.$store.state.userInfo.name,
-              'toEmail': findAccountList.email,
-              'toNo': this.$store.state.newMemberInfo.no,
-              'groupName': this.$store.state.workspace
+              fromNo: this.$store.state.userInfo.no,
+              fromEmail: this.$store.state.userInfo.email,
+              fromName: this.$store.state.userInfo.name,
+              toEmail: findAccountList.email,
+              toNo: this.$store.state.newMemberInfo.no,
+              groupName: this.$store.state.workspace,
+              groupNo: this.workspaceNo
             }
 
             this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, JSON.stringify(map));
+            console.log("========== 알림 송신 완료 ==========")
             // this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, {
             //   'fromEmail': this.$store.state.userInfo.email,
             //   'fromName': this.$store.state.userInfo.name,
@@ -134,7 +137,7 @@ export default {
             this.connected = false;
           }
         );
-      }
+      // }
     },
     kickOutBandMember(no) {
       const kickOutBandMemberNo = {

@@ -30,6 +30,7 @@ public class InviteController {
 		System.out.println(map.get("toEmail"));
 		System.out.println(map.get("toNo"));
 		System.out.println(map.get("groupName"));
+		System.out.println(map.get("groupNo"));
 		
 		return map;
 	}
