@@ -75,7 +75,8 @@
         <v-list-item
           v-for="file in this.$store.state.fileList"
           :key="file.no"
-          @click="openFile(file.contents)">
+          @click="openFile(file.contents)"
+          @mousedown.right="$refs.fileMenu.open($event, file.no)">
           <v-list-item-content>
             <v-list-item-title>{{ file.title }}</v-list-item-title>
           </v-list-item-content>
@@ -86,7 +87,7 @@
       </v-row>
     </v-container>
 
-    <ContextMenu refs="menu">
+    <ContextMenu ref="menu">
       <template>
         <ContextMenuItem v-if="selected" @click.native="deleteWorkspace">
           <v-icon>delete</v-icon>delete
@@ -96,6 +97,19 @@
         </ContextMenuItem>
       </template>
     </ContextMenu>
+
+    <ContextMenu ref="fileMenu">
+      <template>
+        <ContextMenuItem @click.native="()=>{}">
+          <v-icon>delete</v-icon>delete
+        </ContextMenuItem>
+        <ContextMenuItem @click.native="openRenameFileModal()">
+          <v-icon>autorenew</v-icon>rename
+        </ContextMenuItem>
+      </template>
+    </ContextMenu>
+
+    <RenameFileModal />
 
     <InviteModal />
     <!-- workspace rename dialog -->
@@ -127,7 +141,8 @@
 import ContextMenu from './ContextMenu';
 import ContextMenuItem from './ContextMenuItem';
 import InviteModal from "./InviteModal.vue";
-import CreateFileModal from './CreateFileModal.vue'
+import CreateFileModal from './mdfile_modal/CreateFileModal.vue'
+import RenameFileModal from './mdfile_modal/RenameFileModal.vue'
 
 import "material-design-icons-iconfont/dist/material-design-icons.css";
 import fs from "fs";
@@ -143,6 +158,7 @@ export default {
     ContextMenuItem,
     InviteModal,
     CreateFileModal,
+    RenameFileModal,
   },
 
   computed: {
@@ -178,14 +194,6 @@ export default {
       workspaces: [
         { name: "Add workspace first" },
       ],
-      // files: [
-      //   {
-      //     title: '낄낄.md',
-      //   },
-      //   {
-      //     title: '깔깔.md'
-      //   }
-      // ],
     };
   },
 
@@ -288,6 +296,10 @@ export default {
         const fileDataObject = {'openedFileData': openedFileData};
         const win = remote.BrowserWindow.getFocusedWindow();
         win.webContents.send("ping", fileDataObject);
+    },
+
+    openRenameFileModal() {
+      this.$store.commit('SET_IS_RENAME_FILE_MODAL', true)
     }
   }
 };

@@ -31,5 +31,6 @@ export default {
 
         fileList: '/fileList',
         createFile: '/createFile',
+        deleteFile: '/deleteFile',
     }
 }

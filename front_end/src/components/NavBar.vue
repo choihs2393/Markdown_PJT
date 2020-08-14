@@ -83,10 +83,10 @@
 <script>
 import { mapGetters } from "vuex";
 
-import LoginModal from "./modal/LoginModal.vue";
-import SignupModal from "./modal/SignupModal.vue";
-import LogoutModal from "./modal/LogoutModal.vue";
-import MypageModal from "./modal/MypageModal.vue";
+import LoginModal from "./account_modal/LoginModal.vue";
+import SignupModal from "./account_modal/SignupModal.vue";
+import LogoutModal from "./account_modal/LogoutModal.vue";
+import MypageModal from "./account_modal/MypageModal.vue";
 
 // 소켓 관련 모듈
 import SockJS from "sockjs-client";

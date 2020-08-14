@@ -13,7 +13,7 @@
           <v-card-text>
             <v-form>
               <v-text-field
-                v-model="fileData"
+                v-model="fileTitle"
                 label="Title"
                 name="title"
                 prepend-icon="far fa-file-alt"
@@ -24,7 +24,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" text @click="createFile(fileData)">Create</v-btn>
+            <v-btn color="green darken-1" text @click="createFile(fileTitle)">Create</v-btn>
             <v-btn color="green darken-1" text @click="close()">Close</v-btn>
           </v-card-actions>
         </v-card>
@@ -42,7 +42,7 @@ export default {
   data() {
     return {
       isCreateFileModal: false,
-      fileData: '',
+      fileTitle: '',
     }
   },
 
@@ -51,7 +51,7 @@ export default {
 
     close() {
       this.isCreateFileModal = false
-      this.fileData = ''
+      this.fileTitle = ''
     }
   }
 
