@@ -276,7 +276,7 @@ export default new Vuex.Store({
     login({ commit, dispatch }, loginData) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
         .then(res => {
-          console.log(res.headers)
+          // console.log(res.headers)
           commit('SET_TOKEN', res.headers)  // 토큰 저장
           commit('SET_PASSWORD_CHECKED', false)
 
@@ -405,7 +405,7 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.onServerInit)
         .then(res => {
           if (res.data['result'] === 'success') {
-            console.log("################# res.data.map", res.data.map)
+            // console.log("################# res.data.map", res.data.map)
             commit('SET_INIT_USER_INFO', res.data.map)
           }
         })

@@ -165,7 +165,7 @@ export default {
   },
 
   mounted() {
-    console.log("SideBarShare.vue -> mounted() 호출됨.")
+    // console.log("SideBarShare.vue -> mounted() 호출됨.")
 
     if(this.$store.state.userInfo.group.length == 0) {
       
@@ -178,7 +178,7 @@ export default {
   },
 
     updated(){
-      console.log("SideBarShare.vue -> mounted() 호출됨.")
+      // console.log("SideBarShare.vue -> mounted() 호출됨.")
     },
   
   data() {
@@ -188,6 +188,7 @@ export default {
       memberDialog: false,
       // workspaceDialog: false,
       selected: "",
+      workspaceNo: "",
       workspaceName: "",
       workspaceRename: "",
       memberEmail: "",
@@ -278,6 +279,7 @@ export default {
     showInviteModal() {
       // console.log("전체 워크스페이스", this.$store.state.userInfo.group)
       var workspaceNo = this.$store.state.userInfo.group.find(element => element.name == this.$store.state.workspace).no;
+      this.workspaceNo = workspaceNo
       
       // console.log("여기workspaceNo : " + workspaceNo);
 
