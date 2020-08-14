@@ -42,6 +42,7 @@ export default new Vuex.Store({
     isInviteModal: false,
     noSuchMemberAlert: false,
     isRenameFileModal: false,
+    isDeleteFileModal: false,
 
     // server_check
     isShareMode: false,
@@ -248,6 +249,10 @@ export default new Vuex.Store({
     
     SET_IS_RENAME_FILE_MODAL(state, payload) {
       state.isRenameFileModal = payload
+    },
+
+    SET_IS_DELETE_FILE_MODAL(state, payload) {
+      state.isDeleteFileModal = payload
     },
 
     // 초기 fileList 정보 저장
@@ -552,7 +557,7 @@ export default new Vuex.Store({
         }
       })
     },
-    
+
     // fileList 조회
     showFileList({ state, commit }, seletedBandName) {
       const info = {
@@ -598,16 +603,17 @@ export default new Vuex.Store({
       .catch(err => console.error(err.response.data))
     },
 
-    // file 삭제
-    deleteFile({ state, commit }, fileNo) {
+    // file 이름 변경
+    renameFile({ state, commit }, fileTitle) {
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
         no: fileNo,
+        title: fileTitle,
       }
-      axios.post(SERVER.URL + SERVER.ROUTES.deleteFile, info, { headers: { email: state.userInfo.email } })
+      axios.post(SERVER.URL + SERVER.ROUTES.renameFile, info, { headers: { email: state.userInfo.email } })
       .then(() => {
-        commit('DELETE_FILE_INFO', fileNo)
+        commit('_FILE_INFO', fileTitle)
       })
       .catch(err => console.error(err.response.data))
     },
