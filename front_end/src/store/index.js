@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import axios from 'axios'
 import SERVER from '@/api/spring'
+import { ipcRenderer } from 'electron';
 
 Vue.use(Vuex);
 
@@ -220,6 +221,7 @@ export default new Vuex.Store({
 
     SET_IS_SHARE(state, result) {
       state.isShareMode = result
+      ipcRenderer.send("isShareMode", result);
     },
 
     SET_IS_DRAWER(state, result) {
