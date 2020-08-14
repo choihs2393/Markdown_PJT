@@ -21,7 +21,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 
 @RequestMapping("/token")
-@CrossOrigin(exposedHeaders = "authorization")
+@CrossOrigin(exposedHeaders = "Authorization, AccessTokenExpiraionDate, RefreshToken, RefreshTokenExpiraionDate")
 @RestController
 public class TokenController {
 

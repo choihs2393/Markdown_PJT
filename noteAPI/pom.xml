@@ -23,6 +23,15 @@
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.qlrm/qlrm -->
 		<dependency>
 			<groupId>org.qlrm</groupId>
@@ -85,6 +94,13 @@
 			<artifactId>mail</artifactId>
 			<version>1.4</version>
 		</dependency>
+
+		<!-- mail관련 추가 부분 -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+		<!-- mail관련 추가 부분 -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

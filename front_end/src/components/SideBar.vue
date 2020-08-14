@@ -18,6 +18,9 @@
             <v-btn icon @click="showOpenDialog()">
               <v-icon>mdi-plus</v-icon>
             </v-btn>
+            <!-- <v-btn icon>
+              <v-icon>mdi-magnify</v-icon>
+            </v-btn> -->
         </v-toolbar>
 
         <v-list subheader flat>
@@ -90,7 +93,9 @@ import fs from "fs";
 import path from "path";
 
 export default {
-   mounted() {
+  name: 'SideBar',
+  
+  mounted() {
     ipcRenderer.on('ping', (event, message) => {
       var absoluteFilePath = message['absoluteFilePath'];
       // console.log('absolute', absoluteFilePath);
@@ -115,25 +120,25 @@ export default {
       })
     });
   },
-    data() {
-        return {
-            dialog: false,
-            folders: [
 
-            ],
-            files: [
-            ]
-        }
-    },
-    methods: {
-        showOpenDialog() {
+  data() {
+    return {
+      dialog: false,
+      folders: [
+
+      ],
+      files: [
+      ]
+    }
+  },
+
+  methods: {
+    showOpenDialog() {
       // console.log("showOpenDialog() 호출됨.");
 
-      remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(),
-        {
-          properties: ["openDirectory"]
-        }
-      )
+      remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(), {
+         properties: ["openDirectory"]
+      })
       .then(result => {
         var folderFullPath = result.filePaths[0];
 
@@ -144,10 +149,10 @@ export default {
         // console.log("folderFullPath : " + folderFullPath);
         // console.log("folderName : " + folderName);
     
-    // 맥과 윈도우는 폴더 경로 들어갈때 다름.
-    // 예)
-    // 맥 : /Users/kimmuseong/Desktop/폴더1
-    // 윈도우 : C:\kimmuseong\Desktop\폴더1
+        // 맥과 윈도우는 폴더 경로 들어갈때 다름.
+        // 예)
+        // 맥 : /Users/kimmuseong/Desktop/폴더1
+        // 윈도우 : C:\kimmuseong\Desktop\폴더1
         if(isWindow) {
           folderName = folderFullPath.substring(folderFullPath.lastIndexOf("\\") + 1);
         }
@@ -166,12 +171,11 @@ export default {
           for(var i = 0; i < fileList.length; i++) {
             // console.log(folderFullPath + "\\" + fileList[i]);
             if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md') {
-                if(isWindow)
-                    this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
-                if(isMac)
-                    this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "/" + fileList[i]});
+              if(isWindow)
+                this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+              if(isMac)
+                this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "/" + fileList[i]});
             }
-
           }
         })
       });
@@ -194,7 +198,7 @@ export default {
         // console.log('absolutefilepath', absoluteFilePath);
       });
     }
-    }
+  }
 
 }
 </script>

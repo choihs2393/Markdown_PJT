@@ -1,4 +1,5 @@
 import { emojiArray } from './emoji.js';
+import convertImg from './img.js';
 export const referenceLinkArray = [];
 export default class Replacer {
 
@@ -78,8 +79,52 @@ export default class Replacer {
     static paragraph(fullMatch) {
         return '<p>' + fullMatch + '</p>\n';
     }
-    static img(fullMatch, tagStart, tagContents) {
-        return '<img src="' + tagContents.substring(1,tagContents.length-1) + '">';
+    static async img(fullMatch, tagStart, tagContents) {
+        var src = await convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1));
+        return '<img src="' + src + '"/>';
+        // convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1), function (result) {
+        //         asdf = result;
+        //     })
+        // let src = function(asdf) {
+        //     convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1), function (result) {
+        //         asdf = result;
+        //     })
+        // }
+        // src = new Promise(function(resolve, reject) {
+            // convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1), function (result) {
+            //     resolve(result);
+            // })
+        // })
+        
+        // .then(function(resolvedData) {
+        //     console.log(resolvedData);
+        // })
+        
+        //await convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1), function(resolvedData) {
+        //    base64data = resolvedData;
+            //return '<img src="data:image/png;base64, ' + resolvedData + '">';
+        //});
+
+        
+        // let src = '';
+        // let base64data = '';
+        // function getBase64() {
+        //     return new Promise(function(resolve, reject) {
+        //         let src = '';
+        //         convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1), function (result) {
+        //             console.log('result : ' +result);
+        //             src = result;
+        //             callback(src);
+        //         });
+        //         resolve(src);
+        //     });
+        // }
+        // getBase64().then(function(resolvedData) {
+        //     console.log('result : ' + resolvedData);
+        //     base64data = resolvedData;
+        // });
+        //return '<img src="' + base64data + '">';
+    //    return '<img src="' + tagContents.substring(1,tagContents.length-1) + '">';
     }
     static externalLink(fullMatch, tagContents, link, linkTitle) {
         if(typeof linkTitle == 'undefined')

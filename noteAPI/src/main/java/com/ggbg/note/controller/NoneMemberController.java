@@ -66,6 +66,7 @@ public class NoneMemberController {
 	@PostMapping("/email/authSend")
 	public ResponseEntity emailAuth(@RequestBody Map<String, String> map) {
 		logger.debug("=============== email auth entered =============");
+		System.out.println("=============== email auth entered =============");
 		ResponseEntity response = null;
 		final SuccessResponse result = new SuccessResponse();
 		boolean ret = nonMemberService.emailAuthSend(map.get("email"));

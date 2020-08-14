@@ -91,7 +91,9 @@ export default {
       console.log('워크스페이스 멤버 리스트', this.$store.state.workspaceMemberList);
       this.$store.dispatch("findAccountList", findAccountList);
       this.search = "";
-      const serverURL = "http://localhost:8080/noteAPI/ws";
+
+      // const serverURL = "http://localhost:8080/noteAPI/ws";
+      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
 
@@ -102,7 +104,6 @@ export default {
             // 소켓 연결 성공
             this.connected = true;
             console.log("[InviteModal] 소켓 연결 성공", frame);
-            // this.stompClient.send("/receive", JSON.stringify(findAccountList.email));
             console.log("[Send 내용]")
 
             console.log("fromEmail : " + this.$store.state.userInfo.email)
@@ -111,13 +112,22 @@ export default {
             console.log("toNo : " + this.$store.state.newMemberInfo.no)
             console.log("groupName : " + this.$store.state.workspace)
 
-            this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, {
-              fromEmail: this.$store.state.userInfo.email,
-              fromName: this.$store.state.userInfo.name,
-              toEmail: findAccountList.email,
-              toNo: this.$store.state.newMemberInfo.no,
-              groupName: this.$store.state.workspace
-            });
+            var map = {
+              'fromEmail': this.$store.state.userInfo.email,
+              'fromName': this.$store.state.userInfo.name,
+              'toEmail': findAccountList.email,
+              'toNo': this.$store.state.newMemberInfo.no,
+              'groupName': this.$store.state.workspace
+            }
+
+            this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, JSON.stringify(map));
+            // this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, {
+            //   'fromEmail': this.$store.state.userInfo.email,
+            //   'fromName': this.$store.state.userInfo.name,
+            //   'toEmail': findAccountList.email,
+            //   'toNo': this.$store.state.newMemberInfo.no,
+            //   'groupName': this.$store.state.workspace
+            // });
           },
           error => {
             // 소켓 연결 실패
