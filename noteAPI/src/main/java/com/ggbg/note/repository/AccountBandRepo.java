@@ -21,6 +21,9 @@ public interface AccountBandRepo extends JpaRepository<AccountBandEntity, String
 	
 	@Query(value = "SELECT count(*) FROM account_band where account_no = :accountNo and band_no = :bandNo", nativeQuery = true)
 	int findAccountBandByAccountNoAndBandNo(int accountNo, int bandNo);
+
+	@Query(value = "SELECT count(*) FROM account_band where account_no = :accountNo and band_no = :bandNo and account_status != 2", nativeQuery = true)
+	int findAccountBandToVerify(int accountNo, int bandNo);
 	
 	@Transactional
 	@Modifying

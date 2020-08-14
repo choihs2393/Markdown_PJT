@@ -13,6 +13,7 @@ import com.ggbg.note.domain.entity.BandEntity;
 import com.ggbg.note.exception.InternalServerException;
 import com.ggbg.note.repository.AccountBandRepo;
 import com.ggbg.note.repository.BandRepo;
+import com.ggbg.note.repository.NoteRepo;
 import com.ggbg.note.util.JwtTokenUtil;
 
 @Service
@@ -25,15 +26,7 @@ public class BandServiceImpl implements IBandService {
 	private BandRepo bandRepo;
 	
 	@Autowired
-	RedisTemplate<String, Object> redisTemplate;
-
-	@Autowired
-	private JwtTokenUtil jwtTokenUtil;
-
-	@Autowired
-	JwtTokenUtil jtu;
-
-	
+	private NoteRepo noteRepo;
 	
 	@Override
 	public BandDTO addBand(String bandName, int accountNo, String bandMasterName) {
@@ -74,6 +67,8 @@ public class BandServiceImpl implements IBandService {
 		if(accountBandNo == -1)
 			throw new InternalServerException("addBand");
 		
+		noteRepo.createNewNote(bandNo);
+		
 		return bandDTO;
 	}
 	
@@ -84,8 +79,10 @@ public class BandServiceImpl implements IBandService {
 		Optional<BandEntity> optional = bandRepo.findBandByNo(bandNo);
 		if(optional.isPresent()) {
 			BandEntity band = optional.get();
-			if(band.getMaster() == accountNo)
+			if(band.getMaster() == accountNo) {
 				ret = bandRepo.deleteBandByNo(bandNo);
+				noteRepo.removeNote(bandNo);
+			}
 		}else {
 			return ret;
 		}
