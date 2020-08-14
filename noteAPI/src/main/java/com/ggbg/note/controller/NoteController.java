@@ -24,28 +24,12 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 public class NoteController {
 	
-	/*
-	 * 
-	 * account no / band no -> 글 no /글 제목 넘겨주고 o
-	 * account no / band no / 글 no -> 글 내용 o
-	 * 
-	 * update
-	 * account no / band no / 글 no / 수정된 글 제목 / 수정된 글 내용 -> success fail
-	 * 
-	 * delete 
-	 * account no / band no / 글 no -> 삭제 하고 -> 글 no / 글제목 -> success fail
-	 * 
-	 * insert
-	 * account no / band no / 제목 / 내용
-	 * 
-	 */
-	
 	@Autowired
 	private INoteService noteService;
 	
 	@ApiOperation(value = "getNoteSubject", httpMethod = "POST", notes = "Hello this is getNoteSubject")
 	@PostMapping("/getNoteSubject")
-	public ResponseEntity getBandMember(HttpServletRequest request, 
+	public ResponseEntity getNoteSubject(HttpServletRequest request, 
 			@RequestBody(required = true) Map<String, String> map) {
 		
 		ResponseEntity response = null;
@@ -96,6 +80,8 @@ public class NoteController {
 		return response;
 	} 
 	
+	
+	
 	//새 글 추가
 	@ApiOperation(value = "insertNoteDetail", httpMethod = "POST", notes = "Hello this is insertNoteDetail")
 	@PostMapping("/insertNoteDetail") 
@@ -108,8 +94,7 @@ public class NoteController {
 		int accountNo = Integer.parseInt(map.get("accountNo"));
 		int bandNo = Integer.parseInt(map.get("bandNo"));
 		String subject = map.get("subject");
-		String content = map.get("content");
-		int ret = noteService.insertNoteDetail(accountNo, bandNo, subject, content);
+		int ret = noteService.insertNoteDetail(accountNo, bandNo, subject, "");
 		
 		result.status = true;
 		if(ret != -1) {

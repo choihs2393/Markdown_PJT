@@ -46,12 +46,14 @@ public class NoteServiceImpl implements INoteService{
 			return new ArrayList<NoteDetailDTO>();
 		
 		NoteEntity entity = noteDetailRepo.findNoteDetailList(bandNo);
+		System.out.println(entity.toString());
 //		List<NoteDetailEntity> entityList = noteDetailRepo.findNoteDetailList(bandNo);
 		List<NoteDetailDTO> DTOList = new ArrayList<NoteDetailDTO>();
-		
-		for(NoteDetailEntity nde : entity.getNote()) {
-			NoteDetailDTO ndd = mapperUtill.convertToDTO(nde, NoteDetailDTO.class);
-			DTOList.add(ndd);
+		if(entity.getNote() != null) {
+			for(NoteDetailEntity nde : entity.getNote()) {
+				NoteDetailDTO ndd = mapperUtill.convertToDTO(nde, NoteDetailDTO.class);
+				DTOList.add(ndd);
+			}
 		}
 		
 		return DTOList;
