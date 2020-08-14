@@ -216,14 +216,15 @@ public class AccountServiceImpl implements IAccountService {
 		} catch (ExpiredJwtException e) {
 			throw new ExpiredTokenException("AccessToken " + accessToken);
 		}
+		
 		if (email == null || email.equals(""))
 			throw new UnAuthorizationException(accessToken);
 
 		Map<String, Object> map2 = accountRepo.findByEmail(email);
+		if (!map2.containsKey("account_no"))
+			throw new UnAuthorizationException(email);
 		name = (String) map2.get("account_name");
 		no = (int) map2.get("account_no");
-		if (name == null || name.equals(""))
-			throw new UnAuthorizationException(email);
 
 		List<BandEntity> list1 = bandRepo.findAllBandStatusByAccountNo(no);
 		List<BandEntity> list2 = bandRepo.findAllBandByAccountNo(no);
@@ -258,7 +259,16 @@ public class AccountServiceImpl implements IAccountService {
 		String email = "";
 		int no = -1;
 
-		email = jwtTokenUtil.getUsernameFromToken(accessToken);
+		try {
+			email = jwtTokenUtil.getUsernameFromToken(accessToken);
+		} catch (MalformedJwtException e) {
+			throw new UnAuthorizationException(accessToken);
+		} catch (ExpiredJwtException e) {
+			throw new ExpiredTokenException("AccessToken " + accessToken);
+		}
+		
+		if (email == null || email.equals(""))
+			throw new UnAuthorizationException(accessToken);
 
 		Map<String, Object> map2 = accountRepo.findByEmail(email);
 
@@ -279,6 +289,38 @@ public class AccountServiceImpl implements IAccountService {
 		return statusList;
 	}
 	
+	@Override
+	public List<BandDTO> bandList(String accessToken) {
+		String email = "";
+		int no = -1;
+
+		try {
+			email = jwtTokenUtil.getUsernameFromToken(accessToken);
+		} catch (MalformedJwtException e) {
+			throw new UnAuthorizationException(accessToken);
+		} catch (ExpiredJwtException e) {
+			throw new ExpiredTokenException("AccessToken " + accessToken);
+		}
+		
+		if (email == null || email.equals(""))
+			throw new UnAuthorizationException(accessToken);
+		
+		Map<String, Object> map2 = accountRepo.findByEmail(email);
+		if (!map2.containsKey("account_no"))
+			throw new UnAuthorizationException(email);
+		no = (int) map2.get("account_no");
+
+		List<BandEntity> list = bandRepo.findAllBandByAccountNo(no);
+
+		List<BandDTO> bandList = new ArrayList<BandDTO>();
+		
+		for(BandEntity be : list) {
+			BandDTO bd = mapperUtil.convertToDTO(be, BandDTO.class);
+			bandList.add(bd);
+		}
+		
+		return bandList;
+	}
 	
 
 }

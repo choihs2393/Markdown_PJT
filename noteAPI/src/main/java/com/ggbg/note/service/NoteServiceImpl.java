@@ -46,7 +46,6 @@ public class NoteServiceImpl implements INoteService{
 			return new ArrayList<NoteDetailDTO>();
 		
 		NoteEntity entity = noteDetailRepo.findNoteDetailList(bandNo);
-		System.out.println(entity.toString());
 //		List<NoteDetailEntity> entityList = noteDetailRepo.findNoteDetailList(bandNo);
 		List<NoteDetailDTO> DTOList = new ArrayList<NoteDetailDTO>();
 		if(entity.getNote() != null) {
@@ -84,6 +83,26 @@ public class NoteServiceImpl implements INoteService{
 		noteRepo.removeNoteDetail(bandNo, noteNo);
 		noteRepo.updateNoteDetail(bandNo, noteNo, subject, content);
 		
+		return true;
+	}
+	
+	@Override
+	public boolean updateNoteDetailSubject(int accountNo, int bandNo, int noteNo, String subject) {
+		boolean ret = verify(accountNo, bandNo);
+		if(!ret)
+			return false;	
+	
+		NoteEntity ne = noteDetailRepo.findNoteDetailContent(bandNo, noteNo);
+		String content = "";
+		if(ne.getNote() != null) {
+			content = ne.getNote().get(0).getContent();
+		}else {
+			return false;
+		}
+	
+		noteRepo.removeNoteDetail(bandNo, noteNo);
+		noteRepo.updateNoteDetail(bandNo, noteNo, subject, content);
+
 		return true;
 	}
 

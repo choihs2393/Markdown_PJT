@@ -158,4 +158,30 @@ public class NoteController {
 		response = new ResponseEntity<>(result, HttpStatus.OK);
 		return response;
 	} 
+	
+	
+	@ApiOperation(value = "updateNoteDetailSubject", httpMethod = "POST", notes = "Hello this is updateNoteDetailSubject")
+	@PostMapping("/updateNoteDetailSubject")
+	public ResponseEntity updateNoteDetailSubject(HttpServletRequest request, 
+			@RequestBody(required = true) Map<String, String> map) {
+		
+		ResponseEntity response = null;
+		final SuccessResponse result = new SuccessResponse();
+		
+		int bandNo = Integer.parseInt(map.get("bandNo"));
+		int accountNo = Integer.parseInt(map.get("accountNo"));
+		int noteNo = Integer.parseInt(map.get("noteNo"));
+		String subject = map.get("subject");
+		
+		boolean ret = noteService.updateNoteDetailSubject(accountNo, bandNo, noteNo, subject);
+		
+		result.status = true;
+		if(ret) {
+			result.result = "success";
+		} else {
+			result.result = "fail";
+		}
+		response = new ResponseEntity<>(result, HttpStatus.OK);
+		return response;
+	}
 }

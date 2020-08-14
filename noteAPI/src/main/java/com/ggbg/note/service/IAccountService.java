@@ -23,4 +23,5 @@ public interface IAccountService {
 	
 	//statusList
 	public List<BandDTO> statusList(String accessToken);
+	public List<BandDTO> bandList(String accessToken);
 }
