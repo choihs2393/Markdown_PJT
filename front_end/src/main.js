@@ -83,14 +83,14 @@ axios.interceptors.request.use(
 
       const errorAPI = err.config
 
-      if (err.response.status===401 && errorAPI.retry===undefined) {
-      // if (err.response.status===406 && errorAPI.retry===undefined) {
+      // if (err.response.status===401 && errorAPI.retry===undefined) {
+      if (err.response.status===406 && errorAPI.retry===undefined) {
         // console.log('response interceptor 401 error!!');
 
         errorAPI.retry = true
 
         if (!!localStorage.getItem('authorization')) {
-          return axios.post(SERVER.URL + SERVER.ROUTES.newATBR, null, { headers: { RefreshToken: store.state.refreshToken } })
+          return axios.post(SERVER.URL + SERVER.ROUTES.newATBR, null, { headers: { RefreshToken: localStorage.getItem('refresh-token') } })
             .then(res => {
               
               // console.log('기간 만료 후 토큰 갱신!!')
@@ -106,9 +106,9 @@ axios.interceptors.request.use(
         } else {
 
         }
-      } else {
-      // } else if (err.response.status===401) {
-        // store.dispatch('logout')
+      // } else {
+      } else if (err.response.status===401) {
+        store.dispatch('logout')
       }
       return Promise.reject(err)
     })
