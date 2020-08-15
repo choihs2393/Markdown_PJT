@@ -276,7 +276,6 @@ export default new Vuex.Store({
   // 비동기 로직은 actions에서 정의.
   // dispatch를 통해 실행함.
   actions: {
-
     // 로그인
     login({ commit, dispatch }, loginData) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
@@ -332,7 +331,7 @@ export default new Vuex.Store({
         })
         .catch(err => console.error(err.response.data))
     },
-
+    
     // 이메일 중복확인
     checkEmailDuplicate({ commit, dispatch }, signupData) {
       axios.post(SERVER.URL + SERVER.ROUTES.email, signupData)

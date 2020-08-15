@@ -186,6 +186,12 @@ export default {
       var tmp = event.target.value;
       var getTempData = this.$store.state.tempData;
       var getStore = this.$store; 
+
+      //server mode 인지 아닌지 판단하기 위한 variable
+      //local mode 라면 timeout 200
+      //server mode 라면 tiemout * 
+      var isServerMode = this.$store;
+
       if(this.$store.state.syncCheck === false) { 
         this.$store.commit('setSyncCheck',true);
         var timer = setTimeout(function() {
