@@ -17,9 +17,6 @@ import lombok.RequiredArgsConstructor;
 @Controller
 public class InviteController {
 
-	@Autowired
-	private IAccountService accountService;
-	
 	@MessageMapping("/receive/{toNo}")
 	@SendTo("/send/{toNo}")
 //	public Map<String, String> getIntivationList(@RequestBody(required = true) Map<String, String> map) {
