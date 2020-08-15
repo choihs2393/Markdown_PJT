@@ -74,9 +74,9 @@
         </v-subheader> -->
         <v-list-item
           v-for="file in this.$store.state.fileList"
-          :key="file.no"
-          @click="openFile(file.contents)"
-          @mousedown.right="$refs.fileMenu.open($event, file.no)">
+          :key="file._id"
+          @click="openFile(file._id)"
+          @mousedown.right="$refs.fileMenu.open($event, file), $store.commit('SELECTED_FILE_NO', file._id)">
           <v-list-item-content>
             <v-list-item-title>{{ file.subject }}</v-list-item-title>
           </v-list-item-content>
@@ -110,6 +110,7 @@
     </ContextMenu>
 
     <RenameFileModal />
+    <DeleteFileModal />
 
     <InviteModal />
     <!-- workspace rename dialog -->
@@ -143,12 +144,13 @@ import ContextMenuItem from './ContextMenuItem';
 import InviteModal from "./InviteModal.vue";
 import CreateFileModal from './mdfile_modal/CreateFileModal.vue'
 import RenameFileModal from './mdfile_modal/RenameFileModal.vue'
+import DeleteFileModal from './mdfile_modal/DeleteFileModal.vue'
 
 import "material-design-icons-iconfont/dist/material-design-icons.css";
 import fs from "fs";
 import { remote } from "electron";
 
-// import { mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
   name: "SideBarShare",
@@ -159,6 +161,7 @@ export default {
     InviteModal,
     CreateFileModal,
     RenameFileModal,
+    DeleteFileModal,
   },
 
   computed: {
@@ -199,6 +202,8 @@ export default {
   },
 
   methods: {
+    ...mapActions(['openFile']),
+
     cancelCreateWorkspace() {
       this.selected = "";
       this.$refs.form_workspace.reset();
@@ -291,21 +296,14 @@ export default {
       this.$store.dispatch("showGroupMembers", showGroupMembers)
     },
 
-    openFile(data) {
-        const openedFileData = data;
-        // console.log(openedFileData);
-
-        const fileDataObject = {'openedFileData': openedFileData};
-        const win = remote.BrowserWindow.getFocusedWindow();
-        win.webContents.send("ping", fileDataObject);
-    },
-
-    openRenameFileModal() {
+    openRenameFileModal(data) {
       this.$store.commit('SET_IS_RENAME_FILE_MODAL', true)
     },
 
     openDeleteFileModal() {
       this.$store.commit('SET_IS_DELETE_FILE_MODAL', true)
+      // console.log(data)
+      // this.$store.dispatch('deleteFile', data)
     }
   }
 };

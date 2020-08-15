@@ -53,6 +53,11 @@ ipcRenderer.on('ping', (event, message) => {
   data.input = message['openedFileData'];
 });
 
+ipcRenderer.on('openFile', (event, message) => {
+  // console.log(message);
+  data.input = message['openeFile'];
+});
+
 
 // 드래그 후 드랍을 하면,
 document.addEventListener('drop', (event) => {

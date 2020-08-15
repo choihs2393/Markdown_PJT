@@ -17,7 +17,7 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="green darken-1" text @click="renameFile(fileTitle)">Rename</v-btn>
+        <v-btn color="green darken-1" text @click="renameFile(fileTitle), close()">Rename</v-btn>
         <v-btn color="green darken-1" text @click="close()">Close</v-btn>
       </v-card-actions>
     </v-card>
@@ -32,7 +32,7 @@ export default {
 
   data() {
     return {
-      fileTitle: this.$store.state.fileList.title,
+      fileTitle: this.$store.state.fileList[this.$store.state.fileList.findIndex(item => item._id===this.$store.state.selectedNoteNo)].subject
     }
   },
 
@@ -40,7 +40,9 @@ export default {
     ...mapActions(['renameFile']),
 
     close() {
+      console.log(this.$store.state.fileList)
       this.$store.commit('SET_IS_RENAME_FILE_MODAL', false)
+      this.fileTitle = ''
     },
   }
 
