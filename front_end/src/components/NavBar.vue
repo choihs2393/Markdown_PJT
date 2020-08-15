@@ -214,8 +214,8 @@ export default {
           accountNo: this.$store.state.userInfo.no,
           bandNo: groupNo
         };
-        console.log("accountNo : " + this.$store.state.userInfo.no);
-        console.log("bandNo : " + groupNo);
+        // console.log("accountNo : " + this.$store.state.userInfo.no);
+        // console.log("bandNo : " + groupNo);
         this.$store.dispatch("acceptInvite", info);
 
         var idx = this.$store.state.userInfo.status.findIndex(

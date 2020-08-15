@@ -106,10 +106,10 @@ export default {
           frame => {
             // 소켓 연결 성공
             this.connected = true;
-            console.log("[InviteModal] 소켓 연결 성공", frame);
-            console.log("[Send 내용]")
+            // console.log("[InviteModal] 소켓 연결 성공", frame);
+            // console.log("[Send 내용]")
 
-            console.log("workspaceNo : " + this.workspaceNo)
+            // console.log("workspaceNo : " + this.workspaceNo)
 
             var map = {
               fromNo: this.$store.state.userInfo.no,
@@ -122,7 +122,7 @@ export default {
             }
 
             this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, JSON.stringify(map));
-            console.log("========== 알림 송신 완료 ==========")
+            // console.log("========== 알림 송신 완료 ==========")
             // this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, {
             //   'fromEmail': this.$store.state.userInfo.email,
             //   'fromName': this.$store.state.userInfo.name,
@@ -133,7 +133,7 @@ export default {
           },
           error => {
             // 소켓 연결 실패
-            console.log("[InviteModal] 소켓 연결 실패", error);
+            // console.log("[InviteModal] 소켓 연결 실패", error);
             this.connected = false;
           }
         );

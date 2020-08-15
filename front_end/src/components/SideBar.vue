@@ -181,11 +181,11 @@ export default {
       // console.log(absoluteFilePath);
       fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
         // if(err) throw err;
-        console.log(data);
+        // console.log(data);
         // fileData = data;
         let openedFileData = data;
-        console.log('요기',openedFileData);
-        console.log('------------------')
+        // console.log('요기',openedFileData);
+        // console.log('------------------')
 
         let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': absoluteFilePath};
         let win = remote.BrowserWindow.getFocusedWindow();
@@ -238,13 +238,13 @@ export default {
     color: rgb(214, 198, 219) !important;
   }
 
-  /* .theme--dark.v-list-item:not(.v-list-item--active) {
+  .theme--dark.v-list-item:not(.v-list-item--active) {
     color: #615f75 !important;
     font-size:0.5em;
   }
 
   .theme--dark.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled):hover {
     color: rgb(214, 198, 219) !important;
-  } */
+  }
 
 </style>

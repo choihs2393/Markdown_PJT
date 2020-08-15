@@ -32,7 +32,9 @@ export default {
 
         fileList: '/note/getNoteSubject',
         createFile: '/note/insertNoteDetail',
+        renameFile: '/note/updateNoteDetailSubject',
         deleteFile: '/note/deleteNoteDetail',
         openFile: '/note/getNoteContent',
+        saveFile: '/note/updateNoteDetail',
     }
 }
