@@ -83,8 +83,8 @@ axios.interceptors.request.use(
 
       const errorAPI = err.config
 
-      if (err.response.status===401 && errorAPI.retry===undefined) {
-      // if (err.response.status===406 && errorAPI.retry===undefined) {
+      // if (err.response.status===401 && errorAPI.retry===undefined) {
+      if (err.response.status===406 && errorAPI.retry===undefined) {
         // console.log('response interceptor 401 error!!');
 
         errorAPI.retry = true
@@ -106,9 +106,9 @@ axios.interceptors.request.use(
         } else {
 
         }
-      } else {
-      // } else if (err.response.status===401) {
-        // store.dispatch('logout')
+      // } else {
+      } else if (err.response.status===401) {
+        store.dispatch('logout')
       }
       return Promise.reject(err)
     })
