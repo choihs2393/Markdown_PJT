@@ -56,8 +56,11 @@ export default new Vuex.Store({
       status: '',
       no: ''
     },
+
+    // note_file
     fileList: [],
     selectedNoteNo: '',
+
     theme: '',
 
     // 파싱되는 데이터 저장.
@@ -553,16 +556,16 @@ export default new Vuex.Store({
         bandNo: state.userInfo.group.find(element => element.name === seletedBandName).no,
       }
       axios.post(SERVER.URL + SERVER.ROUTES.fileList, info, { headers: { email: state.userInfo.email } })
-      .then(res => {
-        // console.log(res.data)
-        if (res.data.result==='success') {
-          // console.log(res.data.map.noteDetailDTOList)
-          commit('INIT_FILE_LIST', res.data.map.noteDetailDTOList)
-        } else if (res.data.result==='empty') {
-          commit('INIT_FILE_LIST', [])
-        }
-      })
-      .catch(err => console.error(err.response.data))
+        .then(res => {
+          // console.log(res.data)
+          if (res.data.result==='success') {
+            // console.log(res.data.map.noteDetailDTOList)
+            commit('INIT_FILE_LIST', res.data.map.noteDetailDTOList)
+          } else if (res.data.result==='empty') {
+            commit('INIT_FILE_LIST', [])
+          }
+        })
+        .catch(err => console.error(err.response.data))
     },
 
     // file 추가
@@ -573,15 +576,15 @@ export default new Vuex.Store({
         subject: fileTitle,
       }
       axios.post(SERVER.URL + SERVER.ROUTES.createFile, info, { headers: { email: state.userInfo.email } })
-      .then(res => {
-        // console.log(res.data.map)
-        info.no = res.data.map.no
-        info.content = ''
-        // console.log(info)
-        commit('SET_FILE_INFO', info)
-        dispatch('showFileList', state.workspace)
-      })
-      .catch(err => console.error(err.response.data))
+        .then(res => {
+          // console.log(res.data.map)
+          info.no = res.data.map.no
+          info.content = ''
+          // console.log(info)
+          commit('SET_FILE_INFO', info)
+          dispatch('showFileList', state.workspace)
+        })
+        .catch(err => console.error(err.response.data))
     },
 
     // file 삭제
@@ -592,11 +595,11 @@ export default new Vuex.Store({
         noteNo: fileNo,
       }
       axios.post(SERVER.URL + SERVER.ROUTES.deleteFile, info, { headers: { email: state.userInfo.email } })
-      .then(() => {
-        commit('DELETE_FILE_INFO', fileNo)
-        dispatch('showFileList', state.workspace)
-      })
-      .catch(err => console.error(err.response.data))
+        .then(() => {
+          commit('DELETE_FILE_INFO', fileNo)
+          dispatch('showFileList', state.workspace)
+        })
+        .catch(err => console.error(err.response.data))
     },
 
     // file 이름 변경
@@ -604,34 +607,19 @@ export default new Vuex.Store({
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
-        no: state.selectedNoteNo,
+        noteNo: state.selectedNoteNo,
         subject: fileTitle,
       }
       axios.post(SERVER.URL + SERVER.ROUTES.renameFile, info, { headers: { email: state.userInfo.email } })
-      .then(() => {
-        commit('RENAME_FILE_TITLE', fileTitle)
-        dispatch('showFileList', state.workspace)
-      })
-      .catch(err => console.error(err.response.data))
-    },
-
-    // file 열기
-    openFile({ state }, fileNo) {
-      const info = {
-        accountNo: state.userInfo.no,
-        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
-        noteNo: fileNo,
-      }
-      // console.log(info)
-      axios.post(SERVER.URL + SERVER.ROUTES.openFile, info, { headers: { email: state.userInfo.email } })
         .then(() => {
-          let win = remote.BrowserWindow.getFocusedWindow();
-          win.webContents.send("openFile", {'openFile': state.fileList[state.fileList.findIndex(item => item._id===info.noteNo)].content})
+          commit('RENAME_FILE_TITLE', fileTitle)
+          dispatch('showFileList', state.workspace)
         })
+        .catch(err => console.error(err.response.data))
     },
 
     // file 열기
-    saveFile({ state }, fileNo) {
+    openFile({ state, commit }, fileNo) {
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
@@ -639,10 +627,38 @@ export default new Vuex.Store({
       }
       // console.log(info)
       axios.post(SERVER.URL + SERVER.ROUTES.openFile, info, { headers: { email: state.userInfo.email } })
-        .then(res => {
+        .then((res) => {
+          console.log(res)
+          commit('SELECTED_FILE_NO', fileNo)
+          // commit('SET_FILE_CONTENTS', )
+          // console.log(state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content)
           let win = remote.BrowserWindow.getFocusedWindow();
-          win.webContents.send("openFile", {'openFile': state.fileList[state.fileList.findIndex(item => item._id===info.noteNo)].content})
+          if (res.data.result==='success') {
+            win.webContents.send('openFile', res.data.map.content)
+            // win.webContents.send('openFile', state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content)
+          } else if (res.data.result==='empty') {
+            win.webContents.send('openFile', '')
+          }
         })
+        .catch(err => console.error(err.response.data))
+    },
+
+    // file 저장
+    saveFile({ state, commit }, fileContents) {
+      const info = {
+        accountNo: state.userInfo.no,
+        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
+        noteNo: state.selectedNoteNo,
+        subject: state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].subject,
+        content: fileContents
+      }
+      // console.log(info)
+      axios.post(SERVER.URL + SERVER.ROUTES.saveFile, info, { headers: { email: state.userInfo.email } })
+        .then(() => {
+          // console.log(res)
+          commit('SET_FILE_CONTENTS', info.content)
+        })
+        .catch(err => console.error(err.response.data))
     }
   },
   modules: {}

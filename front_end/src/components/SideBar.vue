@@ -238,13 +238,13 @@ export default {
     color: rgb(214, 198, 219) !important;
   }
 
-  /* .theme--dark.v-list-item:not(.v-list-item--active) {
+  .theme--dark.v-list-item:not(.v-list-item--active) {
     color: #615f75 !important;
     font-size:0.5em;
   }
 
   .theme--dark.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled):hover {
     color: rgb(214, 198, 219) !important;
-  } */
+  }
 
 </style>

@@ -2,6 +2,7 @@
   <v-main>
     <v-container class="md" fluid>
 
+      <v-btn @click="saveFile(input)">없어질 버튼</v-btn>
       <div id="editor_div">
         <v-textarea
           solo
@@ -38,7 +39,7 @@
 import parse from "../markdown/parse";
 import sampleData from "../markdown/sampleData.js";
 
-import { mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 
 import { remote, ipcRenderer } from "electron";
 import fs from "fs";
@@ -55,7 +56,7 @@ ipcRenderer.on('ping', (event, message) => {
 
 ipcRenderer.on('openFile', (event, message) => {
   // console.log(message);
-  data.input = message['openeFile'];
+  data.input = message;
 });
 
 
@@ -187,6 +188,8 @@ export default {
   //   return await data;
   // }
   methods: {
+    ...mapActions(['saveFile']),
+
     whenKeyUp() {
       var tmp = event.target.value;
       var getTempData = this.$store.state.tempData;
@@ -223,7 +226,7 @@ export default {
   color: #333;
 }
 
-v-textarea, #editor_div div {
+#editor_div div {
   display: inline-block;
   width: 49%;
   height: 100%;
@@ -232,7 +235,7 @@ v-textarea, #editor_div div {
   padding: 0 20px;
 }
 
-v-textarea {
+.v-textarea {
   border: none;
   border-right: 1px solid #ccc;
   resize: none;

@@ -32,6 +32,7 @@ export default {
 
   data() {
     return {
+      // fileTitle: '낄낄'
       fileTitle: this.$store.state.fileList[this.$store.state.fileList.findIndex(item => item._id===this.$store.state.selectedNoteNo)].subject
     }
   },
@@ -42,7 +43,8 @@ export default {
     close() {
       // console.log(this.$store.state.fileList)
       this.$store.commit('SET_IS_RENAME_FILE_MODAL', false)
-      this.fileTitle = ''
+      this.fileTitle = this.$store.state.fileList[this.$store.state.fileList.findIndex(item => item._id===this.$store.state.selectedNoteNo)].subject
+      // console.log(this.$store.state.fileList[this.$store.state.fileList.findIndex(item => item._id===this.$store.state.selectedNoteNo)].subject)
     },
   }
 
