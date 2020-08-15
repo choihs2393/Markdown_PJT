@@ -32,7 +32,7 @@ export default {
 
   data() {
     return {
-      fileTitle: this.store.state.fileList.title,
+      fileTitle: this.$store.state.fileList.title,
     }
   },
 

@@ -32,10 +32,10 @@
             <span>New workspace</span>
           </v-card-title>
           <v-card-text>
-            <v-form ref="form_workspace">
+            <v-form ref="form_workspace" @submit.prevent>
               <v-row>
                 <v-col cols="12" sm="20" md="20">
-                  <v-text-field label="workspace *" required v-model="workspaceName"></v-text-field>
+                  <v-text-field label="workspace *" @keyup.enter="createWorkspace" v-model="workspaceName"></v-text-field>
                 </v-col>
               </v-row>
             </v-form>
@@ -207,6 +207,7 @@ export default {
 
     // 워크스페이스 새로 추가하는 함수.
     createWorkspace() {
+      event.preventDefault();
       // this.workspaces
       // this.workspaces.push({ name: this.workspaceName });
       this.selected = this.workspaceName;
@@ -218,7 +219,6 @@ export default {
       this.workspaceDialog = false;
       this.$store.commit('SELET_WORKSPACE', this.selected)
       this.workspaces = this.$store.state.userInfo.group
-
     },
     changeWorkspace(select) {
       if (select == "Add workspace first") {
