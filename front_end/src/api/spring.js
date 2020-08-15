@@ -33,5 +33,6 @@ export default {
         fileList: '/note/getNoteSubject',
         createFile: '/note/insertNoteDetail',
         deleteFile: '/note/deleteNoteDetail',
+        openFile: '/note/getNoteContent',
     }
 }

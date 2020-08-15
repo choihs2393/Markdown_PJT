@@ -3,7 +3,7 @@ import Vuex from 'vuex'
 
 import axios from 'axios'
 import SERVER from '@/api/spring'
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, remote } from 'electron';
 
 Vue.use(Vuex);
 
@@ -260,6 +260,11 @@ export default new Vuex.Store({
       const idx = state.fileList.findIndex(file => file.no===fileNo)
       state.fileList.splice(idx, 1);
     },
+
+    // File 내용 추가
+    SET_FILE_CONTENTS(state, fileContents) {
+      state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content = fileContents
+    }
   },
 
   // 범용적인 함수들. mutations에 정의한 함수를 actions에서 실행 가능.
@@ -568,7 +573,7 @@ export default new Vuex.Store({
     },
 
     // file 추가
-    createFile({ state, commit }, fileTitle) {
+    createFile({ state, commit, dispatch }, fileTitle) {
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
@@ -578,8 +583,10 @@ export default new Vuex.Store({
       .then(res => {
         // console.log(res.data.map)
         info.no = res.data.map.no
+        info.content = ''
         // console.log(info)
         commit('SET_FILE_INFO', info)
+        dispatch('showFileList', state.workspace)
       })
       .catch(err => console.error(err.response.data))
     },
@@ -600,7 +607,7 @@ export default new Vuex.Store({
     },
 
     // file 이름 변경
-    renameFile({ state, commit }, fileTitle) {
+    renameFile({ state, commit, dispatch }, fileTitle) {
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
@@ -610,9 +617,34 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.renameFile, info, { headers: { email: state.userInfo.email } })
       .then(() => {
         commit('RENAME_FILE_TITLE', fileTitle)
+        dispatch('showFileList', state.workspace)
       })
       .catch(err => console.error(err.response.data))
     },
+
+    // file 열기
+    openFile({ state }, fileNo) {
+      const info = {
+        accountNo: state.userInfo.no,
+        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
+        noteNo: fileNo,
+      }
+      console.log(info)
+      axios.post(SERVER.URL + SERVER.ROUTES.openFile, info, { headers: { email: state.userInfo.email } })
+        .then(res => {
+          console.log(res.data)
+          console.log(state.fileList[state.fileList.findIndex(item => item._id===info.noteNo)].content)
+
+          // if (res.data.result==='success') {
+          //   commit('SET_FILE_CONTENTS', res.data.map.content)
+          // } else {
+          //   commit('SET_FILE_CONTENTS', '')
+          // }
+          let win = remote.BrowserWindow.getFocusedWindow();
+          win.webContents.send("openFile", {'openFile': state.fileList[state.fileList.findIndex(item => item._id===info.noteNo)].content})
+          // ipcRenderer.send("openFile", {'openFile': state.fileList[state.fileList.findIndex(item => item._id===info.noteNo)].content})
+        })
+    }
   },
   modules: {}
 });

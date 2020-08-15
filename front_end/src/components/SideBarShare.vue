@@ -75,7 +75,7 @@
         <v-list-item
           v-for="file in this.$store.state.fileList"
           :key="file._id"
-          @click="openFile(file.contents)"
+          @click="openFile(file._id)"
           @mousedown.right="$refs.fileMenu.open($event, file), $store.commit('SELECTED_FILE_NO', file._id)">
           <v-list-item-content>
             <v-list-item-title>{{ file.subject }}</v-list-item-title>
@@ -150,7 +150,7 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 import fs from "fs";
 import { remote } from "electron";
 
-// import { mapActions } from 'vuex'
+import { mapActions } from 'vuex'
 
 export default {
   name: "SideBarShare",
@@ -202,6 +202,8 @@ export default {
   },
 
   methods: {
+    ...mapActions(['openFile']),
+
     cancelCreateWorkspace() {
       this.selected = "";
       this.$refs.form_workspace.reset();
@@ -292,15 +294,6 @@ export default {
       }
 
       this.$store.dispatch("showGroupMembers", showGroupMembers)
-    },
-
-    openFile(data) {
-        const openedFileData = data;
-        // console.log(openedFileData);
-
-        const fileDataObject = {'openedFileData': openedFileData};
-        const win = remote.BrowserWindow.getFocusedWindow();
-        win.webContents.send("ping", fileDataObject);
     },
 
     openRenameFileModal(data) {
