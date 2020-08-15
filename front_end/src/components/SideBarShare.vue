@@ -240,9 +240,9 @@ export default {
       var idx = this.$store.state.userInfo.group.findIndex(element => element.name == this.$store.state.workspace);
       var workspaceNo = workspace.no
 
-      console.log("workspaceNo : " + workspaceNo)
-      console.log("workspaceName : " + this.$store.state.workspace)
-      console.log("workspaceIdx : " + idx)
+      // console.log("workspaceNo : " + workspaceNo)
+      // console.log("workspaceName : " + this.$store.state.workspace)
+      // console.log("workspaceIdx : " + idx)
 
       const deleteWorkspace = {
         bandNo: workspaceNo,
@@ -264,9 +264,9 @@ export default {
       var workspaceNo = workspace.no
       var idx = this.$store.state.userInfo.group.findIndex(element => element.name == this.$store.state.workspace);
 
-      console.log("selectedWorkspaceName : " + workspace.name)
-      console.log("workspaceNo : " + workspaceNo)
-      console.log("workspaceRename : " + this.workspaceRename)
+      // console.log("selectedWorkspaceName : " + workspace.name)
+      // console.log("workspaceNo : " + workspaceNo)
+      // console.log("workspaceRename : " + this.workspaceRename)
 
       const renameWorkspace = {
         bandNo: workspaceNo,

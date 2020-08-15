@@ -75,13 +75,6 @@ export default new Vuex.Store({
     //   return state.workspaceMemberList
     // },
 
-    // config: state => ({
-    //   headers: {
-    //     Authorization:  state.authorization,
-    //     RefreshToken: state.refreshToken,
-    //     Email: state.userInfo.email,
-    //   }
-    // }),
    // inputData: state=> state.inputData
   },
 
@@ -162,7 +155,7 @@ export default new Vuex.Store({
     // 워크스페이스 저장
     SET_WORKSPACES(state, result) {
       state.userInfo.group.push(result);
-      console.log("state.userInfo.group : ", state.userInfo.group);
+      // console.log("state.userInfo.group : ", state.userInfo.group);
     },
 
     // 선택한 워크스페이스
@@ -171,20 +164,20 @@ export default new Vuex.Store({
     },
     
     DELETE_WORKSPACE(state, param) {
-      console.log("DELETE_WORKSPACE 호출됨.")
-      console.log(param)
-      console.log(param.workspaceIdx)
+      // console.log("DELETE_WORKSPACE 호출됨.")
+      // console.log(param)
+      // console.log(param.workspaceIdx)
       var idx = param.workspaceIdx;
-      console.log(idx + "번째 아이템 : " + state.userInfo.group[idx].name + "[삭제]");
+      // console.log(idx + "번째 아이템 : " + state.userInfo.group[idx].name + "[삭제]");
       state.userInfo.group.splice(idx, 1)
     },
 
     UPDATE_WORKSPACE(state, param) {
-      console.log("UPDATE_WORKSPACE 호출됨.")
-      console.log(param)
-      console.log(param.workspaceIdx)
+      // console.log("UPDATE_WORKSPACE 호출됨.")
+      // console.log(param)
+      // console.log(param.workspaceIdx)
       var idx = param.workspaceIdx
-      console.log(idx + "번째 아이템 : " + state.userInfo.group[idx].name + "[변경]")
+      // console.log(idx + "번째 아이템 : " + state.userInfo.group[idx].name + "[변경]")
       state.userInfo.group[idx].name = param.newBandName
     },
     
@@ -202,12 +195,12 @@ export default new Vuex.Store({
         }
       }
       // state.workspaceMemberList.push(result)
-      console.log(state.workspaceMemberList)
+      // console.log(state.workspaceMemberList)
     },
 
     GET_NEW_MEMBER_INFO(state, result) {
       state.workspaceMemberList.push(result);
-      console.log(state.workspaceMemberList)
+      // console.log(state.workspaceMemberList)
     },
 
     SET_IS_SHARE(state, result) {
@@ -426,10 +419,10 @@ export default new Vuex.Store({
     
       axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, map, { headers: { email: this.state.userInfo.email }})
       .then(res => {
-        console.log("then구문 진입.");
-        console.log("res.data", res.data);
-        console.log("res.data.map", res.data.map);
-        console.log("res.data.map.band", res.data.map.band);
+        // console.log("then구문 진입.");
+        // console.log("res.data", res.data);
+        // console.log("res.data.map", res.data.map);
+        // console.log("res.data.map.band", res.data.map.band);
 
         commit("SET_WORKSPACES", res.data.map.band)
         // console.log("then구문 진입.");
@@ -443,14 +436,14 @@ export default new Vuex.Store({
 
     // 워크스페이스 제거
     deleteWorkspace({ commit }, deleteWorkspace) {
-      console.log("Vuex내에 deleteWorkspace() 진입.");
-      console.log("넘어온 그룹 정보 (bandNo, accountNo) : ", deleteWorkspace)
+      // console.log("Vuex내에 deleteWorkspace() 진입.");
+      // console.log("넘어온 그룹 정보 (bandNo, accountNo) : ", deleteWorkspace)
       
       axios.post(SERVER.URL + SERVER.ROUTES.deleteWorkspace, deleteWorkspace, { headers: { email: this.state.userInfo.email }})
       .then(res => {
-        console.log("res.data.result : ", res.data.result)
+        // console.log("res.data.result : ", res.data.result)
         if(res.data.result == "success") {
-          console.log("success안에 들어옴.")
+          // console.log("success안에 들어옴.")
           commit("DELETE_WORKSPACE", deleteWorkspace)
 
         } else if(res.data.result == "fail") {
@@ -464,12 +457,12 @@ export default new Vuex.Store({
 
     // 워크스페이스명 변경
     renameWorkspace({ commit }, renameWorkspace) {
-      console.log("Vuex내에 renameWorkspace() 진입")
-      console.log("넘어온 그룹 정보 (bandNo, accountNo, newBandName, workspaceIdx) :", renameWorkspace)
+      // console.log("Vuex내에 renameWorkspace() 진입")
+      // console.log("넘어온 그룹 정보 (bandNo, accountNo, newBandName, workspaceIdx) :", renameWorkspace)
 
       axios.post(SERVER.URL + SERVER.ROUTES.renameWorkspace, renameWorkspace, { headers: { email: this.state.userInfo.email }})
       .then(res => {
-        console.log("res.data.result : ", res.data.result)
+        // console.log("res.data.result : ", res.data.result)
         if(res.data.result == "success") {
           commit("UPDATE_WORKSPACE", renameWorkspace)
         }
@@ -481,7 +474,7 @@ export default new Vuex.Store({
       // console.log(showGroupMembers)
       axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, { headers: { email: this.state.userInfo.email }})
       .then(res => {
-        console.log("res.data.result : ", res.data.result)
+        // console.log("res.data.result : ", res.data.result)
         commit("SHOW_GROUP_MEMBERS", res.data.map.bandMemberList)
         this.state.isInviteModal = !(this.state.isInviteModal)
         })
@@ -509,31 +502,31 @@ export default new Vuex.Store({
 
     // 워크스페이스에 멤버 초대하기
     inviteBandMember({ commit }, inviteBandMember) {
-      console.log("[inviteBandMember] inviteBandMember()", inviteBandMember);
+      // console.log("[inviteBandMember] inviteBandMember()", inviteBandMember);
 
       this.state.noSuchMemberAlert = false;
       axios.post(SERVER.URL + SERVER.ROUTES.inviteBandMember, inviteBandMember, { headers: { email: this.state.userInfo.email} })
       .then(res => {
-        console.log("res.data.result : ", res.data.map.bandMember)
+        // console.log("res.data.result : ", res.data.map.bandMember)
         commit("GET_NEW_MEMBER_INFO", res.data.map.bandMember)
       })
     },
 
     // 워크스페이스 초대 수락
     acceptInvite({}, info) {
-      console.log("[acceptInvite] info : ", info)
+      // console.log("[acceptInvite] info : ", info)
       axios.post(SERVER.URL + SERVER.ROUTES.acceptInvite, info, { headers: { email: this.state.userInfo.email } })
       .then(res => {
-        console.log("초대 수락 확인")
+        // console.log("초대 수락 확인")
       }) 
     },
 
     // 워크스페이스 초대 거절
     declineInvite({}, info) {
-      console.log("[declineInvite] info : ", info)
+      // console.log("[declineInvite] info : ", info)
       axios.post(SERVER.URL + SERVER.ROUTES.declineInvite, info, { headers: { email: this.state.userInfo.email } })
       .then(res => {
-        console.log("초대 거부 확인")
+        // console.log("초대 거부 확인")
       })
     },
 
@@ -561,9 +554,9 @@ export default new Vuex.Store({
       }
       axios.post(SERVER.URL + SERVER.ROUTES.fileList, info, { headers: { email: state.userInfo.email } })
       .then(res => {
-        console.log(res.data)
+        // console.log(res.data)
         if (res.data.result==='success') {
-          console.log(res.data.map.noteDetailDTOList)
+          // console.log(res.data.map.noteDetailDTOList)
           commit('INIT_FILE_LIST', res.data.map.noteDetailDTOList)
         } else if (res.data.result==='empty') {
           commit('INIT_FILE_LIST', [])
@@ -629,20 +622,26 @@ export default new Vuex.Store({
         bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
         noteNo: fileNo,
       }
-      console.log(info)
+      // console.log(info)
       axios.post(SERVER.URL + SERVER.ROUTES.openFile, info, { headers: { email: state.userInfo.email } })
-        .then(res => {
-          console.log(res.data)
-          console.log(state.fileList[state.fileList.findIndex(item => item._id===info.noteNo)].content)
-
-          // if (res.data.result==='success') {
-          //   commit('SET_FILE_CONTENTS', res.data.map.content)
-          // } else {
-          //   commit('SET_FILE_CONTENTS', '')
-          // }
+        .then(() => {
           let win = remote.BrowserWindow.getFocusedWindow();
           win.webContents.send("openFile", {'openFile': state.fileList[state.fileList.findIndex(item => item._id===info.noteNo)].content})
-          // ipcRenderer.send("openFile", {'openFile': state.fileList[state.fileList.findIndex(item => item._id===info.noteNo)].content})
+        })
+    },
+
+    // file 열기
+    saveFile({ state }, fileNo) {
+      const info = {
+        accountNo: state.userInfo.no,
+        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
+        noteNo: fileNo,
+      }
+      // console.log(info)
+      axios.post(SERVER.URL + SERVER.ROUTES.openFile, info, { headers: { email: state.userInfo.email } })
+        .then(res => {
+          let win = remote.BrowserWindow.getFocusedWindow();
+          win.webContents.send("openFile", {'openFile': state.fileList[state.fileList.findIndex(item => item._id===info.noteNo)].content})
         })
     }
   },

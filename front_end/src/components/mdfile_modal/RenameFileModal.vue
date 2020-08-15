@@ -40,7 +40,7 @@ export default {
     ...mapActions(['renameFile']),
 
     close() {
-      console.log(this.$store.state.fileList)
+      // console.log(this.$store.state.fileList)
       this.$store.commit('SET_IS_RENAME_FILE_MODAL', false)
       this.fileTitle = ''
     },

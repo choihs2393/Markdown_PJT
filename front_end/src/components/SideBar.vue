@@ -181,11 +181,11 @@ export default {
       // console.log(absoluteFilePath);
       fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
         // if(err) throw err;
-        console.log(data);
+        // console.log(data);
         // fileData = data;
         let openedFileData = data;
-        console.log('요기',openedFileData);
-        console.log('------------------')
+        // console.log('요기',openedFileData);
+        // console.log('------------------')
 
         let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': absoluteFilePath};
         let win = remote.BrowserWindow.getFocusedWindow();

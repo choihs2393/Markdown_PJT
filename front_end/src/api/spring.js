@@ -34,5 +34,6 @@ export default {
         createFile: '/note/insertNoteDetail',
         deleteFile: '/note/deleteNoteDetail',
         openFile: '/note/getNoteContent',
+        saveFile: '/note/updateNoteDetail',
     }
 }
