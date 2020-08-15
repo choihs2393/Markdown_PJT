@@ -79,12 +79,51 @@ function createWindow() {
       buttons: ["Do Not Save", "Save As...", "Save", "Close"],
       defaultId: 1
     };
+    const optionsForJustSaveas = {
+      type: "question",
+      title: "Question",
+      message: "Are you sure you want to quit without saving?",
+      detail: "Click the save button if you want to save this text to your md file",
+      buttons: ["Do Not Save", "Save As...", "Close"],
+      defaultId: 1
+  };
     var fileData = '';
     BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
     .then(result => {
       fileData = result;
-      if (fileData === sampleData.input && !absoluteFilePath){
-        BrowserWindow.getFocusedWindow().destroy();
+      if (!absoluteFilePath){
+        if (fileData === sampleData.input){
+          BrowserWindow.getFocusedWindow().destroy();
+        } else{
+          dialog.showMessageBox(optionsForJustSaveas)
+          .then(result => {
+          if(result.response == 1) {
+            // 1 : Save
+                dialog.showSaveDialog(
+                    {
+                        title: "파일 저장하기",
+                        filters: [
+                            { name: 'Markdown', extensions: ['md'] },
+                        ],
+                        message: "TEST"
+                    }
+                )
+                .then(result => {
+                    // console.log(result.filePath);
+        
+                    var fileName = result.filePath;
+                    fs.writeFile(fileName, fileData, (err) => {
+    
+                    })
+                  BrowserWindow.getFocusedWindow().destroy();
+
+
+                });   
+        } else if(result.response == 0) {
+          BrowserWindow.getFocusedWindow().destroy();
+        }
+        })
+        }
       }
       else if (fileData.trimEnd() === openFileData.trimEnd() || fileData === ''){
         BrowserWindow.getFocusedWindow().destroy();
