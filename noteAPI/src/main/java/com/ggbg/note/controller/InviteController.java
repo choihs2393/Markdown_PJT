@@ -24,7 +24,6 @@ public class InviteController {
 	@SendTo("/send/{toNo}")
 //	public Map<String, String> getIntivationList(@RequestBody(required = true) Map<String, String> map) {
 	public Map<String, String> getIntivationList(@DestinationVariable("toNo") String toNo, @RequestBody(required = true) Map<String, String> map) {
-
 		return map;
 	}
 }
