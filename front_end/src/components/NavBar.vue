@@ -157,10 +157,7 @@ export default {
       }
       // 그룹을 보여주는 사이드바를 열어준다.
       else if (!!this.$store.state.isShareMode == true) {
-        this.$store.commit(
-          "SET_IS_DRAWER_SHARE",
-          !this.$store.state.drawerShare
-        );
+        this.$store.commit("SET_IS_DRAWER_SHARE", !this.$store.state.drawerShare);
       }
     },
     socketConnect() {

@@ -27,46 +27,39 @@
             <v-form ref="form_workspace" @submit.prevent>
               <v-row>
                 <v-col cols="12" sm="20" md="20">
-                  <v-text-field
-                    label="workspace *"
-                    @keyup.enter="createWorkspace"
-                    v-model="workspaceName"
-                  ></v-text-field>
+                  <v-text-field label="workspace *" v-model="newBandName" @keyup.enter="createWorkspace(newBandName)"></v-text-field>
                 </v-col>
               </v-row>
             </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="cancelCreateWorkspace">Cancel</v-btn>
-            <v-btn color="blue darken-1" text @click="createWorkspace">Create</v-btn>
+            <v-btn color="blue darken-1" text @click="cancelCreateWorkspace()">Cancel</v-btn>
+            <v-btn color="blue darken-1" text @click="createWorkspace(newBandName)">Create</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
       <v-row>
         <v-select
           class="ma-2"
-          v-model="selected"
-          :items="workspaces"
+          v-model="bandInfo"
+          :items="userInfo.group"
           item-text="name"
-          @change="changeWorkspace"
+          item-value="no"
+          select
+          return-object
+          @change="changeWorkspace(bandInfo)"
           prepend-icon="folder"
-          @mousedown.right="$refs.menu.open($event, selected)"
+          @mousedown.right="$refs.menu.open($event, bandInfo)"
           hide-details
         ></v-select>
       </v-row>
       <v-row>
         <v-spacer></v-spacer>
-        <v-btn
-          text
-          color="grey darken-1"
-          v-if="!!(this.$store.state.workspace)"
-          right
-          tile
-          @click="showInviteModal()"
-        >
-          <!-- <v-btn text color="grey darken-1" v-if="true" right tile @click="showInviteModal()"> -->
-          <v-icon left>mdi-plus</v-icon>invite
+        <v-btn text color="grey darken-1" v-if="!!bandInfo" right tile @click="showInviteModal()">
+        <!-- <v-btn text color="grey darken-1" v-if="true" right tile @click="showInviteModal()"> -->
+          <v-icon left>mdi-plus</v-icon>
+          invite
         </v-btn>
       </v-row>
       <v-list subheader flat>
@@ -85,16 +78,16 @@
         </v-list-item>
       </v-list>
       <v-row justify="end">
-        <CreateFileModal />
+        <CreateFileModal v-if="!!bandInfo" />
       </v-row>
     </v-container>
 
     <ContextMenu ref="menu">
       <template>
-        <ContextMenuItem v-if="selected" @click.native="deleteWorkspace">
+        <ContextMenuItem v-if="bandInfo" @click.native="deleteWorkspace">
           <v-icon>delete</v-icon>delete
         </ContextMenuItem>
-        <ContextMenuItem v-if="selected" @click.native="showRenameDialog">
+        <ContextMenuItem v-if="bandInfo" @click.native="showRenameDialog">
           <v-icon>autorenew</v-icon>rename
         </ContextMenuItem>
       </template>
@@ -152,7 +145,7 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 import fs from "fs";
 import { remote } from "electron";
 
-import { mapActions } from "vuex";
+import { mapState, mapActions } from 'vuex'
 
 // 소켓 관련 모듈
 import SockJS from "sockjs-client";
@@ -170,23 +163,9 @@ export default {
     DeleteFileModal
   },
 
-  computed: {},
-
-  mounted() {
-    // console.log("SideBarShare.vue -> mounted() 호출됨.")
-
-    if (this.$store.state.userInfo.group.length == 0) {
-    } else {
-      this.workspaces = this.$store.state.userInfo.group;
-    }
-    // for(var i = 0; i < this.$store.state.userInfo.group.length; i++) {
-    //   this.workspaces.push(this.$store.state.userInfo.group[i]);
-    // }
-  },
-
-  updated() {
-    // console.log("SideBarShare.vue -> mounted() 호출됨.")
-  },
+  computed: mapState([
+    'userInfo'
+  ]),
 
   data() {
     return {
@@ -194,73 +173,59 @@ export default {
       workspaceRenameDialog: false,
       memberDialog: false,
       // workspaceDialog: false,
-      selected: "",
+      bandInfo: {},
       workspaceNo: "",
-      workspaceName: "",
+      newBandName: "",
       workspaceRename: "",
       memberEmail: "",
-      workspaces: [{ name: "Add workspace first" }]
+      // workspaces: [
+        // { name: "Add workspace first" },
+      // ],
     };
+  },
+
+  mounted() {
+    console.log("SideBarShare.vue -> mounted() 호출됨.")
+    // console.log("bandInfo: ", bandInfo)
+    // if(this.$store.state.userInfo.group.length === 0) {
+      // this.workspaces = [{ name: "Add workspace first" }]
+    // } else {
+      // this.workspaces = this.$store.state.userInfo.group;
+    // }
+    // for(var i = 0; i < this.$store.state.userInfo.group.length; i++) {
+    //   this.workspaces.push(this.$store.state.userInfo.group[i]);
+    // }
   },
 
   methods: {
     ...mapActions(["openFile"]),
 
     cancelCreateWorkspace() {
-      this.selected = "";
+      this.bandInfo = "";
       this.$refs.form_workspace.reset();
       this.workspaceDialog = false;
     },
 
     // 워크스페이스 새로 추가하는 함수.
-    createWorkspace() {
-      event.preventDefault();
+    async createWorkspace(newBandName) {
+      // event.preventDefault();
       // this.workspaces
       // this.workspaces.push({ name: this.workspaceName });
-      this.selected = this.workspaceName;
+      console.log(this.bandInfo)
+      await this.$store.dispatch("createWorkspace", newBandName);
 
-      this.$store.dispatch("createWorkspace", this.workspaceName);
+      this.bandInfo = this.$store.state.selectedBandInfo;
+      this.$store.dispatch('showFileList', this.bandInfo)
 
       this.$refs.form_workspace.reset();
-
       this.workspaceDialog = false;
-      this.$store.commit("SELET_WORKSPACE", this.selected);
-      this.workspaces = this.$store.state.userInfo.group;
+      // this.$store.commit('SELETED_WORKSPACE', this.bandInfo)
+      // this.workspaces = this.$store.state.userInfo.group
     },
-    changeWorkspace(select) {
-      if (select == "Add workspace first") {
-        this.workspaceDialog = true;
-      } else {
-        this.$store.commit("SELET_WORKSPACE", select);
-        this.$store.dispatch("showFileList", select);
-
-        // const serverURL = "http://localhost:8080/noteAPI/ws";
-        // // const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
-        // let socket = new SockJS(serverURL);
-        // this.stompClient = Stomp.over(socket);
-
-        // this.stompClient.connect(
-        //   { Authorization: this.$store.state.authorization },
-        //   frame => {
-        //     this.connected = true;
-        //     // 워크스페이스에서의 현재 파일 점유 유무를 받고 있음.
-        //     this.stompClient.subscribe("/groupSend/" + this.$store.state.workspaceNo,
-        //       res => {
-        //         const receivedMsg = JSON.parse(res.body);
-
-        //         // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
-        //         //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
-        //         //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
-        //         var idx = this.$store.state.userInfo.fileList.findIndex(element => element._id == res.body._id);
-        //         this.$store.state.userInfo.fileList[idx].accountNo = res.body.accountNo;
-        //         this.$store.state.userInfo.fileList[idx].accountName = res.body.accountName;
-        //       }
-        //     );
-        //   }
-        // );
-
-        // this.stompClient.disconnect();
-      }
+    changeWorkspace(bandInfo) {
+      console.log("bandInfo: ", bandInfo)
+      // this.$store.commit('SELETED_WORKSPACE', bandInfo)
+      this.$store.dispatch('showFileList', bandInfo)
     },
     deleteWorkspace() {
       this.$refs.menu.close();
@@ -280,8 +245,8 @@ export default {
       };
 
       this.$store.dispatch("deleteWorkspace", deleteWorkspace);
-      this.selected = "";
-      this.workspaces = this.$store.state.userInfo.group;
+      this.bandInfo = "";
+      // this.workspaces = this.$store.state.userInfo.group;
     },
     showRenameDialog() {
       this.workspaceRenameDialog = true;
@@ -304,8 +269,8 @@ export default {
         workspaceIdx: idx
       };
 
-      this.$store.dispatch("renameWorkspace", renameWorkspace);
-      this.workspaces = this.$store.state.userInfo.group;
+      this.$store.dispatch("renameWorkspace", renameWorkspace)
+      // this.workspaces = this.$store.state.userInfo.group;
       // this.selected = this.workspaceRename
       this.workspaceRename = "";
     },
