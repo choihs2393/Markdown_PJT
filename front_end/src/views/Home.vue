@@ -45,7 +45,7 @@ import { remote, ipcRenderer } from "electron";
 import fs from "fs";
 import path from "path";
 
-// var data = sampleData;
+var data = sampleData;
 
 // var data = new Promise(function(resolve, reject) {
 //   resolve(sampleData);
@@ -277,7 +277,7 @@ export default {
     //           accountNo: this.$store.state.userInfo.no,
     //           accountName: this.$store.state.userInfo.name
     //       }
-
+                   
     //       // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유하고 있다'고 send하기
     //       this.stompClient.send("/groupReceive/occupy/" + this.$store.state.workspaceNo, JSON.stringify(map));
     //     }

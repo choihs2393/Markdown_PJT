@@ -31,7 +31,6 @@ public class InviteController {
 		
 		return map;
 	}
-
 	
 	// 파라미터(map)에는 아래 세 정보가 포함되어 있음.
 	// 		1. noteId
