@@ -18,7 +18,7 @@
 
       <v-dialog v-model="invitationDialog" max-width="600px">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" v-on="on" @click="bellClicked">
+          <v-btn icon v-bind="attrs" v-on="on">
             <v-tab>
               <v-badge color="red" :content="badgeContent" v-if="badgeContent">
               <!-- <v-badge color="red" :content="1" > -->
@@ -146,10 +146,10 @@ export default {
   },
 
   methods: {
-    bellClicked() {
-      document.getElementById("bell").removeAttribute("color")
+    // bellClicked() {
+    //   document.getElementById("bell").removeAttribute("color")
 
-    },
+    // },
     decideSideBar() {
       // 폴더트리를 보여주는 사이드바를 열어준다.
       if (!!this.$store.state.isShareMode == false) {
@@ -178,8 +178,9 @@ export default {
           { Authorization: this.$store.state.authorization },
           frame => {
             this.connected = true;
-            this.stompClient.subscribe(
-              "/send/" + this.$store.state.userInfo.no,
+            
+            // 알림 메세지 받고있음.
+            this.stompClient.subscribe("/send/" + this.$store.state.userInfo.no,
               res => {
                 const receivedMsg = JSON.parse(res.body);
 
@@ -189,8 +190,6 @@ export default {
                   master: receivedMsg.fromNo,
                   bandMasterName: receivedMsg.fromName
                 });
-
-                document.getElementById("bell").setAttribute("color", "red")
               }
             );
           },
@@ -201,12 +200,14 @@ export default {
       }
     },
 
+    // 로그아웃 시 수행되는, 소켓 연결 해제 메소드
     socketDisconnect() {
       this.stompClient.disconnect();
       this.connected = false;
       this.connectionCount = 0;
     },
 
+    // 그룹 초대 수락 여부를 서버에 전송.
     send(flag, groupNo) {
       // 수락
       if (flag == 1) {
