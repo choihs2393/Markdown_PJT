@@ -30,11 +30,11 @@ export default {
         acceptInvite: '/accountBand/v1/acceptInvite',
         declineInvite: '/accountBand/v1/declineInvite',
 
-        fileList: '/note/getNoteSubject',
-        createFile: '/note/insertNoteDetail',
-        renameFile: '/note/updateNoteDetailSubject',
-        deleteFile: '/note/deleteNoteDetail',
-        openFile: '/note/getNoteContent',
-        saveFile: '/note/updateNoteDetail',
+        noteList: '/note/getNoteSubject',
+        createNote: '/note/insertNoteDetail',
+        renameNote: '/note/updateNoteDetailSubject',
+        deleteNote: '/note/deleteNoteDetail',
+        getNote: '/note/getNoteContent',
+        saveNote: '/note/updateNoteDetail',
     }
 }
