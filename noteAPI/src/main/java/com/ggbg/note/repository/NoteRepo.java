@@ -72,9 +72,15 @@ public class NoteRepo {
     }
     
     public void updateNoteDetail(int bandNo, int noteNo, String subject, String content) {
-    	Query query = new Query().addCriteria(Criteria.where( "_id" ).is(bandNo));
+    	Query query = new Query().addCriteria(Criteria.where( "_id" ).is(bandNo) );
+        Update update = new Update();
+        update.pull("note", new BasicDBObject("_id", noteNo));
+        mongoTemplate.updateFirst(query, update, NoteEntity.class);
     	
-    	Update update = new Update();
+    	
+    	query = new Query().addCriteria(Criteria.where( "_id" ).is(bandNo));
+    	
+    	update = new Update();
     	Document item = new Document();  //배열안에 담을 값 입니다.
         item.put("_id", noteNo);
         item.put("subject", subject);

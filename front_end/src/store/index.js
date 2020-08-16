@@ -68,6 +68,12 @@ export default new Vuex.Store({
     inputData: '',
     tempData: '',
     syncCheck: false,
+    timer: '',
+
+    // 자동 저장되는 데이터 저장.
+    storeTempData: '',
+    storeSyncCheck: false,
+    storeTimer: '',
   },
 
   // state를 (가공해서)가져올 함수들. === computed
@@ -86,13 +92,25 @@ export default new Vuex.Store({
   // commit 을 통해 실행함.
   // mutations은 첫 번째 인자로 state를 받아야함.
   mutations: {
-
+    //자동처리를 위한 스케쥴링 데이터
+    setStoreTempData(state, param) {
+      state.storeTempData = param;
+    },
+    setStoreSyncCheck(state, param) {
+      state.storeSyncCheck = param;
+    },
+    setStoreTimer(state, param){
+      state.storeTimer = param;
+    },
     //모아서처리를 위한 스케쥴링 데이터
     setTempData(state, param) {
       state.tempData = param;
     },
     setSyncCheck(state, param) {
       state.syncCheck = param;
+    },
+    setTimer(state, param){
+      state.timer = param;
     },
     //파싱되는 데이터 저장
     setParseData(state, param) {

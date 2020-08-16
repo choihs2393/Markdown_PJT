@@ -196,24 +196,64 @@ export default {
       var getStore = this.$store; 
 
       //server mode 인지 아닌지 판단하기 위한 variable
-      //local mode 라면 timeout 200
+      //local mode 라면 timeout 200 
       //server mode 라면 tiemout * 
-      var isServerMode = this.$store;
 
       if(this.$store.state.syncCheck === false) { 
         this.$store.commit('setSyncCheck',true);
-        var timer = setTimeout(function() {
-          clearTimeout(getTempData);
+        var timer = setTimeout(() => {
+          // clearTimeout(getTempData);
           parse(tmp);
+          console.log("ㅋㅋㅋㅋㅋ" + tmp);
           getStore.commit('setSyncCheck',false);
+          
         }, 800);
+        this.$store.commit('setTimer',timer)
       }
       clearTimeout(this.$store.state.tempData);
       //parse(event.target.value);
-      var timeOut = setTimeout(function() {
+      var timeOut = setTimeout(() => {
         parse(tmp);
+        this.$store.commit('setSyncCheck', false);
+        clearTimeout(this.$store.state.timer);
       }, 200);
       this.$store.commit('setTempData',timeOut);
+
+
+
+      let bandNo = this.$store.state.userInfo.group.find(element => element.name === this.$store.state.workspace).no;
+      let noteNo = this.$store.state.selectedNoteNo;
+      let occupyAccountNo = 1;
+      let loginAccountNo = this.$store.state.userInfo.no;
+      console.log("영복이의 로그추적"  + bandNo);
+      console.log("영복이의 로그추적 " + noteNo);
+      console.log("영복이의 로그추적 " + occupyAccountNo);
+      console.log("영복이의 로그추적 " + loginAccountNo);
+      console.log("영복이의 로그추적 " + tmp);
+      if(noteNo !== '' && bandNo !== '' && occupyAccountNo !== '' && occupyAccountNo === loginAccountNo){
+        if(this.$store.state.storeSyncCheck === false){
+          this.$store.commit('setStoreSyncCheck', true);
+          let storeTimer = setTimeout(() => {
+            // clearTimeout(this.$store.state.storeTempData);
+            console.log('로직 안 this22222', this);
+            console.log("영복이의 로그추적 " + tmp);
+            this.$store.dispatch('saveFile', tmp);
+            this.$store.commit('setStoreSyncCheck', false);
+          }, 1000 * 60 * 5);
+           this.$store.commit('setStoreTimer',storeTimer)
+        }
+        clearTimeout(this.$store.state.storeTempData);
+        let timeOut_ = setTimeout(() => {
+            console.log('로직 안 this', this);
+            console.log("영복이의 로그추적 " + tmp);
+            this.$store.dispatch('saveFile', tmp);
+            this.$store.commit('setStoreSyncCheck', false);
+            // console.log(this.$store.state.stroeTimer);
+            clearTimeout(this.$store.state.storeTimer);
+        }, 1000 * 60 * 3);
+        this.$store.commit('setStoreTempData', timeOut_);
+      }
+
     }
 
   }

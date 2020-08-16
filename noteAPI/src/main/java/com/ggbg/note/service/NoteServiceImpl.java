@@ -63,7 +63,7 @@ public class NoteServiceImpl implements INoteService{
 		boolean ret = verify(accountNo, bandNo);
 		if(!ret)
 			return "";
-		
+		System.out.println("getNoteContent");
 		NoteEntity ne = noteDetailRepo.findNoteDetailContent(bandNo, noteNo);
 		if(ne.getNote() == null)
 			return "";
@@ -79,7 +79,7 @@ public class NoteServiceImpl implements INoteService{
 		boolean ret = verify(accountNo, bandNo);
 		if(!ret)
 			return false;
-		
+		System.out.println("updateNoteDetail");
 		noteRepo.removeNoteDetail(bandNo, noteNo);
 		noteRepo.updateNoteDetail(bandNo, noteNo, subject, content);
 		
@@ -91,6 +91,7 @@ public class NoteServiceImpl implements INoteService{
 		boolean ret = verify(accountNo, bandNo);
 		if(!ret)
 			return false;	
+		System.out.println("updateNoteDetailSubject");
 	
 		NoteEntity ne = noteDetailRepo.findNoteDetailContent(bandNo, noteNo);
 		String content = "";
@@ -100,7 +101,6 @@ public class NoteServiceImpl implements INoteService{
 			return false;
 		}
 	
-		noteRepo.removeNoteDetail(bandNo, noteNo);
 		noteRepo.updateNoteDetail(bandNo, noteNo, subject, content);
 
 		return true;
@@ -111,7 +111,7 @@ public class NoteServiceImpl implements INoteService{
 		boolean ret = verify(accountNo, bandNo);
 		if(!ret)
 			return false;
-		
+		System.out.println("deleteNoteDetail");
 		noteRepo.removeNoteDetail(bandNo, noteNo);
 		
 		return true;
