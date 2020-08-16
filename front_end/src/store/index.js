@@ -49,6 +49,7 @@ export default new Vuex.Store({
 
     // selected workspace in server mode
     workspace: '',
+    workspaceNo: '',
     workspaceMemberList: [],
     newMemberInfo: {
       email: '',
@@ -182,6 +183,7 @@ export default new Vuex.Store({
     // 선택한 워크스페이스
     SELET_WORKSPACE(state, payload) {
       state.workspace = payload
+      state.workspaceNo = state.userInfo.group.find(element => element.name == state.workspace).no;
     },
     
     DELETE_WORKSPACE(state, param) {
@@ -651,7 +653,7 @@ export default new Vuex.Store({
           // console.log(state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content)
           let win = remote.BrowserWindow.getFocusedWindow();
           if (res.data.result==='success') {
-            win.webContents.send('openFile', res.data.map.content)
+            win.webContents.send('openFile', res.data.map.content, state.fileList.find(element => element._id == fileNo).accountNo)
             // win.webContents.send('openFile', state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content)
           } else if (res.data.result==='empty') {
             win.webContents.send('openFile', '')
