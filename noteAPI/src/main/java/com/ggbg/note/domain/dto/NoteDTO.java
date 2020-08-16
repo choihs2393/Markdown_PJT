@@ -7,5 +7,5 @@ import lombok.Data;
 @Data
 public class NoteDTO {
 	private int _id;
-	private List<String> note;
+	private List<NoteDetailDTO> note;
 }

@@ -12,4 +12,6 @@ public class NoteDetailEntity {
 	private int _id;
 	private String subject;
 	public String content;
+	public int occupiedNo;
+	public String occupiedName;
 }

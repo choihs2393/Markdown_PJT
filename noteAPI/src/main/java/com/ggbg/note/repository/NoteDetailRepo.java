@@ -1,11 +1,8 @@
 package com.ggbg.note.repository;
 
-import java.util.List;
-
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
-import com.ggbg.note.domain.entity.NoteDetailEntity;
 import com.ggbg.note.domain.entity.NoteEntity;
 
 public interface NoteDetailRepo extends MongoRepository<NoteEntity, Integer> {

@@ -146,8 +146,9 @@ public class NoteController {
 		int noteNo = Integer.parseInt(map.get("noteNo"));
 		String subject = map.get("subject");
 		String content = map.get("content");
-		
-		boolean ret = noteService.updateNoteDetail(accountNo, bandNo, noteNo, subject, content);
+		int occupiedNo = Integer.parseInt(map.get("occupiedNo"));
+		String occupiedName = map.get("occupiedName");
+		boolean ret = noteService.updateNoteDetail(accountNo, bandNo, noteNo, subject, content, occupiedNo, occupiedName);
 		
 		result.status = true;
 		if(ret) {
