@@ -27,7 +27,11 @@
             <v-form ref="form_workspace" @submit.prevent>
               <v-row>
                 <v-col cols="12" sm="20" md="20">
-                  <v-text-field label="workspace *" v-model="newBandName" @keyup.enter="createWorkspace(newBandName)"></v-text-field>
+                  <v-text-field
+                    v-model="newBandName"
+                    label="workspace *"
+                    @keyup.enter="createWorkspace(newBandName)">
+                  </v-text-field>
                 </v-col>
               </v-row>
             </v-form>
@@ -45,19 +49,16 @@
           v-model="bandInfo"
           :items="userInfo.group"
           item-text="name"
-          item-value="no"
-          select
-          return-object
-          @change="changeWorkspace(bandInfo)"
+          @input="changeWorkspace(bandInfo)"
+          @mousedown.right="$refs.bandMenu.open($event, bandInfo)"
           prepend-icon="folder"
-          @mousedown.right="$refs.menu.open($event, bandInfo)"
+          return-object
           hide-details
         ></v-select>
       </v-row>
       <v-row>
         <v-spacer></v-spacer>
         <v-btn text color="grey darken-1" v-if="!!bandInfo" right tile @click="showInviteModal()">
-        <!-- <v-btn text color="grey darken-1" v-if="true" right tile @click="showInviteModal()"> -->
           <v-icon left>mdi-plus</v-icon>
           invite
         </v-btn>
@@ -65,29 +66,29 @@
       <v-list subheader flat>
         <!-- <v-subheader >
           <v-toolbar-title>FILES</v-toolbar-title>
-        </v-subheader>-->
+        </v-subheader> -->
         <v-list-item
-          v-for="file in this.$store.state.fileList"
-          :key="file._id"
-          @click="openFile(file._id)"
-          @mousedown.right="$refs.fileMenu.open($event, file), $store.commit('SELECTED_FILE_NO', file._id)"
+          v-for="note in this.$store.state.noteList"
+          :key="note._id"
+          @click="getNote(note)"
+          @mousedown.right="$refs.fileMenu.open($event, note), setRightNoteInfo(note)"
         >
           <v-list-item-content>
-            <v-list-item-title>{{ file.subject }}</v-list-item-title>
+            <v-list-item-title>{{ note.subject }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
       </v-list>
       <v-row justify="end">
-        <CreateFileModal v-if="!!bandInfo" />
+        <CreateFileModal v-if="bandInfo" />
       </v-row>
     </v-container>
 
-    <ContextMenu ref="menu">
+    <ContextMenu ref="bandMenu">
       <template>
-        <ContextMenuItem v-if="bandInfo" @click.native="deleteWorkspace">
+        <ContextMenuItem v-if="bandInfo" @click.native="deleteWorkspace()">
           <v-icon>delete</v-icon>delete
         </ContextMenuItem>
-        <ContextMenuItem v-if="bandInfo" @click.native="showRenameDialog">
+        <ContextMenuItem v-if="bandInfo" @click.native="showRenameDialog()">
           <v-icon>autorenew</v-icon>rename
         </ContextMenuItem>
       </template>
@@ -118,14 +119,14 @@
           <v-form ref="form_workspace_rename">
             <v-row>
               <v-col cols="12" sm="20" md="20">
-                <v-text-field label="rename *" required v-model="workspaceRename"></v-text-field>
+                <v-text-field label="rename *" required v-model="bandInfo.name"></v-text-field>
               </v-col>
             </v-row>
           </v-form>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="cancelCreateWorkspace">Cancel</v-btn>
+          <v-btn color="blue darken-1" text @click="workspaceRenameDialog=false">Cancel</v-btn>
           <v-btn color="blue darken-1" text @click="renameWorkspace">Rename</v-btn>
         </v-card-actions>
       </v-card>
@@ -169,39 +170,19 @@ export default {
 
   data() {
     return {
+      bandInfo: '',
       workspaceDialog: false,
       workspaceRenameDialog: false,
-      memberDialog: false,
-      // workspaceDialog: false,
-      bandInfo: {},
-      workspaceNo: "",
       newBandName: "",
-      workspaceRename: "",
-      memberEmail: "",
-      // workspaces: [
-        // { name: "Add workspace first" },
-      // ],
+      // memberEmail: "",
+      // memberDialog: false,
     };
   },
 
-  mounted() {
-    console.log("SideBarShare.vue -> mounted() 호출됨.")
-    // console.log("bandInfo: ", bandInfo)
-    // if(this.$store.state.userInfo.group.length === 0) {
-      // this.workspaces = [{ name: "Add workspace first" }]
-    // } else {
-      // this.workspaces = this.$store.state.userInfo.group;
-    // }
-    // for(var i = 0; i < this.$store.state.userInfo.group.length; i++) {
-    //   this.workspaces.push(this.$store.state.userInfo.group[i]);
-    // }
-  },
-
   methods: {
-    ...mapActions(["openFile"]),
+    ...mapActions(["getNote"]),
 
     cancelCreateWorkspace() {
-      this.bandInfo = "";
       this.$refs.form_workspace.reset();
       this.workspaceDialog = false;
     },
@@ -209,88 +190,71 @@ export default {
     // 워크스페이스 새로 추가하는 함수.
     async createWorkspace(newBandName) {
       // event.preventDefault();
-      // this.workspaces
-      // this.workspaces.push({ name: this.workspaceName });
-      console.log(this.bandInfo)
-      await this.$store.dispatch("createWorkspace", newBandName);
-
-      this.bandInfo = this.$store.state.selectedBandInfo;
-      this.$store.dispatch('showFileList', this.bandInfo)
-
+      if (!!newBandName) {
+        await this.$store.dispatch("createWorkspace", newBandName);
+        this.bandInfo = this.$store.state.selectedBandInfo;
+        this.$store.dispatch('getNoteList', this.bandInfo)
+      }
       this.$refs.form_workspace.reset();
       this.workspaceDialog = false;
-      // this.$store.commit('SELETED_WORKSPACE', this.bandInfo)
-      // this.workspaces = this.$store.state.userInfo.group
     },
+
     changeWorkspace(bandInfo) {
       console.log("bandInfo: ", bandInfo)
-      // this.$store.commit('SELETED_WORKSPACE', bandInfo)
-      this.$store.dispatch('showFileList', bandInfo)
+      this.$store.commit('SELECTED_WORKSPACE', bandInfo)
+      this.$store.dispatch('getNoteList', bandInfo)
     },
+
     deleteWorkspace() {
-      this.$refs.menu.close();
-
-      var workspace = this.$store.state.userInfo.group.find(element => element.name == this.$store.state.workspace);
-      var idx = this.$store.state.userInfo.group.findIndex(element => element.name == this.$store.state.workspace);
-      var workspaceNo = workspace.no;
-
-      // console.log("workspaceNo : " + workspaceNo)
-      // console.log("workspaceName : " + this.$store.state.workspace)
-      // console.log("workspaceIdx : " + idx)
+      this.$refs.bandMenu.close();
 
       const deleteWorkspace = {
-        bandNo: workspaceNo,
+        bandNo: this.bandInfo.no,
         accountNo: this.$store.state.userInfo.no,
-        workspaceIdx: idx
       };
 
       this.$store.dispatch("deleteWorkspace", deleteWorkspace);
-      this.bandInfo = "";
-      // this.workspaces = this.$store.state.userInfo.group;
+      this.$store.commit('SELECTED_WORKSPACE', '')
+      this.bandInfo = this.$store.state.selectedBandInfo;
+      this.$store.dispatch('getNoteList', this.bandInfo)
     },
+
     showRenameDialog() {
       this.workspaceRenameDialog = true;
     },
+
     renameWorkspace() {
-      this.workspaceRenameDialog = false;
-
-      var workspace = this.$store.state.userInfo.group.find(element => element.name == this.$store.state.workspace);
-      var workspaceNo = workspace.no;
-      var idx = this.$store.state.userInfo.group.findIndex(element => element.name == this.$store.state.workspace);
-
-      // console.log("selectedWorkspaceName : " + workspace.name)
-      // console.log("workspaceNo : " + workspaceNo)
-      // console.log("workspaceRename : " + this.workspaceRename)
-
       const renameWorkspace = {
-        bandNo: workspaceNo,
+        bandNo: this.bandInfo.no,
         accountNo: this.$store.state.userInfo.no,
-        newBandName: this.workspaceRename,
-        workspaceIdx: idx
+        newBandName: this.bandInfo.name,
       };
 
       this.$store.dispatch("renameWorkspace", renameWorkspace)
-      // this.workspaces = this.$store.state.userInfo.group;
-      // this.selected = this.workspaceRename
-      this.workspaceRename = "";
+      this.workspaceRenameDialog = false;
     },
+
     showInviteModal() {
       // console.log("전체 워크스페이스", this.$store.state.userInfo.group)
-      var workspaceNo = this.$store.state.userInfo.group.find(element => element.name == this.$store.state.workspace).no;
-      this.workspaceNo = workspaceNo;
+      // var workspaceNo = this.$store.state.userInfo.group.find(element => element.name == this.$store.state.workspace).no;
+      // this.workspaceNo = workspaceNo;
 
       // console.log("여기workspaceNo : " + workspaceNo);
 
       const showGroupMembers = {
-        bandNo: workspaceNo,
+        bandNo: this.bandInfo.no,
         email: this.$store.state.userInfo.email
       };
 
       this.$store.dispatch("showGroupMembers", showGroupMembers);
     },
 
-    openRenameFileModal(data) {
+    openRenameFileModal() {
       this.$store.commit("SET_IS_RENAME_FILE_MODAL", true);
+    },
+
+    setRightNoteInfo(noteInfo) {
+      this.$store.commit("RIGHT_SELECTED_NOTE", noteInfo);
     },
 
     openDeleteFileModal() {
@@ -317,36 +281,38 @@ export default {
   border-bottom: solid 1px rgba(210, 215, 217, 0.75);
 }
 .sidesubheader {
-  border-bottom: solid 3px rgb(100, 93, 102);
+  /* border-bottom: solid 3px rgb(100, 93, 102); */
   display: inline-block;
-  margin: 2.5em 0 0 0;
+  margin: 1em 0 0 0;
   padding: 0 0.75em 0.5em 0;
 }
 
 .v-subheader:not(.sidesubheader) {
   font-size: 1.25em;
-  color: rgb(95, 90, 97) !important;
-  border-bottom: solid 2px rgb(83, 81, 83);
+  /* color: rgb(95, 90, 97) !important; */
+  /* border-bottom: solid 2px rgb(83, 81, 83); */
   display: inline-block;
   margin: 0.5em;
   padding: 0.75em 0;
 }
 
 .theme--light.v-list-item:not(.v-list-item--active) {
-  color: #615f75 !important;
+  /* color: #615f75 !important; */
   font-size: 0.5em;
 }
 
 .theme--light.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled):hover {
-  color: rgb(214, 198, 219) !important;
+  color: rgb(255, 179, 102) !important;
+  /* color: rgb(214, 198, 219) !important; */
 }
 
 .theme--dark.v-list-item:not(.v-list-item--active) {
-  color: #615f75 !important;
+  /* color: #615f75 !important; */
   font-size: 0.5em;
 }
 
 .theme--dark.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled):hover {
-  color: rgb(214, 198, 219) !important;
+  color: rgb(255, 179, 102) !important;
+  /* color: rgb(214, 198, 219) !important; */
 }
 </style>

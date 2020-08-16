@@ -29,8 +29,7 @@ export default new Vuex.Store({
 
     // selected workspace in server mode
     workspace: '',
-    selectedBandInfo: '',
-    selectedBandNo: '',
+    selectedBandInfo: {},
     workspaceMemberList: [],
     newMemberInfo: {
       email: '',
@@ -40,7 +39,9 @@ export default new Vuex.Store({
     },
 
     // note_file
-    fileList: [],
+    noteList: [],
+    selectedNoteInfo: {},
+    rightSelectedNoteInfo: {},
     selectedNoteNo: '',
     
     // 파싱되는 데이터 저장.
@@ -186,21 +187,15 @@ export default new Vuex.Store({
       state.selectedBandInfo = bandInfo
     },
     
+    // 워크스페이스 삭제
     DELETE_WORKSPACE(state, param) {
-      // console.log("DELETE_WORKSPACE 호출됨.")
-      // console.log(param)
-      // console.log(param.workspaceIdx)
-      var idx = param.workspaceIdx;
-      // console.log(idx + "번째 아이템 : " + state.userInfo.group[idx].name + "[삭제]");
+      const idx = state.userInfo.group.findIndex(item => item.no===param.bandNo)
       state.userInfo.group.splice(idx, 1)
     },
 
+    // 워크스페이스 이름 변경
     UPDATE_WORKSPACE(state, param) {
-      // console.log("UPDATE_WORKSPACE 호출됨.")
-      // console.log(param)
-      // console.log(param.workspaceIdx)
-      var idx = param.workspaceIdx
-      // console.log(idx + "번째 아이템 : " + state.userInfo.group[idx].name + "[변경]")
+      const idx = state.userInfo.group.findIndex(item => item.no == param.bandNo)
       state.userInfo.group[idx].name = param.newBandName
     },
     
@@ -252,34 +247,40 @@ export default new Vuex.Store({
       state.isDeleteFileModal = payload
     },
 
-    // 초기 fileList 정보 저장
-    INIT_FILE_LIST(state, fileList) {
-      state.fileList = fileList
+    // 초기 noteList 정보 저장
+    INIT_NOTE_LIST(state, noteList) {
+      state.noteList = noteList
     },
 
     // FileList 에 File 추가하기
-    SET_FILE_INFO(state, file) {
-      state.fileList.push(file);
+    SET_NOTE(state, noteInfo) {
+      state.noteList.push(noteInfo);
     },
 
-    SELECTED_FILE_NO(state, fileNo) {
-      state.selectedNoteNo = fileNo
+    SELECTED_NOTE(state, noteInfo) {
+      state.selectedNoteInfo = noteInfo
+    },
+
+    RIGHT_SELECTED_NOTE(state, noteInfo) {
+      state.rightSelectedNoteInfo = noteInfo
     },
 
     // File 이름 변경
-    RENAME_FILE_TITLE(state, rename) {
-      state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].subject = rename
+    RENAME_NOTE_SUBJECT(state, noteInfo) {
+      const idx = state.noteList.findIndex(item => item._id == noteInfo.noteNo)
+      state.noteList[idx].subject = noteInfo.subject
     },
 
     // FileList 에 File 삭제하기
-    DELETE_FILE_INFO(state, fileNo) {
-      const idx = state.fileList.findIndex(file => file.no===fileNo)
-      state.fileList.splice(idx, 1);
+    DELETE_NOTE(state, noteNo) {
+      const idx = state.noteList.findIndex(item => item._id===noteNo)
+      state.noteList.splice(idx, 1);
     },
 
     // File 내용 추가
-    SET_FILE_CONTENTS(state, fileContents) {
-      state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content = fileContents
+    SET_NOTE_CONTENT(state, noteInfo) {
+      const idx = state.noteList.findIndex(item => item._id===noteInfo.noteNo)
+      state.noteList[idx].content = noteInfo.content
     }
   },
 
@@ -339,7 +340,7 @@ export default new Vuex.Store({
           /* 서버모드로 켜놓고, 로그아웃 하면 서버모드가 유지됩니다. */
           /* 로그아웃시 로컬모드만 사용할 수 있도록 false로 고정해놨습니다. */
           commit('SET_IS_SHARE', false)
-          commit('INIT_FILE_LIST', [])
+          commit('INIT_NOTE_LIST', [])
         })
         .catch(err => console.error(err.response.data))
     },
@@ -422,9 +423,7 @@ export default new Vuex.Store({
         .then(res => {
           if (res.data['result'] === 'success') {
             // console.log("################# res.data.map", res.data.map)
-            console.log("초기데이터 저장")
             commit('SET_INIT_USER_INFO', res.data.map)
-            // console.log(typeof(state.workspace))
           }
         })
         .catch(err => console.error(err.response.data))
@@ -460,11 +459,11 @@ export default new Vuex.Store({
     },
 
     // 워크스페이스 제거
-    deleteWorkspace({ commit }, deleteWorkspace) {
+    deleteWorkspace({ state, commit }, deleteWorkspace) {
       // console.log("Vuex내에 deleteWorkspace() 진입.");
       // console.log("넘어온 그룹 정보 (bandNo, accountNo) : ", deleteWorkspace)
       
-      axios.post(SERVER.URL + SERVER.ROUTES.deleteWorkspace, deleteWorkspace, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.deleteWorkspace, deleteWorkspace, { headers: { email: state.userInfo.email }})
       .then(res => {
         // console.log("res.data.result : ", res.data.result)
         if(res.data.result == "success") {
@@ -481,11 +480,11 @@ export default new Vuex.Store({
     },
 
     // 워크스페이스명 변경
-    renameWorkspace({ commit }, renameWorkspace) {
+    renameWorkspace({ state, commit }, renameWorkspace) {
       // console.log("Vuex내에 renameWorkspace() 진입")
       // console.log("넘어온 그룹 정보 (bandNo, accountNo, newBandName, workspaceIdx) :", renameWorkspace)
 
-      axios.post(SERVER.URL + SERVER.ROUTES.renameWorkspace, renameWorkspace, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.renameWorkspace, renameWorkspace, { headers: { email: state.userInfo.email }})
       .then(res => {
         // console.log("res.data.result : ", res.data.result)
         if(res.data.result == "success") {
@@ -495,9 +494,9 @@ export default new Vuex.Store({
       })
     },
     // 워크스페이스 멤버 불러오기
-    showGroupMembers({ commit }, showGroupMembers) {
+    showGroupMembers({ state, commit }, showGroupMembers) {
       // console.log(showGroupMembers)
-      axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, { headers: { email: state.userInfo.email }})
       .then(res => {
         // console.log("res.data.result : ", res.data.result)
         commit("SHOW_GROUP_MEMBERS", res.data.map.bandMemberList)
@@ -571,133 +570,116 @@ export default new Vuex.Store({
       })
     },
 
-    // fileList 조회
-    // showFileList({ state, commit }, seletedBandName) {
-    //   const info = {
-    //     accountNo: state.userInfo.no,
-    //     bandNo: state.userInfo.group.find(element => element.name === seletedBandName).no,
-    //   }
-    //   axios.post(SERVER.URL + SERVER.ROUTES.fileList, info)
-    //     .then(res => {
-    //       // console.log(res.data)
-    //       if (res.data.result==='success') {
-    //         // console.log(res.data.map.noteDetailDTOList)
-    //         commit('INIT_FILE_LIST', res.data.map.noteDetailDTOList)
-    //       } else if (res.data.result==='empty' || seletedBandName==='') {
-    //         commit('INIT_FILE_LIST', [])
-    //       }
-    //     })
-    //     .catch(err => console.error(err.response.data))
-    // },
-
-    // fileList 조회
-    showFileList({ state, commit }, bandInfo) {
-      const info = {
-        accountNo: state.userInfo.no,
-        bandNo: bandInfo.no,
+    // noteList 조회
+    getNoteList({ state, commit }, bandInfo) {
+      if (!!bandInfo.no) {
+        const info = {
+          accountNo: state.userInfo.no,
+          bandNo: bandInfo.no,
+        }
+        axios.post(SERVER.URL + SERVER.ROUTES.noteList, info)
+          .then(res => {
+            // console.log(res.data)
+            if (res.data.result==='success') {
+              // console.log(res.data.map.noteDetailDTOList)
+              commit('INIT_NOTE_LIST', res.data.map.noteDetailDTOList)
+            } else if (res.data.result==='empty') {
+              commit('INIT_NOTE_LIST', [])
+            }
+          })
+          .catch(err => console.error(err.response.data))
       }
-      axios.post(SERVER.URL + SERVER.ROUTES.fileList, info)
-        .then(res => {
-          // console.log(res.data)
-          if (res.data.result==='success') {
-            // console.log(res.data.map.noteDetailDTOList)
-            commit('INIT_FILE_LIST', res.data.map.noteDetailDTOList)
-          } else if (res.data.result==='empty' || seletedBandName==='') {
-            commit('INIT_FILE_LIST', [])
-          }
-        })
-        .catch(err => console.error(err.response.data))
     },
 
-    // file 추가
-    createFile({ state, commit, dispatch }, fileTitle) {
-      const info = {
-        accountNo: state.userInfo.no,
-        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
-        subject: fileTitle,
+    // note 추가
+    createNote({ state, commit, dispatch }, subject) {
+      if (!!subject) {
+        const info = {
+          accountNo: state.userInfo.no,
+          bandNo: state.selectedBandInfo.no,
+          subject: subject,
+        }
+        axios.post(SERVER.URL + SERVER.ROUTES.createNote, info)
+          .then(res => {
+            // console.log(res.data.map)
+            info.no = res.data.map.no
+            info.content = ''
+            // console.log(info)
+            commit('SET_NOTE', info)
+            dispatch('getNoteList', state.selectedBandInfo)
+          })
+          .catch(err => console.error(err.response.data))
       }
-      axios.post(SERVER.URL + SERVER.ROUTES.createFile, info)
-        .then(res => {
-          // console.log(res.data.map)
-          info.no = res.data.map.no
-          info.content = ''
-          // console.log(info)
-          commit('SET_FILE_INFO', info)
-          dispatch('showFileList', state.workspace)
-        })
-        .catch(err => console.error(err.response.data))
     },
 
-    // file 삭제
-    deleteFile({ state, commit, dispatch }, fileNo) {
+    // note 삭제
+    deleteNote({ state, commit, dispatch }, noteInfo) {
       const info = {
         accountNo: state.userInfo.no,
-        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
-        noteNo: fileNo,
+        bandNo: state.selectedBandInfo.no,
+        noteNo: noteInfo._id,
       }
-      axios.post(SERVER.URL + SERVER.ROUTES.deleteFile, info)
+      // console.log(noteInfo)
+      axios.post(SERVER.URL + SERVER.ROUTES.deleteNote, info)
         .then(() => {
-          commit('DELETE_FILE_INFO', fileNo)
-          dispatch('showFileList', state.workspace)
+          commit('DELETE_NOTE', info.noteNo)
+          dispatch('getNoteList', state.selectedBandInfo)
         })
         .catch(err => console.error(err.response.data))
     },
 
-    // file 이름 변경
-    renameFile({ state, commit, dispatch }, fileTitle) {
+    // note 이름 변경
+    renameNote({ state, commit, dispatch }, newSubject) {
       const info = {
         accountNo: state.userInfo.no,
-        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
-        noteNo: state.selectedNoteNo,
-        subject: fileTitle,
+        bandNo: state.selectedBandInfo.no,
+        noteNo: state.rightSelectedNoteInfo._id,
+        subject: newSubject,
       }
-      axios.post(SERVER.URL + SERVER.ROUTES.renameFile, info)
+      axios.post(SERVER.URL + SERVER.ROUTES.renameNote, info)
         .then(() => {
-          commit('RENAME_FILE_TITLE', fileTitle)
-          dispatch('showFileList', state.workspace)
+          commit('RENAME_NOTE_SUBJECT', info)
+          dispatch('getNoteList', state.selectedBandInfo)
         })
         .catch(err => console.error(err.response.data))
     },
 
-    // file 열기
-    openFile({ state, commit }, fileNo) {
+    // note 열기
+    getNote({ state, commit }, noteInfo) {
       const info = {
         accountNo: state.userInfo.no,
-        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
-        noteNo: fileNo,
+        bandNo: state.selectedBandInfo.no,
+        noteNo: noteInfo._id,
       }
-      // console.log(info)
-      axios.post(SERVER.URL + SERVER.ROUTES.openFile, info)
+      axios.post(SERVER.URL + SERVER.ROUTES.getNote, info)
         .then((res) => {
-          console.log(res)
-          commit('SELECTED_FILE_NO', fileNo)
-          // commit('SET_FILE_CONTENTS', )
-          // console.log(state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content)
-          let win = remote.BrowserWindow.getFocusedWindow();
+          commit('SELECTED_NOTE', noteInfo)
+          const win = remote.BrowserWindow.getFocusedWindow();
           if (res.data.result==='success') {
-            win.webContents.send('openFile', res.data.map.content, state.fileList.find(element => element._id == fileNo).accountNo)
-            // win.webContents.send('openFile', state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content)
+            win.webContents.send('getNote', res.data.map.content, info.accountNo)
+            // win.webContents.send('getNote', res.data.map.content, state.noteList.find(item => item._id === info.noteNo).accountNo)
+            // win.webContents.send('getNote', state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteNo)].content)
           } else if (res.data.result==='empty') {
-            win.webContents.send('openFile', '')
+            win.webContents.send('getNote', '')
           }
         })
         .catch(err => console.error(err.response.data))
     },
 
-    // file 저장
-    saveFile({ state, commit }, fileContents) {
+    // note 저장
+    saveNote({ state, commit }, content) {
       const info = {
         accountNo: state.userInfo.no,
-        bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
-        noteNo: state.selectedNoteNo,
-        subject: state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].subject,
-        content: fileContents
+        bandNo: state.selectedBandInfo.no,
+        noteNo: state.selectedNoteInfo._id,
+        subject: state.selectedNoteInfo.subject,
+        content: content
       }
       // console.log(info)
-      axios.post(SERVER.URL + SERVER.ROUTES.saveFile, info)
+      axios.post(SERVER.URL + SERVER.ROUTES.saveNote, info)
         .then(() => {
           // console.log(res)
-          commit('SET_FILE_CONTENTS', info.content)
+          commit('SET_NOTE_CONTENT', info)
         })
         .catch(err => console.error(err.response.data))
     }

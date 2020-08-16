@@ -1,7 +1,7 @@
 <template>
   <v-main>
     <v-container class="md" fluid>
-      <v-btn v-if="isLoggedIn" @click="saveFile(input)">없어질 버튼</v-btn>
+      <v-btn v-if="isLoggedIn" @click="saveNote(input)">없어질 버튼</v-btn>
       <!-- <v-btn v-if="isLoggedIn && !isOccupied" @click="occupy(this.$store.state.selectedNoteNo)">점유 하기</v-btn>
       <v-btn v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn> -->
       <div id="editor_div">
@@ -55,7 +55,7 @@ ipcRenderer.on("ping", (event, message) => {
   data.input = message["openedFileData"];
 });
 
-ipcRenderer.on("openFile", (event, message, accountNo) => {
+ipcRenderer.on("getNote", (event, message, accountNo) => {
   // console.log(message);
   data.input = message;
   // if(accountNo != 0) {
@@ -196,7 +196,7 @@ export default {
   //   return await data;
   // }
   methods: {
-    ...mapActions(["saveFile"]),
+    ...mapActions(["saveNote"]),
 
     whenKeyUp() {
       var tmp = event.target.value;
@@ -227,8 +227,8 @@ export default {
       }, 200);
       this.$store.commit('setTempData',timeOut);
 
-      let bandNo = this.$store.state.userInfo.group.find(element => element.name === this.$store.state.workspace).no;
-      let noteNo = this.$store.state.selectedNoteNo;
+      let bandNo = this.$store.state.selectedBandInfo.no;
+      let noteNo = this.$store.state.selectedNoteInfo._id;
       let occupyAccountNo = 1;
       let loginAccountNo = this.$store.state.userInfo.no;
       console.log("영복이의 로그추적"  + bandNo);
@@ -243,7 +243,7 @@ export default {
             // clearTimeout(this.$store.state.storeTempData);
             console.log('로직 안 this22222', this);
             console.log("영복이의 로그추적 " + tmp);
-            this.$store.dispatch('saveFile', tmp);
+            this.$store.dispatch('saveNote', tmp);
             this.$store.commit('setStoreSyncCheck', false);
           }, 1000 * 60 * 5);
            this.$store.commit('setStoreTimer',storeTimer)
@@ -252,7 +252,7 @@ export default {
         let timeOut_ = setTimeout(() => {
             console.log('로직 안 this', this);
             console.log("영복이의 로그추적 " + tmp);
-            this.$store.dispatch('saveFile', tmp);
+            this.$store.dispatch('saveNote', tmp);
             this.$store.commit('setStoreSyncCheck', false);
             // console.log(this.$store.state.stroeTimer);
             clearTimeout(this.$store.state.storeTimer);

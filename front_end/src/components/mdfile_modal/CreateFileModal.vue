@@ -13,7 +13,7 @@
           <v-card-text>
             <v-form>
               <v-text-field
-                v-model="fileTitle"
+                v-model="subject"
                 label="Title"
                 name="title"
                 prepend-icon="far fa-file-alt"
@@ -24,8 +24,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="green darken-1" text @click="createFile(fileTitle), close()">Create</v-btn>
             <v-btn color="green darken-1" text @click="close()">Close</v-btn>
+            <v-btn color="green darken-1" text @click="createNote(subject), close()">Create</v-btn>
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -42,16 +42,16 @@ export default {
   data() {
     return {
       isCreateFileModal: false,
-      fileTitle: '',
+      subject: '',
     }
   },
 
   methods: {
-    ...mapActions(['createFile']),
+    ...mapActions(['createNote']),
 
     close() {
       this.isCreateFileModal = false
-      this.fileTitle = ''
+      this.subject = ''
     }
   }
 
