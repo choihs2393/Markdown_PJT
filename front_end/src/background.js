@@ -1,6 +1,6 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, Menu, dialog, ipcMain } from "electron";
+import { app, protocol, BrowserWindow, Menu, dialog, ipcMain, globalShortcut  } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 import menuTemplate from './markdown/menuTemplate.js';
@@ -18,6 +18,22 @@ let win;
 // let win: Electron.BrowserWindow | null;
 
 
+//block to 
+app.on ( 'browser-window-focus', function () {
+  globalShortcut.register ( "CommandOrControl + R", () => {
+  console.log ( "CommandOrControl + R 누름 : 바로 가기 비활성화 됨");
+  });
+  globalShortcut.register ( "CommandOrControl + Shift + R", () => {
+  console.log ( "CommandOrControl + Shift + R 누름 : 바로 가기 비활성화 됨");
+  });
+});
+  
+app.on ( 'browser-window-blur', function () {
+  globalShortcut.unregister ( 'CommandOrControl + R');
+  globalShortcut.unregister ( 'CommandOrControl + Shift + R');
+});
+
+  
 let openFileData;
 ipcMain.on("mainping", (event, message)=>{
     openFileData = message['openedFileData'];
@@ -52,7 +68,8 @@ function createWindow() {
       //true
       
         // .ELECTRON_NODE_INTEGRATION as unknown) as boolean
-    }
+    },
+    
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -182,6 +199,7 @@ function createWindow() {
   });
 
   win.webContents.closeDevTools();
+
   win.setTitle("소망이노트");
   win.on('page-title-updated', function(e) {
     e.preventDefault()
