@@ -29,7 +29,7 @@ public class NoteController {
 	
 	@ApiOperation(value = "getNoteSubject", httpMethod = "POST", notes = "Hello this is getNoteSubject")
 	@PostMapping("/getNoteSubject")
-	public ResponseEntity getNoteSubject(HttpServletRequest request, 
+	public ResponseEntity getNoteSubject(HttpServletRequest request,
 			@RequestBody(required = true) Map<String, String> map) {
 		
 		ResponseEntity response = null;

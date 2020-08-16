@@ -27,28 +27,10 @@ export default new Vuex.Store({
       no: ''
     },
 
-    // auth_check
-    isDuplicateChecked: false,
-    isAuthNumChecked: false,
-    isPasswordChecked: false,
-    isModifyChecked: false,
-
-    // modal
-    drawer: false,
-    drawerShare: false,
-    isLogoutModal: false,
-    isMypageModal: false,
-    isDeleteModal: false,
-    isInviteModal: false,
-    noSuchMemberAlert: false,
-    isRenameFileModal: false,
-    isDeleteFileModal: false,
-
-    // server_check
-    isShareMode: false,
-
     // selected workspace in server mode
     workspace: '',
+    selectedBandInfo: '',
+    selectedBandNo: '',
     workspaceMemberList: [],
     newMemberInfo: {
       email: '',
@@ -60,14 +42,35 @@ export default new Vuex.Store({
     // note_file
     fileList: [],
     selectedNoteNo: '',
-
-    theme: '',
-
+    
     // 파싱되는 데이터 저장.
     parseData: '',
     inputData: '',
     tempData: '',
     syncCheck: false,
+    
+    // modal
+    drawer: false,
+    drawerShare: false,
+    isLogoutModal: false,
+    isMypageModal: false,
+    isDeleteModal: false,
+    isInviteModal: false,
+    noSuchMemberAlert: false,
+    isRenameFileModal: false,
+    isDeleteFileModal: false,
+    
+    // auth_check
+    isDuplicateChecked: false,
+    isAuthNumChecked: false,
+    isPasswordChecked: false,
+    isModifyChecked: false,
+
+    // server_check
+    isShareMode: false,
+
+    // theme
+    theme: '',
   },
 
   // state를 (가공해서)가져올 함수들. === computed
@@ -158,12 +161,11 @@ export default new Vuex.Store({
     // 워크스페이스 저장
     SET_WORKSPACES(state, result) {
       state.userInfo.group.push(result);
-      // console.log("state.userInfo.group : ", state.userInfo.group);
     },
 
     // 선택한 워크스페이스
-    SELET_WORKSPACE(state, payload) {
-      state.workspace = payload
+    SELECTED_WORKSPACE(state, bandInfo) {
+      state.selectedBandInfo = bandInfo
     },
     
     DELETE_WORKSPACE(state, param) {
@@ -319,6 +321,7 @@ export default new Vuex.Store({
           /* 서버모드로 켜놓고, 로그아웃 하면 서버모드가 유지됩니다. */
           /* 로그아웃시 로컬모드만 사용할 수 있도록 false로 고정해놨습니다. */
           commit('SET_IS_SHARE', false)
+          commit('INIT_FILE_LIST', [])
         })
         .catch(err => console.error(err.response.data))
     },
@@ -401,35 +404,37 @@ export default new Vuex.Store({
         .then(res => {
           if (res.data['result'] === 'success') {
             // console.log("################# res.data.map", res.data.map)
+            console.log("초기데이터 저장")
             commit('SET_INIT_USER_INFO', res.data.map)
+            // console.log(typeof(state.workspace))
           }
         })
         .catch(err => console.error(err.response.data))
     },
 
     // 워크스페이스 생성
-    createWorkspace({ commit }, workspaceName) {
+    async createWorkspace({ state, commit }, newBandName) {
       // console.log("Vuex내에 createWorkspace() 함수 진입.");
       // console.log("bandName : " + workspaceName)
       // console.log("accountNo : " + this.state.userInfo.no);
 
-      var map = {
-        bandName: workspaceName,
-        accountNo: this.state.userInfo.no,
-        bandMasterName: this.state.userInfo.name
+      const info = {
+        bandName: newBandName,
+        accountNo: state.userInfo.no,
+        bandMasterName: state.userInfo.name
       }
     
-      axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, map, { headers: { email: this.state.userInfo.email }})
+      await axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, info, { headers: { email: state.userInfo.email }})
       .then(res => {
         // console.log("then구문 진입.");
         // console.log("res.data", res.data);
         // console.log("res.data.map", res.data.map);
-        // console.log("res.data.map.band", res.data.map.band);
+        console.log("res.data.map.band", res.data.map.band);
 
         commit("SET_WORKSPACES", res.data.map.band)
+        commit("SELECTED_WORKSPACE", res.data.map.band)
         // console.log("then구문 진입.");
         
-        // commit("SET_WORKSPACES", res.data.map)
       })
       .catch(err => {
 
@@ -549,18 +554,37 @@ export default new Vuex.Store({
     },
 
     // fileList 조회
-    showFileList({ state, commit }, seletedBandName) {
+    // showFileList({ state, commit }, seletedBandName) {
+    //   const info = {
+    //     accountNo: state.userInfo.no,
+    //     bandNo: state.userInfo.group.find(element => element.name === seletedBandName).no,
+    //   }
+    //   axios.post(SERVER.URL + SERVER.ROUTES.fileList, info)
+    //     .then(res => {
+    //       // console.log(res.data)
+    //       if (res.data.result==='success') {
+    //         // console.log(res.data.map.noteDetailDTOList)
+    //         commit('INIT_FILE_LIST', res.data.map.noteDetailDTOList)
+    //       } else if (res.data.result==='empty' || seletedBandName==='') {
+    //         commit('INIT_FILE_LIST', [])
+    //       }
+    //     })
+    //     .catch(err => console.error(err.response.data))
+    // },
+
+    // fileList 조회
+    showFileList({ state, commit }, bandInfo) {
       const info = {
         accountNo: state.userInfo.no,
-        bandNo: state.userInfo.group.find(element => element.name === seletedBandName).no,
+        bandNo: bandInfo.no,
       }
-      axios.post(SERVER.URL + SERVER.ROUTES.fileList, info, { headers: { email: state.userInfo.email } })
+      axios.post(SERVER.URL + SERVER.ROUTES.fileList, info)
         .then(res => {
           // console.log(res.data)
           if (res.data.result==='success') {
             // console.log(res.data.map.noteDetailDTOList)
             commit('INIT_FILE_LIST', res.data.map.noteDetailDTOList)
-          } else if (res.data.result==='empty') {
+          } else if (res.data.result==='empty' || seletedBandName==='') {
             commit('INIT_FILE_LIST', [])
           }
         })
@@ -574,7 +598,7 @@ export default new Vuex.Store({
         bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
         subject: fileTitle,
       }
-      axios.post(SERVER.URL + SERVER.ROUTES.createFile, info, { headers: { email: state.userInfo.email } })
+      axios.post(SERVER.URL + SERVER.ROUTES.createFile, info)
         .then(res => {
           // console.log(res.data.map)
           info.no = res.data.map.no
@@ -593,7 +617,7 @@ export default new Vuex.Store({
         bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
         noteNo: fileNo,
       }
-      axios.post(SERVER.URL + SERVER.ROUTES.deleteFile, info, { headers: { email: state.userInfo.email } })
+      axios.post(SERVER.URL + SERVER.ROUTES.deleteFile, info)
         .then(() => {
           commit('DELETE_FILE_INFO', fileNo)
           dispatch('showFileList', state.workspace)
@@ -609,7 +633,7 @@ export default new Vuex.Store({
         noteNo: state.selectedNoteNo,
         subject: fileTitle,
       }
-      axios.post(SERVER.URL + SERVER.ROUTES.renameFile, info, { headers: { email: state.userInfo.email } })
+      axios.post(SERVER.URL + SERVER.ROUTES.renameFile, info)
         .then(() => {
           commit('RENAME_FILE_TITLE', fileTitle)
           dispatch('showFileList', state.workspace)
@@ -625,7 +649,7 @@ export default new Vuex.Store({
         noteNo: fileNo,
       }
       // console.log(info)
-      axios.post(SERVER.URL + SERVER.ROUTES.openFile, info, { headers: { email: state.userInfo.email } })
+      axios.post(SERVER.URL + SERVER.ROUTES.openFile, info)
         .then((res) => {
           console.log(res)
           commit('SELECTED_FILE_NO', fileNo)
@@ -652,7 +676,7 @@ export default new Vuex.Store({
         content: fileContents
       }
       // console.log(info)
-      axios.post(SERVER.URL + SERVER.ROUTES.saveFile, info, { headers: { email: state.userInfo.email } })
+      axios.post(SERVER.URL + SERVER.ROUTES.saveFile, info)
         .then(() => {
           // console.log(res)
           commit('SET_FILE_CONTENTS', info.content)
