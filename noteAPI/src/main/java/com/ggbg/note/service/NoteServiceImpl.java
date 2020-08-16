@@ -36,7 +36,6 @@ public class NoteServiceImpl implements INoteService{
 			return false;
 		else
 			return true;
-			
 	}
 	
 	@Override
@@ -75,13 +74,13 @@ public class NoteServiceImpl implements INoteService{
 	}
 
 	@Override
-	public boolean updateNoteDetail(int accountNo, int bandNo, int noteNo, String subject, String content) {
+	public boolean updateNoteDetail(int accountNo, int bandNo, int noteNo, String subject, String content, int occupiedNo, String occupiedName) {
 		boolean ret = verify(accountNo, bandNo);
 		if(!ret)
 			return false;
 		System.out.println("updateNoteDetail");
-		noteRepo.removeNoteDetail(bandNo, noteNo);
-		noteRepo.updateNoteDetail(bandNo, noteNo, subject, content);
+//		noteRepo.removeNoteDetail(bandNo, noteNo);
+		noteRepo.updateNoteDetail(bandNo, noteNo, subject, content, occupiedNo, occupiedName);
 		
 		return true;
 	}
@@ -95,13 +94,17 @@ public class NoteServiceImpl implements INoteService{
 	
 		NoteEntity ne = noteDetailRepo.findNoteDetailContent(bandNo, noteNo);
 		String content = "";
+		int occupiedNo = -1;
+		String occupiedName = "";
 		if(ne.getNote() != null) {
 			content = ne.getNote().get(0).getContent();
+			occupiedNo = ne.getNote().get(0).getOccupiedNo();
+			occupiedName = ne.getNote().get(0).getOccupiedName();
 		}else {
 			return false;
 		}
 	
-		noteRepo.updateNoteDetail(bandNo, noteNo, subject, content);
+		noteRepo.updateNoteDetail(bandNo, noteNo, subject, content, occupiedNo, occupiedName);
 
 		return true;
 	}

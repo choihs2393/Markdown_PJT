@@ -24,7 +24,7 @@ public interface INoteService {
 	public String getNoteContent(int accountNo, int bandNo, int noteNo);
 	
 	//udpate
-	public boolean updateNoteDetail(int accountNo, int bandNo, int noteNo, String subject, String content);
+	public boolean updateNoteDetail(int accountNo, int bandNo, int noteNo, String subject, String content, int occupiedNo, String occupiedName);
 	public boolean updateNoteDetailSubject(int accountNo, int bandNo, int noteNo, String subject);
 	
 	//delete

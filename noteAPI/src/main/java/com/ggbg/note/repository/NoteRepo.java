@@ -53,7 +53,7 @@ public class NoteRepo {
     public int insertNoteDetail(int bandNo, String subject, String content) {
     	int no = noteNoRepo.findNoteNo(bandNo).getNo();
     	
-    	Query query = new Query().addCriteria(Criteria.where( "_id" ).is(bandNo) );
+    	Query query = new Query().addCriteria(Criteria.where( "_id" ).is(bandNo));
         Update update = new Update();
         update.inc("no", 1);  //증감시킬 숫자
         mongoTemplate.updateFirst(query, update, NoteInfoEntity.class);
@@ -64,14 +64,15 @@ public class NoteRepo {
     	item.put("_id", no);
     	item.put("subject", subject);
     	item.put("content", content);
-    	
+    	item.put("occupiedNo", 0);
+    	item.put("occupiedName", "");
     	update.push("note").each(item);
     	mongoTemplate.updateFirst(query, update, NoteEntity.class);
     	
     	return no;
     }
     
-    public void updateNoteDetail(int bandNo, int noteNo, String subject, String content) {
+    public void updateNoteDetail(int bandNo, int noteNo, String subject, String content, int occupiedNo, String occupiedName) {
     	Query query = new Query().addCriteria(Criteria.where( "_id" ).is(bandNo) );
         Update update = new Update();
         update.pull("note", new BasicDBObject("_id", noteNo));
@@ -85,6 +86,8 @@ public class NoteRepo {
         item.put("_id", noteNo);
         item.put("subject", subject);
         item.put("content", content);
+        item.put("occupiedNo", occupiedNo);
+        item.put("occupiedName", occupiedName);
         update.push("note").each(item);
         
     	mongoTemplate.updateFirst(query, update, NoteEntity.class);
