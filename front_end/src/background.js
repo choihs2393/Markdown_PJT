@@ -201,6 +201,7 @@ function createWindow() {
   win.webContents.closeDevTools();
 
   win.setTitle("소망이노트");
+  win.setIcon("src/assets/sme.png");
   win.on('page-title-updated', function(e) {
     e.preventDefault()
   });
