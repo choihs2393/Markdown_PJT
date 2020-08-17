@@ -58,6 +58,10 @@ ipcRenderer.on("template", (event, message) => {
   // console.log(message);
   if (message){
     data.input = readmeTemplate.input;
+    let fileDataObject = {'openedFileData': readmeTemplate.input, 'absoluteFilePath': ''};
+    let win = remote.BrowserWindow.getFocusedWindow();
+    win.webContents.send("ping", fileDataObject);
+    ipcRenderer.send("mainping", fileDataObject);
   }
 });
 
