@@ -64,7 +64,6 @@ export default new Vuex.Store({
     noSuchMemberAlert: false,
     isRenameFileModal: false,
     isDeleteFileModal: false,
-    isTextArea: true,
     
     // auth_check
     isDuplicateChecked: false,
@@ -283,9 +282,6 @@ export default new Vuex.Store({
     SET_IS_INVITE_MODAL(state, result) {
       state.isInviteModal = result
     },
-    SET_IS_TEXTAREA(state, result) {
-      state.isTextArea = result
-    }
   },
 
   // 범용적인 함수들. mutations에 정의한 함수를 actions에서 실행 가능.
@@ -642,8 +638,12 @@ export default new Vuex.Store({
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.selectedBandInfo.no,
-        noteNo: state.rightSelectedNoteInfo._id,
         subject: newSubject,
+      }
+      if (state.rightSelectedNoteInfo===state.selectedNoteInfo) {
+        info.noteNo = state.selectedNoteInfo._id
+      } else {
+        info.noteNo = state.rightSelectedNoteInfo._id
       }
       axios.post(SERVER.URL + SERVER.ROUTES.renameNote, info)
         .then(() => {

@@ -6,35 +6,36 @@
         <v-btn color="primary" v-if="$store.state.selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
         <v-btn color="primary" v-if="$store.state.selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
         <span v-if="isLoggedIn">{{ currentTime }}</span>
-        <v-btn color="primary" v-if="isLoggedIn && !isOccupied" @click="occupy(this.$store.state.selectedNoteNo)">점유 하기</v-btn>
-        <v-btn color="primary" v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn>
         <v-spacer></v-spacer>
-        <v-btn @click="$store.commit('SET_IS_TEXTAREA',!$store.state.isTextArea)">숨기기</v-btn>
+        <v-btn class="mr-2" @click="isTextarea=!isTextarea">
+          <!-- <v-icon left>mdi-pencil</v-icon> -->
+          {{ showTextarea }}
+        </v-btn>
       </v-row>
       <v-row>
-        <v-col id="editor_div" v-if="$store.state.isTextArea">
-            <v-textarea
-              solo
-              flat
-              auto-grow
-              row-height="100%"
-              full-width
-              ref="textarea"
-              v-model="input"
-              id="editor_textarea"
-              @keyup.native="whenKeyUp"
-              onkeydown="
-                if(event.keyCode === 9) {
-                  var v=this.value, s=this.selectionStart, e=this.selectionEnd;
-                  this.value=v.substring(0, s)+'\t'+v.substring(e);
-                  this.selectionStart=this.selectionEnd=s+1;
-                  
-                  return false;
-                }"
-            />
+        <v-col id="editor_div" v-if="isTextarea">
+          <v-textarea
+            solo
+            flat
+            auto-grow
+            row-height="100%"
+            full-width
+            ref="textarea"
+            v-model="input"
+            id="editor_textarea"
+            @keyup.native="whenKeyUp"
+            onkeydown="
+              if(event.keyCode === 9) {
+                var v=this.value, s=this.selectionStart, e=this.selectionEnd;
+                this.value=v.substring(0, s)+'\t'+v.substring(e);
+                this.selectionStart=this.selectionEnd=s+1;
+                
+                return false;
+              }"
+          />
         </v-col>
         <v-col id="markdown_div">
-          <div id="compiledMarkdown" class="compiledMarkdown" v-html="compiledMarkdown" style="overflow-y: scroll;"></div>
+          <div id="compiledMarkdown" class="compiledMarkdown" v-html="compiledMarkdown"></div>
         </v-col>
       </v-row>
     </v-container>
@@ -210,13 +211,13 @@ export default {
     currentTime() {
       return new Date();
     },
-    // showTextArea: () => {
-    //   if (this.store.state.isTextArea) {
-    //     return '입력창 숨기기'
-    //   } else {
-    //     return '입력창 열기'
-    //   }
-    // }
+    showTextarea() {
+      if (data.isTextarea) {
+        return '입력창 숨기기'
+      } else {
+        return '입력창 열기'
+      }
+    }
     // isOccupied() {
     //   return this.isOccupied;
     // }
@@ -362,10 +363,6 @@ export default {
 </script>
 
 <style scoped>
-.v-container {
-  /* background-color: #333; */
-}
-
 #editor_div {
   margin: 0;
   /* height: 100%; */
@@ -401,6 +398,7 @@ code {
 #markdown_div {
   margin: 0;
   height: 85vh;
+  overflow-y: scroll;
   /* color: #333; */
 }
 
