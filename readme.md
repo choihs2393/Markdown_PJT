@@ -80,9 +80,9 @@ Add additional notes about how to deploy this on a live system
 
 ## Built With
 
-- :ng_man: Dropwizard - The web framework used
-- :ng_woman: Maven - Dependency Management
-- :tipping_hand_man: ROME - Used to generate RSS Feeds
+-  :ng_man: Dropwizard - The web framework used
+-  :ng_woman: Maven - Dependency Management
+-  :tipping_hand_man: ROME - Used to generate RSS Feeds
 
 
 
