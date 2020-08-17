@@ -402,9 +402,8 @@ export default {
           var map = {
               noteId: this.$store.state.selectedNoteInfo._id,
               accountNo: this.$store.state.userInfo.no,
-              // accountName: this.$store.state.userInfo.name
-              subject: this.$store.state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].subject,
-              content: this.$store.state.fileList[state.fileList.findIndex(itemgit => item._id===state.selectedNoteNo)].content
+              subject: this.$store.state.selectedNoteInfo.subject,
+              content: this.$store.state.selectedNoteInfo.content
           }
 
           // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유권을 놓겠다'고 send하기
