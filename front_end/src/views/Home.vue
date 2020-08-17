@@ -4,14 +4,25 @@
       <v-row>
         <v-btn color="primary" v-if="isLoggedIn" @click="saveNote(input)">저장하기</v-btn>
         <span v-if="isLoggedIn">{{ currentTime }}</span>
+<<<<<<< HEAD
       </v-row>
       <v-row>
         <v-col id="editor_div" >
+=======
+        <v-btn color="primary" v-if="isLoggedIn && !isOccupied" @click="occupy(this.$store.state.selectedNoteNo)">점유 하기</v-btn>
+        <v-btn color="primary" v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn>
+        <v-spacer></v-spacer>
+        <v-btn @click="$store.commit('SET_IS_TEXTAREA',!$store.state.isTextArea)">숨기기</v-btn>
+      </v-row>
+      <v-row>
+        <v-col id="editor_div" v-if="$store.state.isTextArea">
+>>>>>>> feature/add-right-click-fucntion
             <v-textarea
               solo
               flat
               auto-grow
               row-height="100%"
+              full-width
               ref="textarea"
               v-model="input"
               id="editor_textarea"
@@ -198,6 +209,13 @@ export default {
     currentTime() {
       return new Date();
     },
+    // showTextArea: () => {
+    //   if (this.store.state.isTextArea) {
+    //     return '입력창 숨기기'
+    //   } else {
+    //     return '입력창 열기'
+    //   }
+    // }
     // isOccupied() {
     //   return this.isOccupied;
     // }
@@ -210,6 +228,7 @@ export default {
   data() {
     return data;
   },
+
   // data: async () => {
   //   console.log(data);
   //   return await data;
