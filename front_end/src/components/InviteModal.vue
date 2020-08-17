@@ -117,7 +117,7 @@ export default {
               fromName: this.$store.state.userInfo.name,
               toEmail: findAccountList.email,
               toNo: this.$store.state.newMemberInfo.no,
-              groupName: this.$store.state.workspace,
+              groupName: this.$store.state.selectedBandInfo.name,
               groupNo: this.workspaceNo
             }
 
