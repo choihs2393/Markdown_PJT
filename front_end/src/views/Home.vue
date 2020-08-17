@@ -339,7 +339,7 @@ export default {
               accountNo: this.$store.state.userInfo.no,
               // accountName: this.$store.state.userInfo.name
               subject: this.$store.state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].subject,
-              content: this.$store.state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content
+              content: this.$store.state.fileList[state.fileList.findIndex(itemgit => item._id===state.selectedNoteNo)].content
           }
 
           // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유하고 있다'고 send하기
