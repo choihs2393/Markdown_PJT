@@ -89,11 +89,7 @@ export default {
   },
   methods: {
     inviteBandMember() {
-      const findAccountList = {
-        email: this.search
-      };
-      this.$store.dispatch("findAccountList", findAccountList);
-      this.search = "";
+      this.$store.dispatch("findAccountList", this.search);
 
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
@@ -115,18 +111,18 @@ export default {
               fromNo: this.$store.state.userInfo.no,
               fromEmail: this.$store.state.userInfo.email,
               fromName: this.$store.state.userInfo.name,
-              toEmail: findAccountList.email,
+              toEmail: this.search,
               toNo: this.$store.state.newMemberInfo.no,
-              groupName: this.$store.state.workspace,
+              groupName: this.$store.state.selectedBandInfo.name,
               groupNo: this.workspaceNo
             }
 
             this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, JSON.stringify(map));
             // console.log("========== 알림 송신 완료 ==========")
             // this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, {
-            //   'fromEmail': this.$store.state.userInfo.email,
+              //   'fromEmail': this.$store.state.userInfo.email,
             //   'fromName': this.$store.state.userInfo.name,
-            //   'toEmail': findAccountList.email,
+            //   'toEmail': this.search,
             //   'toNo': this.$store.state.newMemberInfo.no,
             //   'groupName': this.$store.state.workspace
             // });
@@ -137,13 +133,11 @@ export default {
             this.connected = false;
           }
         );
+      this.search = "";
       // }
     },
-    kickOutBandMember(no) {
-      const kickOutBandMemberNo = {
-        accountNo: no
-      };
-      this.$store.dispatch("kickOutBandMember", kickOutBandMemberNo);
+    kickOutBandMember(accountNo) {
+      this.$store.dispatch("kickOutBandMember", accountNo);
     }
   }
 };
