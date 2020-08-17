@@ -64,6 +64,7 @@ export default new Vuex.Store({
     noSuchMemberAlert: false,
     isRenameFileModal: false,
     isDeleteFileModal: false,
+    isTextArea: true,
     
     // auth_check
     isDuplicateChecked: false,
@@ -281,6 +282,9 @@ export default new Vuex.Store({
     },
     SET_IS_INVITE_MODAL(state, result) {
       state.isInviteModal = result
+    },
+    SET_IS_TEXTAREA(state, result) {
+      state.isTextArea = result
     }
   },
 
