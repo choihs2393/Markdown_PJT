@@ -80,7 +80,7 @@ public class InviteController {
 	//		2. account_no
 	//		++ 3. subject/ 4. content도 보낼 것.
 	@MessageMapping("/groupReceive/vacate/{bandNo}")
-	@SendTo("/groupSend/{bandNo}")
+	@SendTo("/send/groupSend/vacate/{bandNo}")
 	public Map<String, Object> vacate(@DestinationVariable("bandNo") String bandNo, Map<String, String> map) {
 		
 		// NoteDetailRepo를 통해 할 작업은 아래와 같다.
@@ -101,5 +101,14 @@ public class InviteController {
 		retMap = socketService.vacate(accountNo, bandId, noteId, subject, content);
 		
 		return retMap;
+	}
+	
+	@MessageMapping("/groupReceive/content/{bandNo}/{noteNo}")
+	@SendTo("/send/groupSend/content/{bandNo}/{noteNo}")
+	public Map<String, String> content(@DestinationVariable("bandNo") String bandNo, 
+			@DestinationVariable("noteNo") String noteNo ,Map<String, String> map){
+		System.out.println(map.get("noteNo"));
+		System.out.println(map.get("content"));
+		return map;
 	}
 }
