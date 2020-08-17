@@ -509,7 +509,10 @@ export default new Vuex.Store({
 
     // 가입된 회원인지 확인
     findAccountList({ state, dispatch }, email) {
-      axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, email, { headers: { email: state.userInfo.email }})
+      var map = {
+        email: email
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, map, { headers: { email: state.userInfo.email }})
       .then(res => {
         state.newMemberInfo.no = res.data.map.primitiveAccountList[0].no; // 초대받을 사람의 account_no를 보관.
         // console.log("res.data.map.primitiveAccountList[0].no : ", res.data.map.primitiveAccountList[0].no);
