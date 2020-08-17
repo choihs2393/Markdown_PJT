@@ -84,7 +84,7 @@ export default new Vuex.Store({
   getters: {
     isLoggedIn: state => !!state.authorization,
     status: state => state.userInfo.status,
-    isOccupied: state => state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].occupiedName
+    isOccupied: state => state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteNo)].occupiedName
     // getWorkspaceMemberList: state => {
     //   return state.workspaceMemberList
     // },
@@ -650,6 +650,8 @@ export default new Vuex.Store({
 
     // note 열기
     getNote({ state, commit }, noteInfo) {
+      state.selectedNoteNo = noteInfo._id
+
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.selectedBandInfo.no,
@@ -673,14 +675,19 @@ export default new Vuex.Store({
 
     // note 저장
     saveNote({ state, commit }, content) {
+      console.log("saveNote() 호출됨.")
+      console.log("content : " + content)
+      console.log("state.selectedNoteNo : " + state.selectedNoteNo)
+      
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.selectedBandInfo.no,
         noteNo: state.selectedNoteInfo._id,
         subject: state.selectedNoteInfo.subject,
         content: content,
-        occupiedNo: state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].accountNo, // 점유자의 account_no
-        occupiedName: state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].accountName // 점유자의 account_name
+        occupiedNo: state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteNo)].occupiedNo, // 점유자의 account_no
+        // occupiedName: state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteNo)].occupiedName // 점유자의 account_name
+        occupiedName: state.userInfo.name // 점유자의 account_name
       }
       // console.log(info)
       axios.post(SERVER.URL + SERVER.ROUTES.saveNote, info)
