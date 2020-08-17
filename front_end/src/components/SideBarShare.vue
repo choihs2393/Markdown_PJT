@@ -206,8 +206,8 @@ export default {
       this.$store.commit('SELECTED_WORKSPACE', bandInfo)
       this.$store.dispatch('getNoteList', bandInfo)
 
-      const serverURL = "http://localhost:8080/noteAPI/ws";
-      // const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+      // const serverURL = "http://localhost:8080/noteAPI/ws";
+      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
 
