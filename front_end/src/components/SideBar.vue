@@ -115,21 +115,6 @@ export default {
         }
       })
     });
-<<<<<<< HEAD
-  },
-  data() {
-      return {
-          dialog: false,
-          folders: [
-
-          ],
-          files: [
-          ]
-      }
-  },
-  methods: {
-    showOpenDialog() {
-=======
     ipcRenderer.on("addFileInList", (event, folderFullPath) => {
         fs.readdir(folderFullPath, (err, fileList) => {
         this.files = [];
@@ -155,7 +140,6 @@ export default {
     },
     methods: {
         showOpenDialog() {
->>>>>>> feature/newTemplateLocalSave
       // console.log("showOpenDialog() 호출됨.");
 
       remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(),
@@ -236,18 +220,8 @@ export default {
         ipcRenderer.send("mainping", fileDataObject);
         // console.log('absolutefilepath', absoluteFilePath);
       });
-<<<<<<< HEAD
     }
   }
-=======
-    },
-
-    // resetFileList(folderFullPath){
-      
-    // }
-    }
-
->>>>>>> feature/newTemplateLocalSave
 }
 </script>
 
