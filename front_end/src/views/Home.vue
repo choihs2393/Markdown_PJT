@@ -8,7 +8,7 @@
         <v-btn color="primary" v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn>
       </v-row>
       <v-row>
-        <v-col id="editor_div">
+        <v-col id="editor_div" >
             <v-textarea
               solo
               flat
@@ -28,8 +28,8 @@
                 }"
             />
         </v-col>
-        <v-col>
-          <div id="compiledMarkdown" class="compiledMarkdown" v-html="compiledMarkdown"></div>
+        <v-col id="markdown_div">
+          <div id="compiledMarkdown" class="compiledMarkdown" v-html="compiledMarkdown" style="overflow-y: scroll;"></div>
         </v-col>
       </v-row>
     </v-container>
@@ -345,14 +345,15 @@ export default {
 
 <style scoped>
 .v-container {
-  background-color: #333;
+  /* background-color: #333; */
 }
 
 #editor_div {
   margin: 0;
-  height: 100%;
+  /* height: 100%; */
+  height: 85vh;
   font-family: "Helvetica Neue", Arial, sans-serif;
-  color: #333;
+  /* color: #333; */
 }
 
 #editor_div div {
@@ -366,15 +367,39 @@ export default {
   border: none;
   resize: none;
   outline: none;
-  height: 100%;
-  background-color: #f6f6f6;
+  /* height: 100%; */
+  height: 100vh;
+  /* background-color: #f6f6f6; */
   font-size: 14px;
   font-family: "Monaco", courier, monospace;
-  padding: 20px;
+  padding: 10px;
+  overflow-y: scroll;
 }
 
 code {
   color: #f66;
+}
+
+#markdown_div {
+  margin: 0;
+  height: 85vh;
+  /* color: #333; */
+}
+
+#markdown_div div {
+  height: 100%;
+  vertical-align: top;
+  box-sizing: border-box;
+  /* padding: 0 20px; */
+}
+
+#compileMarkdown{
+  border: none;
+  resize: none;
+  outline: none;
+  padding: 10px;
+  height: 100vh;
+  /* background-color: #f6f6f6; */
 }
 
 .compiledMarkdown >>> h1 {
