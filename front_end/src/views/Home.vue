@@ -4,11 +4,6 @@
       <v-row>
         <v-btn color="primary" v-if="isLoggedIn" @click="saveNote(input)">저장하기</v-btn>
         <span v-if="isLoggedIn">{{ currentTime }}</span>
-<<<<<<< HEAD
-      </v-row>
-      <v-row>
-        <v-col id="editor_div" >
-=======
         <v-btn color="primary" v-if="isLoggedIn && !isOccupied" @click="occupy(this.$store.state.selectedNoteNo)">점유 하기</v-btn>
         <v-btn color="primary" v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn>
         <v-spacer></v-spacer>
@@ -16,7 +11,6 @@
       </v-row>
       <v-row>
         <v-col id="editor_div" v-if="$store.state.isTextArea">
->>>>>>> feature/add-right-click-fucntion
             <v-textarea
               solo
               flat
