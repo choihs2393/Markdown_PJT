@@ -68,7 +68,7 @@ ipcRenderer.on("ping", (event, message) => {
 
 ipcRenderer.on("getNote", (event, message, accountNo) => {
   // console.log(message);
-  data.input = message;
+  data.input = message.content;
   // if(accountNo != 0) {
   //   this.isOccupied = true;
   //   document.getElementById("editor_div").setAttribute("disabled", true);

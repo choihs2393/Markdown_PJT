@@ -658,7 +658,7 @@ export default new Vuex.Store({
       }
       axios.post(SERVER.URL + SERVER.ROUTES.getNote, info)
         .then((res) => {
-          commit('SELECTED_NOTE', noteInfo)
+          commit('SELECTED_NOTE', res.data.map.content)
           const win = remote.BrowserWindow.getFocusedWindow();
           if (res.data.result==='success') {
             win.webContents.send('getNote', res.data.map.content, info.accountNo)
