@@ -195,6 +195,8 @@ export default {
                   master: receivedMsg.fromNo,
                   bandMasterName: receivedMsg.fromName
                 });
+
+                
               }
             );
           },
@@ -224,9 +226,7 @@ export default {
         // console.log("bandNo : " + groupNo);
         this.$store.dispatch("acceptInvite", info);
 
-        var idx = this.$store.state.userInfo.status.findIndex(
-          element => element.no == groupNo
-        );
+        var idx = this.$store.state.userInfo.status.findIndex(element => element.no == groupNo);
         this.$store.state.userInfo.status.splice(idx, 1);
       }
       // 거절
