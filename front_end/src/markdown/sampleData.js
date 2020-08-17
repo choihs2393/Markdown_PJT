@@ -72,7 +72,7 @@ var data = {
     +'- Inspiration\n'
     +'- etc\n'
     +'---\n'
-    +'<자료 출처: [Readme](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2#file-readme-template-md, "Readme") >\n'
+    +'<자료 출처: [Readme](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2#file-readme-template-md, "Readme") >\n',
     
     // input: '# 마크다운 에디터 사용법\n'
     // + '----------------------------------------------------------------------------------------------------\n'
@@ -134,6 +134,7 @@ var data = {
     // + '----------------------------------------------------------------------------------------------------\n'
     // + '## 10. 동영상\n'
     // + '@[video](https://www.youtube.com/watch?v=mgvZ0Gmo02k)'
+    isTextarea: true
 };
 
 export default data;
