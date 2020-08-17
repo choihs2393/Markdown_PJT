@@ -206,8 +206,8 @@ export default {
       this.$store.commit('SELECTED_WORKSPACE', bandInfo)
       this.$store.dispatch('getNoteList', bandInfo)
 
-      const serverURL = "http://localhost:8080/noteAPI/ws";
-      // const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+      // const serverURL = "http://localhost:8080/noteAPI/ws";
+      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
 
@@ -219,14 +219,11 @@ export default {
           this.stompClient.subscribe("/send/groupSend/occupy/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
-              console.log("res.body", res.body)
-              console.log("res.body.noteDetailDTO", res.body.noteDetailDTO)
-              console.log("res.body.noteDetailDTO._id", res.body.noteDetailDTO._id)
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
               console.log("this.$store.state.noteList", this.$store.state.noteList)
-              var idx = this.$store.state.noteList.findIndex(element => element._id == res.body.noteDetailDTO._id);
+              var idx = this.$store.state.noteList.findIndex(element => element._id == res.body.noteNo);
               this.$store.state.noteList[idx].occupiedNo = res.body.noteDetailDTO.occupiedNo;
               this.$store.state.noteList[idx].occupiedName = res.body.noteDetailDTO.occupiedName;
             }
