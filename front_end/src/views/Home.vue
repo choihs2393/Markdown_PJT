@@ -1,7 +1,7 @@
 <template>
   <v-main>
     <v-container class="md" fluid>
-      <v-btn v-if="isLoggedIn" @click="saveNote(input)">없어질 버튼</v-btn>
+      <v-btn color="primary" v-if="isLoggedIn" @click="saveNote(input)">저장하기</v-btn>
       <span v-if="isLoggedIn">{{ currentTime }}</span>
       <!-- <v-btn color="primary" v-if="isLoggedIn && !isOccupied" @click="occupy(this.$store.state.selectedNoteNo)">점유 하기</v-btn>
       <v-btn color="primary" v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn> -->

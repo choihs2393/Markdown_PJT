@@ -216,7 +216,7 @@ export default {
         frame => {
           this.connected = true;
           // 워크스페이스에서의 현재 파일 점유 유무를 받고 있음.
-          this.stompClient.subscribe("/groupSend/" + this.$store.state.workspaceNo,
+          this.stompClient.subscribe("/groupSend/" + this.bandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
 
@@ -231,7 +231,8 @@ export default {
         }
       );
 
-      this.stompClient.disconnect();
+      console.log("this.stompClient", this.stompClient)
+      // this.stompClient.disconnect();
     },
 
     deleteWorkspace() {
