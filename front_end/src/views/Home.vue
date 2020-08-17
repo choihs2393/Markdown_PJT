@@ -4,8 +4,6 @@
       <v-row>
         <v-btn color="primary" v-if="isLoggedIn" @click="saveNote(input)">저장하기</v-btn>
         <span v-if="isLoggedIn">{{ currentTime }}</span>
-        <v-btn color="primary" v-if="isLoggedIn && !isOccupied" @click="occupy(this.$store.state.selectedNoteNo)">점유 하기</v-btn>
-        <v-btn color="primary" v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn>
       </v-row>
       <v-row>
         <v-col id="editor_div">
@@ -285,8 +283,8 @@ export default {
     // 해당 파일 점유하기.
     occupy(selectedNoteNo) {
       // 1. 소켓 뚫기
-      const serverURL = "http://localhost:8080/noteAPI/ws";
-      // const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+      // const serverURL = "http://localhost:8080/noteAPI/ws";
+      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
 
