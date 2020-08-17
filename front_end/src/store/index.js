@@ -76,6 +76,9 @@ export default new Vuex.Store({
 
     // theme
     theme: '',
+
+    // add Readme.md in file list
+    addReadme: '',
   },
 
   // state를 (가공해서)가져올 함수들. === computed
