@@ -26,7 +26,7 @@ public class NoteServiceImpl implements INoteService{
 	@Autowired
 	private NoteRepo noteRepo;
 	@Autowired
-	private MapperUtil mapperUtill;
+	private MapperUtil mapperUtil;
 	
 	public boolean verify(int accountNo, int bandNo) {
 		//db 들러서 해당 그룹에 있는 사람이 맞는지 확인
@@ -49,7 +49,7 @@ public class NoteServiceImpl implements INoteService{
 		List<NoteDetailDTO> DTOList = new ArrayList<NoteDetailDTO>();
 		if(entity.getNote() != null) {
 			for(NoteDetailEntity nde : entity.getNote()) {
-				NoteDetailDTO ndd = mapperUtill.convertToDTO(nde, NoteDetailDTO.class);
+				NoteDetailDTO ndd = mapperUtil.convertToDTO(nde, NoteDetailDTO.class);
 				DTOList.add(ndd);
 			}
 		}
@@ -67,8 +67,7 @@ public class NoteServiceImpl implements INoteService{
 		if(ne.getNote() == null)
 			return new NoteDetailDTO();
 		else {
-			NoteDetailDTO dto = new NoteDetailDTO(ne.getNote().get(0).get_id(), ne.getNote().get(0).getSubject(), ne.getNote().get(0).getContent(),
-					ne.getNote().get(0).getOccupiedNo(), ne.getNote().get(0).getOccupiedName());
+			NoteDetailDTO dto = mapperUtil.convertToDTO(ne.getNote(), NoteDetailDTO.class);
 //			String str = ne.getNote().get(0).getContent();
 			return dto;
 		}

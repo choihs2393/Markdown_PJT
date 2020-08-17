@@ -268,7 +268,7 @@ export default {
 
       let bandNo = this.$store.state.selectedBandInfo.no;
       let noteNo = this.$store.state.selectedNoteInfo._id;
-      let occupyAccountNo = 1;
+      let occupyAccountNo = this.$store.state.selectedBandInfo.occupiedNo;
       let loginAccountNo = this.$store.state.userInfo.no;
       console.log("영복이의 로그추적"  + bandNo);
       console.log("영복이의 로그추적 " + noteNo);
@@ -320,9 +320,9 @@ export default {
           }
 
           // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유하고 있다'고 점유를 풀때까지 무한정 send하기
-          setInterval(() => {
+          // setInterval(() => {
             this.stompClient.send("/groupReceive/occupy/" + this.$store.state.selectedBandInfo.no, JSON.stringify(map)); 
-          }, 5000);
+          // }, 5000);
         }
       )
 
