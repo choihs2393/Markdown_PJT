@@ -90,6 +90,7 @@ import fs from "fs";
 import path from "path";
 
 export default {
+  
    mounted() {
     ipcRenderer.on('ping', (event, message) => {
       var absoluteFilePath = message['absoluteFilePath'];
@@ -109,12 +110,24 @@ export default {
 
         for(var i = 0; i < fileList.length; i++) {
           // console.log(folderFullPath + "\\" + fileList[i]);
-          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
+          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md'){
             this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+          }
         }
       })
     });
-  },
+    ipcRenderer.on("addFileInList", (event, folderFullPath) => {
+        fs.readdir(folderFullPath, (err, fileList) => {
+        this.files = [];
+
+        for(var i = 0; i < fileList.length; i++) {
+          // console.log(folderFullPath + "\\" + fileList[i]);
+          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
+            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+          }
+        })
+  })
+   },
     data() {
         return {
             dialog: false,
@@ -122,7 +135,8 @@ export default {
 
             ],
             files: [
-            ]
+
+            ],
         }
     },
     methods: {
@@ -174,11 +188,25 @@ export default {
 
           }
         })
+      let win = remote.BrowserWindow.getFocusedWindow();
+      win.webContents.send("pong", folderFullPath);
       });
     },
 
     openFile(absoluteFilePath) {
       // console.log(absoluteFilePath);
+      var folderFullPath = path.dirname(absoluteFilePath);
+      fs.readdir(folderFullPath, (err, fileList) => {
+        this.files = [];
+
+        // console.log('filelist', fileList);
+
+        for(var i = 0; i < fileList.length; i++) {
+          // console.log(folderFullPath + "\\" + fileList[i]);
+          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
+            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+        }
+      })
       fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
         // if(err) throw err;
         // console.log(data);
@@ -193,7 +221,11 @@ export default {
         ipcRenderer.send("mainping", fileDataObject);
         // console.log('absolutefilepath', absoluteFilePath);
       });
-    }
+    },
+
+    // resetFileList(folderFullPath){
+      
+    // }
     }
 
 }

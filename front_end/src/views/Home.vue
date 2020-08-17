@@ -1,37 +1,36 @@
 <template>
   <v-main>
     <v-container class="md" fluid>
-      <v-row>
-        <v-btn color="primary" v-if="isLoggedIn" @click="saveNote(input)">저장하기</v-btn>
-        <span v-if="isLoggedIn">{{ currentTime }}</span>
-        <v-btn color="primary" v-if="isLoggedIn && !isOccupied" @click="occupy(this.$store.state.selectedNoteNo)">점유 하기</v-btn>
-        <v-btn color="primary" v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn>
-      </v-row>
-      <v-row>
-        <v-col id="editor_div">
-            <v-textarea
-              solo
-              flat
-              auto-grow
-              row-height="100%"
-              ref="textarea"
-              v-model="input"
-              id="editor_textarea"
-              @keyup.native="whenKeyUp"
-              onkeydown="
-                if(event.keyCode === 9) {
-                  var v=this.value, s=this.selectionStart, e=this.selectionEnd;
-                  this.value=v.substring(0, s)+'\t'+v.substring(e);
-                  this.selectionStart=this.selectionEnd=s+1;
-                  
-                  return false;
-                }"
-            />
-        </v-col>
-        <v-col>
-          <div id="compiledMarkdown" class="compiledMarkdown" v-html="compiledMarkdown"></div>
-        </v-col>
-      </v-row>
+      <v-btn color="primary" v-if="isLoggedIn" @click="saveNote(input)">저장하기</v-btn>
+      <span v-if="isLoggedIn">{{ currentTime }}</span>
+      <v-btn color="primary" v-if="isLoggedIn && !isOccupied" @click="occupy(this.$store.state.selectedNoteNo)">점유 하기</v-btn>
+      <v-btn color="primary" v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn>
+      <div id="editor_div">
+        <v-textarea
+          solo
+          flat
+          auto-grow
+          ref="textarea"
+          v-model="input"
+          id="editor_textarea"
+          @keyup.native="whenKeyUp"
+          onkeydown="
+            if(event.keyCode === 9) {
+              var v=this.value, s=this.selectionStart, e=this.selectionEnd;
+              this.value=v.substring(0, s)+'\t'+v.substring(e);
+              this.selectionStart=this.selectionEnd=s+1;
+              
+              return false;
+            }"
+        />
+        <div id="compiledMarkdown" class="compiledMarkdown" v-html="compiledMarkdown"></div>
+      </div>
+
+      <!-- <v-row
+        align="center"
+        justify="center"
+      >
+      </v-row>-->
     </v-container>
   </v-main>
 </template>
@@ -43,25 +42,56 @@ import sampleData from "../markdown/sampleData.js";
 import readmeTemplate from "../markdown/readmeTemplate.js";
 
 import { mapActions, mapGetters } from "vuex";
+
 import { remote, ipcRenderer } from "electron";
 import fs from "fs";
 import path from "path";
+import { is } from 'vee-validate/dist/rules';
 
 var data = sampleData;
 
 // var data = new Promise(function(resolve, reject) {
-//   resolve(sampleData);
+  //   resolve(sampleData);
 // });
-ipcRenderer.on("template", (event, message) => {
-  // console.log(message);
-  if (message){
-    data.input = readmeTemplate.input;
-    let fileDataObject = {'openedFileData': readmeTemplate.input, 'absoluteFilePath': ''};
-    let win = remote.BrowserWindow.getFocusedWindow();
-    win.webContents.send("ping", fileDataObject);
-    ipcRenderer.send("mainping", fileDataObject);
+
+let isPathExist = false;
+let isTemplate = false;
+let folderFullPath = ''
+
+ipcRenderer.on("pong", (event, folderPath) => {
+  // console.log('folderPath', folderPath)
+  folderFullPath = folderPath;
+  // console.log('absoluteFilePath', absoluteFilePath)
+  if (folderFullPath != '') {
+    isPathExist = true;
   }
-});
+  // console.log('absoluteee', folderFullPath);
+})
+
+ipcRenderer.on("template", (event, isThereTemplate) => {
+  // console.log(message);
+  isTemplate = isThereTemplate;
+  data.input = readmeTemplate.input;
+  if (isTemplate){
+    let fileDataObject = {}
+    if (isPathExist){
+      
+      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'\\readme.md'};
+      fs.writeFile(fileDataObject['absoluteFilePath'], readmeTemplate.input, (err) => {
+        // console.log('파일경로', fileDataObject['absoluteFilePath'])
+      })
+    }else {
+      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': ''};
+    }
+    let win = remote.BrowserWindow.getFocusedWindow();
+    // win.webContents.send("ping", fileDataObject);
+    ipcRenderer.send("mainping", fileDataObject);
+    ipcRenderer.send("template", isTemplate);
+    win.webContents.send("addFileInList", folderFullPath);
+    isTemplate = false;
+  }
+})
+
 
 ipcRenderer.on("ping", (event, message) => {
   // console.log(message);
@@ -156,8 +186,7 @@ document.addEventListener("drop", event => {
 
 export default {
   name: "Home",
-  components: {
-  },
+  components: {},
   created() {
     //data.then(function(tmp) {
     //return this.input = tmp;
@@ -205,6 +234,7 @@ export default {
     // }
 
     //  ...mapGetters(['inputData']),
+
   },
   // data: {
   //   input: data
@@ -285,8 +315,8 @@ export default {
     // 해당 파일 점유하기.
     occupy(selectedNoteNo) {
       // 1. 소켓 뚫기
-      const serverURL = "http://localhost:8080/noteAPI/ws";
-      // const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+      // const serverURL = "http://localhost:8080/noteAPI/ws";
+      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
 
@@ -315,8 +345,8 @@ export default {
     // 해당 파일 점유 포기하기.
     vacate(selectedNoteNo) {
       // 1. 소켓 뚫기
-      const serverURL = "http://localhost:8080/noteAPI/ws";
-      // const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+      // const serverURL = "http://localhost:8080/noteAPI/ws";
+      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
 
@@ -356,17 +386,19 @@ export default {
 }
 
 #editor_div div {
+  display: inline-block;
+  width: 49%;
   height: 100%;
   vertical-align: top;
   box-sizing: border-box;
-  /* padding: 0 20px; */
+  padding: 0 20px;
 }
 
 .v-textarea {
   border: none;
+  border-right: 1px solid #ccc;
   resize: none;
   outline: none;
-  height: 100%;
   background-color: #f6f6f6;
   font-size: 14px;
   font-family: "Monaco", courier, monospace;
