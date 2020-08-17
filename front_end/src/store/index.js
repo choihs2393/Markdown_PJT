@@ -28,7 +28,6 @@ export default new Vuex.Store({
     },
 
     // selected workspace in server mode
-    workspace: '',
     selectedBandInfo: {},
     workspaceMemberList: [],
     newMemberInfo: {
@@ -42,7 +41,6 @@ export default new Vuex.Store({
     noteList: [],
     selectedNoteInfo: {},
     rightSelectedNoteInfo: {},
-    selectedNoteNo: '',
     
     // 파싱되는 데이터 저장.
     parseData: '',
@@ -84,7 +82,7 @@ export default new Vuex.Store({
   getters: {
     isLoggedIn: state => !!state.authorization,
     status: state => state.userInfo.status,
-    isOccupied: state => state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteNo)].occupiedName
+    isOccupied: state => state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteInfo._id)].occupiedName
     // getWorkspaceMemberList: state => {
     //   return state.workspaceMemberList
     // },
@@ -509,21 +507,21 @@ export default new Vuex.Store({
     },
 
     // 가입된 회원인지 확인
-    findAccountList({ dispatch }, findAccountList) {
-      axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, findAccountList, { headers: { email: this.state.userInfo.email }})
+    findAccountList({ state, dispatch }, email) {
+      axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, email, { headers: { email: state.userInfo.email }})
       .then(res => {
-        this.state.newMemberInfo.no = res.data.map.primitiveAccountList[0].no; // 초대받을 사람의 account_no를 보관.
+        state.newMemberInfo.no = res.data.map.primitiveAccountList[0].no; // 초대받을 사람의 account_no를 보관.
         // console.log("res.data.map.primitiveAccountList[0].no : ", res.data.map.primitiveAccountList[0].no);
         if (res.data.result === "success") {
           const inviteBandMember = {
-            bandNo: this.state.userInfo.group.find(element => element.name == this.state.workspace).no,
-            email: findAccountList.email,
-            masterNo: this.state.userInfo.group.find(element => element.name == this.state.workspace).master,
+            bandNo: state.selectedBandInfo.no,
+            email: email,
+            masterNo: state.selectedBandInfo.master,
           }
-          // console.log("[inviteBandMember] findAccountList()", inviteBandMember)
+          // console.log("[inviteBandMember] email()", inviteBandMember)
           dispatch("inviteBandMember", inviteBandMember)
         } else {
-          this.state.noSuchMemberAlert = !(this.state.noSuchMemberAlert)
+          state.noSuchMemberAlert = !(state.noSuchMemberAlert)
         }
       })
     },
@@ -559,14 +557,13 @@ export default new Vuex.Store({
     },
 
     //워크스페이스 멤버 내보내기
-    kickOutBandMember({commit}, kickOutBandMemberNo) {
-      const workspaceNo = this.state.userInfo.group.find(element => element.name == this.state.workspace).no;
+    kickOutBandMember({ state, commit }, accounNo) {
       const kickOutBandMember = {
-        accountNo: kickOutBandMemberNo.accountNo,
-        bandNo: workspaceNo, 
-        masterNo: this.state.userInfo.no
+        accountNo: accountNo,
+        bandNo: state.selectedBandInfo.no, 
+        masterNo: state.userInfo.no
       }
-      axios.post(SERVER.URL + SERVER.ROUTES.deleteMember, kickOutBandMember, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.deleteMember, kickOutBandMember, { headers: { email: state.userInfo.email }})
       .then(res => {
         if(res.data.result == "success") {
         commit("REMOVE_DELETE_MEMBER_INFO", kickOutBandMember)
@@ -650,8 +647,6 @@ export default new Vuex.Store({
 
     // note 열기
     getNote({ state, commit }, noteInfo) {
-      state.selectedNoteNo = noteInfo._id
-
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.selectedBandInfo.no,
@@ -664,7 +659,6 @@ export default new Vuex.Store({
           if (res.data.result==='success') {
             win.webContents.send('getNote', res.data.map.content, info.accountNo)
             // win.webContents.send('getNote', res.data.map.content, state.noteList.find(item => item._id === info.noteNo).accountNo)
-            // win.webContents.send('getNote', state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteNo)].content)
             state.storeTimer = '';
           } else if (res.data.result==='empty') {
             win.webContents.send('getNote', '')
@@ -677,7 +671,6 @@ export default new Vuex.Store({
     saveNote({ state, commit }, content) {
       console.log("saveNote() 호출됨.")
       console.log("content : " + content)
-      console.log("state.selectedNoteNo : " + state.selectedNoteNo)
       
       const info = {
         accountNo: state.userInfo.no,
@@ -685,8 +678,7 @@ export default new Vuex.Store({
         noteNo: state.selectedNoteInfo._id,
         subject: state.selectedNoteInfo.subject,
         content: content,
-        occupiedNo: state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteNo)].occupiedNo, // 점유자의 account_no
-        // occupiedName: state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteNo)].occupiedName // 점유자의 account_name
+        occupiedNo: state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteInfo._id)].occupiedNo, // 점유자의 account_no
         occupiedName: state.userInfo.name // 점유자의 account_name
       }
       // console.log(info)
