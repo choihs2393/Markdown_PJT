@@ -52,4 +52,20 @@ export default {
     font-family: 'Helvetica Neue', Arial, sans-serif;
     color: #333;
   }
+
+  .v-application code {
+    all: unset;
+    
+    background: #474949!important;
+    color: #d1d9e1!important;
+  }
+
+  pre code {
+    display: block!important;
+  overflow-x: auto!important;
+  padding: 0.5em!important;
+  background: #474949;
+  color: #d1d9e1;
+  }
+
 </style>

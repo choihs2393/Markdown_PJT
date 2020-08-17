@@ -114,6 +114,18 @@ const template = [
         ]
     },
     {
+        label: 'Template',
+        submenu: [
+            {
+                label: 'New Readme',
+                accelerator: 'CommandOrControl+N+T',
+                click() {
+                    openNewReadme();
+                }
+            },
+        ]
+    },
+    {
       role: 'help',
       submenu: [
         {
@@ -250,5 +262,38 @@ function createHelpWindow() {
     e.preventDefault()
   });
   }
+
+function openNewReadme() {
+    var fileData = '';
+
+    BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
+    .then(result => {
+        fileData = result;
+        // console.log(fileData);
+    });
+
+    var fileName = dialog.showSaveDialog(BrowserWindow.getFocusedWindow(),
+        {
+            title: "파일 저장하기",
+            filters: [
+                { name: 'Markdown', extensions: ['md'] },
+            ],
+            message: "TEST"
+        }
+    )
+    .then(result => {
+        fileName = result.filePath;
+        fs.writeFile(fileName, fileData, (err) => {
+
+        })
+    });
+
+    let win = BrowserWindow.getFocusedWindow();
+
+    let message = true;
+    win.webContents.send("template", message);
+
+
+}
 
 export default template

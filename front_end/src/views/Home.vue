@@ -38,6 +38,7 @@
 // @ is an alias to /src
 import parse from "../markdown/parse";
 import sampleData from "../markdown/sampleData.js";
+import readmeTemplate from "../markdown/readmeTemplate.js";
 
 import { mapActions, mapGetters } from "vuex";
 
@@ -50,6 +51,13 @@ var data = sampleData;
 // var data = new Promise(function(resolve, reject) {
 //   resolve(sampleData);
 // });
+ipcRenderer.on("template", (event, message) => {
+  // console.log(message);
+  if (message){
+    data.input = readmeTemplate.input;
+  }
+});
+
 ipcRenderer.on("ping", (event, message) => {
   // console.log(message);
   data.input = message["openedFileData"];
