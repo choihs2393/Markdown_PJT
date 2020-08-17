@@ -6,8 +6,6 @@ services:
       - 80:80
     depends_on:
       - docker-springboot
-    network_mode:
-      "bridge"
   docker-springboot:
     build: .
     expose:
