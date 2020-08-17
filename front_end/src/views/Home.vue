@@ -2,6 +2,9 @@
   <v-main>
     <v-container class="md" fluid>
       <v-btn v-if="isLoggedIn" @click="saveNote(input)">없어질 버튼</v-btn>
+      <span v-if="isLoggedIn">{{ currentTime }}</span>
+      <!-- <v-btn color="primary" v-if="isLoggedIn && !isOccupied" @click="occupy(this.$store.state.selectedNoteNo)">점유 하기</v-btn>
+      <v-btn color="primary" v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn> -->
       <!-- <v-btn v-if="isLoggedIn && !isOccupied" @click="occupy(this.$store.state.selectedNoteNo)">점유 하기</v-btn>
       <v-btn v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn> -->
       <div id="editor_div">
@@ -65,6 +68,10 @@ ipcRenderer.on("getNote", (event, message, accountNo) => {
   //   this.isOccupied = false;
   //   document.getElementById("editor_div").setAttribute("disabled", false);
   // }
+});
+
+ipcRenderer.on("contentReset", (event, message) => {
+  data.input = ""
 });
 
 // 드래그 후 드랍을 하면,
@@ -178,7 +185,10 @@ export default {
       //return parse(this.input);
       // });
     },
-    ...mapGetters(["isLoggedIn"]),
+    ...mapGetters(["isLoggedIn", "isOccupied"]),
+    currentTime() {
+      return new Date();
+    },
     // isOccupied() {
     //   return this.isOccupied;
     // }
@@ -262,56 +272,62 @@ export default {
     },
     
     // 해당 파일 점유하기.
-    // occupy(selectedNoteNo) {
-    //   // 1. 소켓 뚫기
-    //   const serverURL = "http://localhost:8080/noteAPI/ws";
-    //   // const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
-    //   let socket = new SockJS(serverURL);
-    //   this.stompClient = Stomp.over(socket);
+    occupy(selectedNoteNo) {
+      // 1. 소켓 뚫기
+      // const serverURL = "http://localhost:8080/noteAPI/ws";
+      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+      let socket = new SockJS(serverURL);
+      this.stompClient = Stomp.over(socket);
 
-    //   // 2. 소켓 연결하기
-    //   this.stompClient.connect({ Authorization: this.$store.state.authorization },
-    //     frame => {
-    //       var map = {
-    //           noteId: selectedNoteNo,
-    //           accountNo: this.$store.state.userInfo.no,
-    //           accountName: this.$store.state.userInfo.name
-    //       }
-                   
-    //       // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유하고 있다'고 send하기
-    //       this.stompClient.send("/groupReceive/occupy/" + this.$store.state.workspaceNo, JSON.stringify(map));
-    //     }
-    //   )
+      // 2. 소켓 연결하기
+      this.stompClient.connect({ Authorization: this.$store.state.authorization },
+        frame => {
+          var map = {
+              noteId: selectedNoteNo,
+              accountNo: this.$store.state.userInfo.no,
+              accountName: this.$store.state.userInfo.name,
+              subject: this.$store.state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].subject,
+              content: this.$store.state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content
+          }
 
-    //   // 4. send 했으면, 소켓 disconnect를 진행해준다.
-    //   this.stompClient.disconnect();
-    // },
+          // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유하고 있다'고 점유를 풀때까지 무한정 send하기
+          while(this.$store.getters.isOccupied) {
+            this.stompClient.send("/groupReceive/occupy/" + this.$store.state.workspaceNo, JSON.stringify(map));
+          }
+        }
+      )
+
+      // 4. send 했으면, 소켓 disconnect를 진행해준다.
+      this.stompClient.disconnect();
+    },
 
     // 해당 파일 점유 포기하기.
-    // vacate(selectedNoteNo) {
-    //   // 1. 소켓 뚫기
-    //   const serverURL = "http://localhost:8080/noteAPI/ws";
-    //   // const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
-    //   let socket = new SockJS(serverURL);
-    //   this.stompClient = Stomp.over(socket);
+    vacate(selectedNoteNo) {
+      // 1. 소켓 뚫기
+      // const serverURL = "http://localhost:8080/noteAPI/ws";
+      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+      let socket = new SockJS(serverURL);
+      this.stompClient = Stomp.over(socket);
 
-    //   // 2. 소켓 연결하기
-    //   this.stompClient.connect({ Authorization: this.$store.state.authorization },
-    //     frame => {
-    //       var map = {
-    //           noteId: this.$store.state.selectedNoteNo,
-    //           accountNo: this.$store.state.userInfo.no,
-    //           accountName: this.$store.state.userInfo.name
-    //       }
+      // 2. 소켓 연결하기
+      this.stompClient.connect({ Authorization: this.$store.state.authorization },
+        frame => {
+          var map = {
+              noteId: this.$store.state.selectedNoteNo,
+              accountNo: this.$store.state.userInfo.no,
+              // accountName: this.$store.state.userInfo.name
+              subject: this.$store.state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].subject,
+              content: this.$store.state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content
+          }
 
-    //       // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유하고 있다'고 send하기
-    //       this.stompClient.send("/groupReceive/vacate/" + this.$store.state.workspaceNo, JSON.stringify(map));
-    //     }
-    //   )
+          // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유하고 있다'고 send하기
+          this.stompClient.send("/groupReceive/vacate/" + this.$store.state.workspaceNo, JSON.stringify(map));
+        }
+      )
 
-    //   // 4. send 했으면, 소켓 disconnect를 진행해준다.
-    //   this.stompClient.disconnect();
-    // }
+      // 4. send 했으면, 소켓 disconnect를 진행해준다.
+      this.stompClient.disconnect();
+    }
   }
 };
 </script>

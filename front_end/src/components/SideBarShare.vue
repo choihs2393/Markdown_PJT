@@ -197,12 +197,41 @@ export default {
       }
       this.$refs.form_workspace.reset();
       this.workspaceDialog = false;
+      this.$store.commit("SELET_WORKSPACE", this.selected);
+      this.workspaces = this.$store.state.userInfo.group;
     },
 
     changeWorkspace(bandInfo) {
       console.log("bandInfo: ", bandInfo)
       this.$store.commit('SELECTED_WORKSPACE', bandInfo)
       this.$store.dispatch('getNoteList', bandInfo)
+
+      const serverURL = "http://localhost:8080/noteAPI/ws";
+      // const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+      let socket = new SockJS(serverURL);
+      this.stompClient = Stomp.over(socket);
+
+      this.stompClient.connect(
+        { Authorization: this.$store.state.authorization },
+        frame => {
+          this.connected = true;
+          // 워크스페이스에서의 현재 파일 점유 유무를 받고 있음.
+          this.stompClient.subscribe("/groupSend/" + this.$store.state.workspaceNo,
+            res => {
+              const receivedMsg = JSON.parse(res.body);
+
+              // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
+              //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
+              //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
+              var idx = this.$store.state.userInfo.fileList.findIndex(element => element._id == res.body._id);
+              this.$store.state.fileList[idx].occupiedNo = res.body.occupiedNo;
+              this.$store.state.fileList[idx].occupiedName = res.body.occupiedName;
+            }
+          );
+        }
+      );
+
+      this.stompClient.disconnect();
     },
 
     deleteWorkspace() {

@@ -83,7 +83,8 @@ export default new Vuex.Store({
   // state를 (가공해서)가져올 함수들. === computed
   getters: {
     isLoggedIn: state => !!state.authorization,
-    status: state => state.userInfo.status
+    status: state => state.userInfo.status,
+    isOccupied: state => state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].occupiedName
     // getWorkspaceMemberList: state => {
     //   return state.workspaceMemberList
     // },
@@ -223,7 +224,7 @@ export default new Vuex.Store({
 
     SET_IS_SHARE(state, result) {
       state.isShareMode = result
-      ipcRenderer.send("isShareMode", result);
+      // ipcRenderer.send("isShareMode", result);
     },
 
     SET_IS_DRAWER(state, result) {
@@ -341,6 +342,9 @@ export default new Vuex.Store({
           /* 로그아웃시 로컬모드만 사용할 수 있도록 false로 고정해놨습니다. */
           commit('SET_IS_SHARE', false)
           commit('INIT_NOTE_LIST', [])
+
+          let win = remote.BrowserWindow.getFocusedWindow();
+          win.webContents.send("contentReset", "msg")
         })
         .catch(err => console.error(err.response.data))
     },
@@ -659,6 +663,7 @@ export default new Vuex.Store({
             win.webContents.send('getNote', res.data.map.content, info.accountNo)
             // win.webContents.send('getNote', res.data.map.content, state.noteList.find(item => item._id === info.noteNo).accountNo)
             // win.webContents.send('getNote', state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteNo)].content)
+            state.storeTimer = '';
           } else if (res.data.result==='empty') {
             win.webContents.send('getNote', '')
           }
@@ -673,7 +678,9 @@ export default new Vuex.Store({
         bandNo: state.selectedBandInfo.no,
         noteNo: state.selectedNoteInfo._id,
         subject: state.selectedNoteInfo.subject,
-        content: content
+        content: content,
+        occupiedNo: state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].accountNo, // 점유자의 account_no
+        occupiedName: state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].accountName // 점유자의 account_name
       }
       // console.log(info)
       axios.post(SERVER.URL + SERVER.ROUTES.saveNote, info)
