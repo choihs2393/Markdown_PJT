@@ -36,9 +36,9 @@ public class SocketServiceImpl implements ISocketService{
 	}
 	
 	@Override
-	public Map<String, Object> occupy(int accountNo, int bandNo, int noteNo, String subject, String content,
+	public Map<String, String> occupy(int accountNo, int bandNo, int noteNo, String subject, String content,
 			String occupiedName) {
-		Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, String> map = new HashMap<String, String>();
 		
 		boolean ret = verify(accountNo, bandNo);
 		if(!ret) {
@@ -46,13 +46,18 @@ public class SocketServiceImpl implements ISocketService{
 			return map;
 		}
 		noteRepo.updateNoteDetail(bandNo, noteNo, subject, content, accountNo, occupiedName);
-		NoteDetailDTO noteDetailDTO = new NoteDetailDTO(noteNo, subject, content, accountNo, occupiedName);
-		map.put("noteDetailDTO", noteDetailDTO);
+//		NoteDetailDTO noteDetailDTO = new NoteDetailDTO(noteNo, subject, content, accountNo, occupiedName);
+		map.put("noteNo", Integer.toString(noteNo));
+		map.put("subject", subject);
+		map.put("content", content);
+		map.put("accountNo", Integer.toString(accountNo));
+		map.put("occupiedName", occupiedName);
+		
 		return map;
 	}
 	@Override
-	public Map<String, Object> vacate(int accountNo, int bandNo, int noteNo, String subject, String content) {
-		Map<String, Object> map = new HashMap<String, Object>();
+	public Map<String, String> vacate(int accountNo, int bandNo, int noteNo, String subject, String content) {
+		Map<String, String> map = new HashMap<String, String>();
 		
 		boolean ret = verify(accountNo, bandNo);
 		if(!ret) {
@@ -61,7 +66,13 @@ public class SocketServiceImpl implements ISocketService{
 		}
 		noteRepo.updateNoteDetail(bandNo, noteNo, subject, content, 0, "");
 		NoteDetailDTO noteDetailDTO = new NoteDetailDTO(noteNo, subject, content, 0, "");
-		map.put("noteDetailDTO", noteDetailDTO);
+//		map.put("noteDetailDTO", noteDetailDTO);
+		map.put("noteNo", Integer.toString(noteNo));
+		map.put("subject", subject);
+		map.put("content", content);
+		map.put("occupiedNo", "0");
+		map.put("occupiedName", "");
+		
 		return map;
 	}
 

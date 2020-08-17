@@ -47,7 +47,7 @@ public class InviteController {
 	//		++ 4. subject/ 5. content도 보낼 것.
 	@MessageMapping("/groupReceive/occupy/{bandNo}")
 	@SendTo("/send/groupSend/occupy/{bandNo}")
-	public Map<String, Object> occupy(@DestinationVariable("bandNo") String bandNo, Map<String, String> map) {
+	public Map<String, String> occupy(@DestinationVariable("bandNo") String bandNo, Map<String, String> map) {
 		
 		// NoteDetailRepo를 통해 할 작업은 아래와 같다.
 		
@@ -66,7 +66,7 @@ public class InviteController {
 		/*
 		 * service
 		 */
-		Map<String, Object> retMap = new HashMap<String, Object>();
+		Map<String, String> retMap = new HashMap<String, String>();
 		retMap = socketService.occupy(accountNo, bandId, noteId, subject, content, accountName);
 		
 		// 그 결과, 업데이트된 row를 하나의 객체타입으로 리턴해준다.
@@ -80,8 +80,8 @@ public class InviteController {
 	//		2. account_no
 	//		++ 3. subject/ 4. content도 보낼 것.
 	@MessageMapping("/groupReceive/vacate/{bandNo}")
-	@SendTo("/groupSend/{bandNo}")
-	public Map<String, Object> vacate(@DestinationVariable("bandNo") String bandNo, Map<String, String> map) {
+	@SendTo("/send/groupSend/vacate/{bandNo}")
+	public Map<String, String> vacate(@DestinationVariable("bandNo") String bandNo, Map<String, String> map) {
 		
 		// NoteDetailRepo를 통해 할 작업은 아래와 같다.
 		
@@ -97,7 +97,7 @@ public class InviteController {
 	
 		// 그 결과, 업데이트된 row를 하나의 객체타입으로 리턴해준다.
 		// 그럼, 프론트에서는 해당 row를 fileList에서 찾아 갈아 끼워주면 될 것이다.
-		Map<String, Object> retMap = new HashMap<String, Object>();
+		Map<String, String> retMap = new HashMap<String, String>();
 		retMap = socketService.vacate(accountNo, bandId, noteId, subject, content);
 		
 		return retMap;
