@@ -2,7 +2,9 @@
   <v-main>
     <v-container class="md" fluid>
       <v-row>
-        <v-btn color="primary" v-if="isLoggedIn" @click="saveNote(input)">저장하기</v-btn>
+        <v-btn color="primary" :v-if="$store.state.selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
+        <v-btn color="primary" v-if="$store.state.selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
+        <v-btn color="primary" v-if="$store.state.selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
         <span v-if="isLoggedIn">{{ currentTime }}</span>
         <v-btn color="primary" v-if="isLoggedIn && !isOccupied" @click="occupy(this.$store.state.selectedNoteNo)">점유 하기</v-btn>
         <v-btn color="primary" v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn>
@@ -49,6 +51,11 @@ import { mapActions, mapGetters } from "vuex";
 import { remote, ipcRenderer } from "electron";
 import fs from "fs";
 import path from "path";
+
+// 소켓 관련 모듈
+import SockJS from "sockjs-client";
+import Stomp from "webstomp-client";
+import { setInterval } from 'timers';
 
 var data = sampleData;
 
@@ -305,22 +312,22 @@ export default {
       this.stompClient.connect({ Authorization: this.$store.state.authorization },
         frame => {
           var map = {
-              noteId: selectedNoteNo,
+              noteId: this.$store.state.selectedNoteInfo._id,
               accountNo: this.$store.state.userInfo.no,
               accountName: this.$store.state.userInfo.name,
-              subject: this.$store.state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].subject,
-              content: this.$store.state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content
+              subject: this.$store.state.selectedNoteInfo.subject,
+              content: this.$store.state.selectedNoteInfo.content
           }
 
           // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유하고 있다'고 점유를 풀때까지 무한정 send하기
-          while(this.$store.getters.isOccupied) {
-            this.stompClient.send("/groupReceive/occupy/" + this.$store.state.workspaceNo, JSON.stringify(map));
-          }
+          setInterval(() => {
+            this.stompClient.send("/groupReceive/occupy/" + this.$store.state.selectedBandInfo.no, JSON.stringify(map)); 
+          }, 5000);
         }
       )
 
       // 4. send 했으면, 소켓 disconnect를 진행해준다.
-      this.stompClient.disconnect();
+      // this.stompClient.disconnect();
     },
 
     // 해당 파일 점유 포기하기.
@@ -335,15 +342,15 @@ export default {
       this.stompClient.connect({ Authorization: this.$store.state.authorization },
         frame => {
           var map = {
-              noteId: this.$store.state.selectedNoteNo,
+              noteId: this.$store.state.selectedNoteInfo._id,
               accountNo: this.$store.state.userInfo.no,
               // accountName: this.$store.state.userInfo.name
               subject: this.$store.state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].subject,
               content: this.$store.state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content
           }
 
-          // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유하고 있다'고 send하기
-          this.stompClient.send("/groupReceive/vacate/" + this.$store.state.workspaceNo, JSON.stringify(map));
+          // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유권을 놓겠다'고 send하기
+          this.stompClient.send("/groupReceive/vacate/" + this.$store.state.selectedBandInfo.no, JSON.stringify(map));
         }
       )
 
