@@ -31,12 +31,12 @@ public class InviteController {
 		
 		return map;
 	}
-
 	
 	// 파라미터(map)에는 아래 세 정보가 포함되어 있음.
 	// 		1. noteId
 	//		2. account_no
 	//		3. account_name
+	//		++ 4. subject/ 5. content도 보낼 것.
 	@MessageMapping("/groupReceive/occupy/{bandNo}")
 	@SendTo("/groupSend/{bandNo}")
 	public void occupy(@DestinationVariable("bandNo") String bandNo, Map<String, String> map) {
@@ -53,7 +53,7 @@ public class InviteController {
 	// 파라미터(map)에는 아래 세 정보가 포함되어 있음.
 	// 		1. noteId
 	//		2. account_no
-	//		3. account_name
+	//		++ 3. subject/ 4. content도 보낼 것.
 	@MessageMapping("/groupReceive/vacate/{bandNo}")
 	@SendTo("/groupSend/{bandNo}")
 	public void vacate(@DestinationVariable("bandNo") String bandNo, Map<String, String> map) {

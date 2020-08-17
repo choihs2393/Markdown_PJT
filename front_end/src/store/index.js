@@ -80,7 +80,8 @@ export default new Vuex.Store({
   // state를 (가공해서)가져올 함수들. === computed
   getters: {
     isLoggedIn: state => !!state.authorization,
-    status: state => state.userInfo.status
+    status: state => state.userInfo.status,
+    isOccupied: state => state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].occupiedName
     // getWorkspaceMemberList: state => {
     //   return state.workspaceMemberList
     // },
@@ -228,7 +229,7 @@ export default new Vuex.Store({
 
     SET_IS_SHARE(state, result) {
       state.isShareMode = result
-      ipcRenderer.send("isShareMode", result);
+      // ipcRenderer.send("isShareMode", result);
     },
 
     SET_IS_DRAWER(state, result) {
@@ -339,6 +340,12 @@ export default new Vuex.Store({
           /* 서버모드로 켜놓고, 로그아웃 하면 서버모드가 유지됩니다. */
           /* 로그아웃시 로컬모드만 사용할 수 있도록 false로 고정해놨습니다. */
           commit('SET_IS_SHARE', false)
+
+          let win = remote.BrowserWindow.getFocusedWindow();
+          win.webContents.send("contentReset", "msg")
+          
+          // fileList 제거해주기.
+          this.state.fileList = [];
         })
         .catch(err => console.error(err.response.data))
     },
@@ -655,6 +662,9 @@ export default new Vuex.Store({
           if (res.data.result==='success') {
             win.webContents.send('openFile', res.data.map.content, state.fileList.find(element => element._id == fileNo).accountNo)
             // win.webContents.send('openFile', state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].content)
+
+            state.storeTimer = '';
+
           } else if (res.data.result==='empty') {
             win.webContents.send('openFile', '')
           }
@@ -669,7 +679,9 @@ export default new Vuex.Store({
         bandNo: state.userInfo.group.find(element => element.name === state.workspace).no,
         noteNo: state.selectedNoteNo,
         subject: state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].subject,
-        content: fileContents
+        content: fileContents,
+        occupiedNo: state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].accountNo, // 점유자의 account_no
+        occupiedName: state.fileList[state.fileList.findIndex(item => item._id===state.selectedNoteNo)].accountName // 점유자의 account_name
       }
       // console.log(info)
       axios.post(SERVER.URL + SERVER.ROUTES.saveFile, info, { headers: { email: state.userInfo.email } })

@@ -34,7 +34,15 @@
           </v-card-title>
 
           <v-list-item>
-            <v-list-item-group>
+            <v-list-item-group v-if="status.length == 0">
+              <v-list-item>
+                <v-list-item-content class="d-flex justify-center">
+                  새로운 알림이 없습니다.
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+
+            <v-list-item-group v-else>
               <v-list-item v-for="group in status" :key="group.no">
                 <v-list-item-avatar color="grey">
                   <v-img src="https://cdn.vuetifyjs.com/images/lists/1.jpg"></v-img>
