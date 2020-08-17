@@ -69,7 +69,7 @@ public class CustomJwtRequestFilter extends OncePerRequestFilter {
 			}
 		} else {
 			logger.warn("JWT Token does not begin with Bearer String");
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		}
 		
 		if (email == null) {
