@@ -1,5 +1,6 @@
 import { app, BrowserWindow, dialog } from "electron";
 import { createWindow } from "../background";
+import sampleData from './sampleData.js';
 const fs = require("fs");
 const isMac = process.platform === "darwin"
 
@@ -263,35 +264,121 @@ function createHelpWindow() {
   });
   }
 
+let openFileData;
+ipcMain.on("mainping", (event, message)=>{
+    openFileData = message['openedFileData'];
+    }
+)
+let absoluteFilePath;
+ipcMain.on("mainping", (event, message)=>{
+    absoluteFilePath = message['absoluteFilePath'];
+    }
+)
 function openNewReadme() {
-    var fileData = '';
 
-    BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
-    .then(result => {
+
+    const options = {
+        type: "question",
+        title: "Question",
+        message: "Are you sure you want to quit without saving?",
+        detail: "Click the save button if you want to save this text to your md file",
+        buttons: ["Do Not Save", "Save As...", "Save", "Close"],
+        defaultId: 1
+      };
+      const optionsForJustSaveas = {
+        type: "question",
+        title: "Question",
+        message: "Are you sure you want to quit without saving?",
+        detail: "Click the save button if you want to save this text to your md file",
+        buttons: ["Do Not Save", "Save As...", "Close"],
+        defaultId: 1
+    };
+
+      var fileData = '';
+
+      BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
+      .then(result => {
         fileData = result;
-        // console.log(fileData);
-    });
-
-    var fileName = dialog.showSaveDialog(BrowserWindow.getFocusedWindow(),
-        {
-            title: "파일 저장하기",
-            filters: [
-                { name: 'Markdown', extensions: ['md'] },
-            ],
-            message: "TEST"
+        if (!absoluteFilePath){
+          if (fileData === sampleData.input){
+          } else{
+            dialog.showMessageBox(optionsForJustSaveas)
+            .then(result => {
+            if(result.response == 1) {
+              // 1 : Save
+                  dialog.showSaveDialog(
+                      {
+                          title: "파일 저장하기",
+                          filters: [
+                              { name: 'Markdown', extensions: ['md'] },
+                          ],
+                          message: "TEST"
+                      }
+                  )
+                  .then(result => {
+                      // console.log(result.filePath);
+          
+                      var fileName = result.filePath;
+                      fs.writeFile(fileName, fileData, (err) => {
+      
+                      })
+  
+  
+                  });   
+          } else if(result.response == 0) {
+          }
+          })
+          }
         }
-    )
-    .then(result => {
-        fileName = result.filePath;
-        fs.writeFile(fileName, fileData, (err) => {
-
-        })
-    });
+        else if (fileData.trimEnd() === openFileData.trimEnd() || fileData === ''){
+        }else{
+          
+      dialog.showMessageBox(options)
+      .then(result => {
+  
+        // 1 : SaveAs
+        if(result.response == 1) {
+  
+  
+          dialog.showSaveDialog(
+              {
+                  title: "파일 저장하기",
+                  filters: [
+                      { name: 'Markdown', extensions: ['md'] },
+                  ],
+                  message: "TEST"
+              }
+          )
+          .then(result => {
+            if(!result.canceled){
+              
+            
+            console.log(result.filePath);
+  
+              var fileName = result.filePath;
+              fs.writeFile(fileName, fileData, (err) => {
+  
+              })
+              
+            }
+          });
+        }
+  
+        // 2 : Save
+        else if(result.response == 2){
+          fs.writeFile(absoluteFilePath, fileData, (err) => {
+          })
+        }
+      });
+    }
 
     let win = BrowserWindow.getFocusedWindow();
-
+  
     let message = true;
     win.webContents.send("template", message);
+
+  });
+
 
 
 }
