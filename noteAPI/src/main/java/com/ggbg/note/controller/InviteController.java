@@ -81,12 +81,13 @@ public class InviteController {
 	//		++ 3. subject/ 4. content도 보낼 것.
 	@MessageMapping("/groupReceive/vacate/{bandNo}")
 	@SendTo("/send/groupSend/vacate/{bandNo}")
-		
+	public Map<String, String> vacate(@DestinationVariable("bandNo") String bandNo, Map<String, String> map) {
+
 		int noteId = Integer.parseInt(map.get("noteId"));
 		int accountNo = Integer.parseInt(map.get("accountNo"));
 		String subject = map.get("subject");
 		String content = map.get("content");
-		
+		int bandId = Integer.parseInt(bandNo);
 		
 		// map.get("noteId")값으로 Document에서 일치하는 _id로 접근하고,
 		// 해당 row의 occupiedNo, occupiedName 값을 각각 0, "" 값으로 UPDATE 해준다.
