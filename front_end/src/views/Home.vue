@@ -1,7 +1,6 @@
 <template>
   <v-main>
     <v-container class="md" fluid>
-<<<<<<< HEAD
       <v-row>
         <v-btn color="primary" v-if="isLoggedIn && $store.state.selectedNoteInfo != null && $store.state.selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
         <v-btn color="primary" v-if="$store.state.selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
@@ -39,38 +38,6 @@
           <div id="compiledMarkdown" class="compiledMarkdown" v-html="compiledMarkdown"></div>
         </v-col>
       </v-row>
-=======
-      <v-btn color="primary" v-if="isLoggedIn" @click="saveNote(input)">저장하기</v-btn>
-      <span v-if="isLoggedIn">{{ currentTime }}</span>
-      <v-btn color="primary" v-if="isLoggedIn && !isOccupied" @click="occupy(this.$store.state.selectedNoteNo)">점유 하기</v-btn>
-      <v-btn color="primary" v-if="isLoggedIn && isOccupied" @click="vacate(this.$store.state.selectedNoteNo)">점유 끊기</v-btn>
-      <div id="editor_div">
-        <v-textarea
-          solo
-          flat
-          auto-grow
-          ref="textarea"
-          v-model="input"
-          id="editor_textarea"
-          @keyup.native="whenKeyUp"
-          onkeydown="
-            if(event.keyCode === 9) {
-              var v=this.value, s=this.selectionStart, e=this.selectionEnd;
-              this.value=v.substring(0, s)+'\t'+v.substring(e);
-              this.selectionStart=this.selectionEnd=s+1;
-              
-              return false;
-            }"
-        />
-        <div id="compiledMarkdown" class="compiledMarkdown" v-html="compiledMarkdown"></div>
-      </div>
-
-      <!-- <v-row
-        align="center"
-        justify="center"
-      >
-      </v-row>-->
->>>>>>> feature/newTemplateLocalSave
     </v-container>
   </v-main>
 </template>
@@ -449,13 +416,9 @@ export default {
   border-right: 1px solid #ccc;
   resize: none;
   outline: none;
-<<<<<<< HEAD
   /* height: 100%; */
   height: 100vh;
   /* background-color: #f6f6f6; */
-=======
-  background-color: #f6f6f6;
->>>>>>> feature/newTemplateLocalSave
   font-size: 14px;
   font-family: "Monaco", courier, monospace;
   padding: 10px;
