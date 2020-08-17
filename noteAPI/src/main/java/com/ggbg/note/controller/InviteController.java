@@ -46,7 +46,7 @@ public class InviteController {
 	//		3. account_name
 	//		++ 4. subject/ 5. content도 보낼 것.
 	@MessageMapping("/groupReceive/occupy/{bandNo}")
-	@SendTo("/groupSend/{bandNo}")
+	@SendTo("/send/groupSend/occupy/{bandNo}")
 	public Map<String, Object> occupy(@DestinationVariable("bandNo") String bandNo, Map<String, String> map) {
 		
 		// NoteDetailRepo를 통해 할 작업은 아래와 같다.

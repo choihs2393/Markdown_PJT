@@ -216,7 +216,7 @@ export default {
         frame => {
           this.connected = true;
           // 워크스페이스에서의 현재 파일 점유 유무를 받고 있음.
-          this.stompClient.subscribe("/groupSend/" + this.$store.state.selectedBandInfo.no,
+          this.stompClient.subscribe("/send/groupSend/occupy/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
 
