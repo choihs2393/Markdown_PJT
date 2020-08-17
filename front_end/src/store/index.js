@@ -211,8 +211,6 @@ export default new Vuex.Store({
           }
         }
       }
-      // state.workspaceMemberList.push(result)
-      // console.log(state.workspaceMemberList)
     },
 
     GET_NEW_MEMBER_INFO(state, result) {
@@ -220,19 +218,7 @@ export default new Vuex.Store({
       // console.log(state.workspaceMemberList)
     },
 
-    SET_IS_SHARE(state, result) {
-      state.isShareMode = result
-      // ipcRenderer.send("isShareMode", result);
-    },
-
-    SET_IS_DRAWER(state, result) {
-      state.drawer = result
-    },
-
-    SET_IS_DRAWER_SHARE(state, result) {
-      state.drawerShare = result
-    },
-
+    
     REMOVE_DELETE_MEMBER_INFO(state, result) {
       const idx = state.workspaceMemberList.findIndex(function(item) {return item.no === result.accountNo}) // findIndex = find + indexOf 
       state.workspaceMemberList.splice(idx, 1)
@@ -241,45 +227,60 @@ export default new Vuex.Store({
     SET_IS_RENAME_FILE_MODAL(state, payload) {
       state.isRenameFileModal = payload
     },
-
+    
     SET_IS_DELETE_FILE_MODAL(state, payload) {
       state.isDeleteFileModal = payload
     },
-
+    
     // 초기 noteList 정보 저장
     INIT_NOTE_LIST(state, noteList) {
       state.noteList = noteList
     },
-
+    
     // FileList 에 File 추가하기
     SET_NOTE(state, noteInfo) {
       state.noteList.push(noteInfo);
     },
-
+    
     SELECTED_NOTE(state, noteInfo) {
       state.selectedNoteInfo = noteInfo
     },
-
+    
     RIGHT_SELECTED_NOTE(state, noteInfo) {
       state.rightSelectedNoteInfo = noteInfo
     },
-
+    
     // File 이름 변경
     RENAME_NOTE_SUBJECT(state, noteInfo) {
       const idx = state.noteList.findIndex(item => item._id == noteInfo.noteNo)
       state.noteList[idx].subject = noteInfo.subject
     },
-
+    
     // FileList 에 File 삭제하기
     DELETE_NOTE(state, noteNo) {
       const idx = state.noteList.findIndex(item => item._id===noteNo)
       state.noteList.splice(idx, 1);
     },
-
+    
     // File 내용 추가
     SET_NOTE_CONTENT(state, noteInfo) {
       const idx = state.noteList.findIndex(item => item._id===noteInfo.noteNo)
       state.noteList[idx].content = noteInfo.content
+    },
+
+    // modal 관련 로직
+    SET_IS_SHARE(state, result) {
+      state.isShareMode = result
+      // ipcRenderer.send("isShareMode", result);
+    },
+    SET_IS_DRAWER(state, result) {
+      state.drawer = result
+    },
+    SET_IS_DRAWER_SHARE(state, result) {
+      state.drawerShare = result
+    },
+    SET_IS_INVITE_MODAL(state, result) {
+      state.isInviteModal = result
     }
   },
 
@@ -502,7 +503,7 @@ export default new Vuex.Store({
       .then(res => {
         // console.log("res.data.result : ", res.data.result)
         commit("SHOW_GROUP_MEMBERS", res.data.map.bandMemberList)
-        this.state.isInviteModal = !(this.state.isInviteModal)
+        state.isInviteModal = !(state.isInviteModal)
         })
     },
 
@@ -527,11 +528,11 @@ export default new Vuex.Store({
     },
 
     // 워크스페이스에 멤버 초대하기
-    inviteBandMember({ commit }, inviteBandMember) {
+    inviteBandMember({ state, commit }, inviteBandMember) {
       // console.log("[inviteBandMember] inviteBandMember()", inviteBandMember);
 
-      this.state.noSuchMemberAlert = false;
-      axios.post(SERVER.URL + SERVER.ROUTES.inviteBandMember, inviteBandMember, { headers: { email: this.state.userInfo.email} })
+      state.noSuchMemberAlert = false;
+      axios.post(SERVER.URL + SERVER.ROUTES.inviteBandMember, inviteBandMember, { headers: { email: state.userInfo.email} })
       .then(res => {
         // console.log("res.data.result : ", res.data.map.bandMember)
         commit("GET_NEW_MEMBER_INFO", res.data.map.bandMember)
@@ -539,25 +540,25 @@ export default new Vuex.Store({
     },
 
     // 워크스페이스 초대 수락
-    acceptInvite({}, info) {
+    acceptInvite({state}, info) {
       // console.log("[acceptInvite] info : ", info)
-      axios.post(SERVER.URL + SERVER.ROUTES.acceptInvite, info, { headers: { email: this.state.userInfo.email } })
+      axios.post(SERVER.URL + SERVER.ROUTES.acceptInvite, info, { headers: { email: state.userInfo.email } })
       .then(res => {
         // console.log("초대 수락 확인")
       }) 
     },
 
     // 워크스페이스 초대 거절
-    declineInvite({}, info) {
+    declineInvite({state}, info) {
       // console.log("[declineInvite] info : ", info)
-      axios.post(SERVER.URL + SERVER.ROUTES.declineInvite, info, { headers: { email: this.state.userInfo.email } })
+      axios.post(SERVER.URL + SERVER.ROUTES.declineInvite, info, { headers: { email: state.userInfo.email } })
       .then(res => {
         // console.log("초대 거부 확인")
       })
     },
 
     //워크스페이스 멤버 내보내기
-    kickOutBandMember({ state, commit }, accounNo) {
+    kickOutBandMember({ state, commit }, accountNo) {
       const kickOutBandMember = {
         accountNo: accountNo,
         bandNo: state.selectedBandInfo.no, 
