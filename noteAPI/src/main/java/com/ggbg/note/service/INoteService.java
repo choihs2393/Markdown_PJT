@@ -21,7 +21,7 @@ public interface INoteService {
 	
 	//select
 	public List<NoteDetailDTO> getNoteSubject(int accountNo, int bandNo);
-	public String getNoteContent(int accountNo, int bandNo, int noteNo);
+	public NoteDetailDTO getNoteContent(int accountNo, int bandNo, int noteNo);
 	
 	//udpate
 	public boolean updateNoteDetail(int accountNo, int bandNo, int noteNo, String subject, String content, int occupiedNo, String occupiedName);

@@ -64,7 +64,7 @@ public class NoteController {
 		int accountNo = Integer.parseInt(map.get("accountNo"));
 		int noteNo = Integer.parseInt(map.get("noteNo"));
 		
-		String content = noteService.getNoteContent(accountNo, bandNo, noteNo);
+		NoteDetailDTO content = noteService.getNoteContent(accountNo, bandNo, noteNo);
 		
 		result.status = true;
 		if(content != null && !content.equals("")) {

@@ -58,17 +58,19 @@ public class NoteServiceImpl implements INoteService{
 	}
 
 	@Override
-	public String getNoteContent(int accountNo, int bandNo, int noteNo) {
+	public NoteDetailDTO getNoteContent(int accountNo, int bandNo, int noteNo) {
 		boolean ret = verify(accountNo, bandNo);
 		if(!ret)
-			return "";
+			return new NoteDetailDTO();
 		System.out.println("getNoteContent");
 		NoteEntity ne = noteDetailRepo.findNoteDetailContent(bandNo, noteNo);
 		if(ne.getNote() == null)
-			return "";
+			return new NoteDetailDTO();
 		else {
-			String str = ne.getNote().get(0).getContent();
-			return str;
+			NoteDetailDTO dto = new NoteDetailDTO(ne.getNote().get(0).get_id(), ne.getNote().get(0).getSubject(), ne.getNote().get(0).getContent(),
+					ne.getNote().get(0).getOccupiedNo(), ne.getNote().get(0).getOccupiedName());
+//			String str = ne.getNote().get(0).getContent();
+			return dto;
 		}
 		
 	}

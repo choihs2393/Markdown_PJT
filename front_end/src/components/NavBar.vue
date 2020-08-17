@@ -227,6 +227,14 @@ export default {
         this.$store.dispatch("acceptInvite", info);
 
         var idx = this.$store.state.userInfo.status.findIndex(element => element.no == groupNo);
+        
+        this.$store.state.userInfo.group.push({
+          no: this.$store.state.userInfo.status[idx].no,
+          name: this.$store.state.userInfo.status[idx].name,
+          master: this.$store.state.userInfo.status[idx].master,
+          bandMasterName: this.$store.state.userInfo.status[idx].bandMasterName
+        });
+        
         this.$store.state.userInfo.status.splice(idx, 1);
       }
       // 거절

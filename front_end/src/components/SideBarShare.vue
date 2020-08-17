@@ -108,7 +108,7 @@
     <RenameFileModal />
     <DeleteFileModal />
 
-    <InviteModal />
+    <InviteModal :workspaceNo="bandInfo.no" />
     <!-- workspace rename dialog -->
     <v-dialog v-model="workspaceRenameDialog" max-width="600px">
       <v-card>
