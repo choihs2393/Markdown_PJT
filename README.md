@@ -1,4 +1,4 @@
-# :star:Project Title
+# :rocket:Project Title
 ---
 One Paragraph of project description goes her
 ## :sparkles: Started
