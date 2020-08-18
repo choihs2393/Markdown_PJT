@@ -361,11 +361,11 @@ export default {
     // 해당 파일 점유하기.
     occupy(selectedNoteNo) {
       // 1. 소켓 뚫기
-      const serverURL = "http://localhost:8080/noteAPI/ws";
-      // const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+      // const serverURL = "http://localhost:8080/noteAPI/ws";
+      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
-
+      console.log(this.$store.state.selectedNoteInfo._id);
       // 2. 소켓 연결하기
       this.stompClient.connect({ Authorization: this.$store.state.authorization },
         frame => {
