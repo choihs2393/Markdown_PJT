@@ -5,7 +5,7 @@
         <v-btn color="primary" v-if="isLoggedIn && $store.state.selectedNoteInfo != null && $store.state.selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
         <v-btn color="primary" v-if="$store.state.selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
         <v-btn color="primary" v-if="$store.state.selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
-        <span v-if="isLoggedIn">{{ currentTime }}</span>
+        <span v-if="$store.state.isShareMode">{{ currentTime }}</span>
         <v-spacer></v-spacer>
         <v-btn class="mr-2" @click="isTextarea=!isTextarea">
           <!-- <v-icon left>mdi-pencil</v-icon> -->
@@ -88,7 +88,7 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
     let fileDataObject = {}
     if (isPathExist){
       
-      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'\\readme.md'};
+      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'\\README.md'};
       fs.exists(fileDataObject['absoluteFilePath'], (exists) => { 
         if (!exists){
           fs.writeFile(fileDataObject['absoluteFilePath'], readmeTemplate.input, (err) => {
@@ -108,6 +108,7 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
     ipcRenderer.send("template", isTemplate);
     win.webContents.send("addFileInList", folderFullPath);
     isTemplate = false;
+    parse(data.input)
   }
 })
 
@@ -115,6 +116,7 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
 ipcRenderer.on("ping", (event, message) => {
   // console.log(message);
   data.input = message["openedFileData"];
+  parse(data.input)
 });
 
 ipcRenderer.on("getNote", (event, message, accountNo) => {
@@ -127,10 +129,12 @@ ipcRenderer.on("getNote", (event, message, accountNo) => {
   //   this.isOccupied = false;
   //   document.getElementById("editor_div").setAttribute("disabled", false);
   // }
+  parse(data.input)
 });
 
 ipcRenderer.on("contentReset", (event, message) => {
   data.input = ""
+  parse(data.input)
 });
 
 // 드래그 후 드랍을 하면,
