@@ -86,6 +86,8 @@ export default new Vuex.Store({
 
     // add Readme.md in file list
     addReadme: '',
+
+    savedTime: ''
   },
 
   // state를 (가공해서)가져올 함수들. === computed
@@ -94,7 +96,10 @@ export default new Vuex.Store({
     status: state => state.userInfo.status,
     // occupiedName: state => state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteInfo._id)].occupiedName,
     selectedNoteInfo: state => state.selectedNoteInfo,
-    isShareMode: state => state.isShareMode
+    isShareMode: state => state.isShareMode,
+    selectedBandInfo: state => state.selectedBandInfo,
+    savedTime: state => state.savedTime,
+    noteList: state => state.noteList
     // getWorkspaceMemberList: state => {
     //   return state.workspaceMemberList
     // },
@@ -715,6 +720,22 @@ export default new Vuex.Store({
           commit('SET_NOTE_CONTENT', info)
         })
         .catch(err => console.error(err.response.data))
+
+      var d = new Date(),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear(),
+      hour = ("0" + d.getHours()).slice(-2),
+      min = ("0" + d.getMinutes()).slice(-2),
+      sec = ("0" + d.getSeconds()).slice(-2);
+
+      if (month.length < 2) 
+          month = '0' + month;
+      if (day.length < 2) 
+          day = '0' + day;
+
+      state.savedTime = "저장 일시 : " + [year, month, day].join('-') + " " + [hour, min, sec].join(':');
+      console.log(state.savedTime)
     }
   },
   modules: {}
