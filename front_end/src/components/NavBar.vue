@@ -89,7 +89,7 @@
       </v-menu>
       <LogoutModal />
       <MypageModal />
-      <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share" style="font-weight: bold;"></v-switch>
+      <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share" style="font-weight: bold;"@click="changeMode"></v-switch>
     </template>
   </v-app-bar>
 </template>
@@ -267,7 +267,7 @@ if (!!this.$store.state.isShareMode == false) {
           }
         });
         }
-        remote.BrowserWindow.getFocusedWindow().webContents.send("contentReset", "msg");
+        remote.BrowserWindow.getFocusedWindow().webContents.send("serverInit", serverStartInput);
       });
     },
 

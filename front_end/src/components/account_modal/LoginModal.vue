@@ -30,7 +30,7 @@
                   name="password"
                   type="password"
                   prepend-icon="mdi-lock"
-                  @keyup.enter="login(loginData), submit(), changeMode()"
+                  @keyup.enter="login(loginData), submit()"
                 ></v-text-field>
               </ValidationProvider>
               <v-alert dense outlined type="error" v-if="isPasswordChecked">
@@ -40,7 +40,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="login(loginData), submit(), changeMode()">Login</v-btn>
+            <v-btn color="primary" @click="login(loginData), submit()">Login</v-btn>
             <v-btn @click="close()">Close</v-btn>
           </v-card-actions>
         </v-card>
