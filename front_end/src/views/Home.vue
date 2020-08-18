@@ -336,6 +336,11 @@ export default {
       console.log("영복이의 로그추적 " + occupyAccountNo);
       console.log("영복이의 로그추적 " + loginAccountNo);
       console.log("영복이의 로그추적 " + tmp);
+
+      /*
+      * this is a auto save + share part
+      */
+
       if(noteNo !== '' && bandNo !== '' && occupyAccountNo !== '' && occupyAccountNo === loginAccountNo){
         if(this.$store.state.storeSyncCheck === false){
           this.$store.commit('setStoreSyncCheck', true);
@@ -343,9 +348,9 @@ export default {
             // clearTimeout(this.$store.state.storeTempData);
             // console.log('로직 안 this22222', this);
             // console.log("영복이의 로그추적 " + tmp);
-            this.$store.dispatch('saveNote', tmp);
+            this.shareNote(tmp);
             this.$store.commit('setStoreSyncCheck', false);
-          }, 1000 * 60 * 5);
+          }, 1000 * 2);
            this.$store.commit('setStoreTimer',storeTimer)
         }
         clearTimeout(this.$store.state.storeTempData);
@@ -353,36 +358,28 @@ export default {
             // console.log('로직 안 this', this);
             // console.log("영복이의 로그추적 " + tmp);
             // console.log(this.$store.state.stroeTimer);
-            this.$store.dispatch('saveNote', tmp);
-            this.$store.commit('setStoreSyncCheck', false);
-            clearTimeout(this.$store.state.storeTimer);
-        }, 1000 * 60 * 3);
-        this.$store.commit('setStoreTempData', timeOut_);
-
-
-        clearTimeout(this.$store.state.shareTimeOut)
-        let shareTimeOut = setTimeout(() => {
             console.log("영복이의 Share 로그추적 " + tmp);
             this.shareNote(tmp);
-        }, 700);
-        this.$store.commit('setShareTempData', shareTimeOut);
+            this.$store.commit('setStoreSyncCheck', false);
+            clearTimeout(this.$store.state.storeTimer);
+        }, 500);
+        this.$store.commit('setStoreTempData', timeOut_);
       }
     },
     
 
     shareNote(inputContent){
-      console.log(this.$store.state.selectedBandInfo.no);
-      console.log(this.$store.state.selectedNoteInfo._id);
       console.log(inputContent);
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
-
       this.stompClient.connect({ Authorization: this.$store.state.authorization },
         frame => {
           var map = {
-              noteNo: this.$store.state.selectedNoteInfo._id,
-              content: inputContent
+            accountNo: this.$store.state.userInfo.no,
+            subject: this.$store.state.selectedNoteInfo.subject,
+            content: inputContent,
+            occupiedName: this.$store.state.selectedNoteInfo.occupiedName
           }
           this.stompClient.send("/groupReceive/content/" + this.$store.state.selectedBandInfo.no + "/" + this.$store.state.selectedNoteInfo._id, JSON.stringify(map));
         }

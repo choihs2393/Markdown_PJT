@@ -70,7 +70,7 @@
         <v-list-item
           v-for="note in this.$store.state.noteList"
           :key="note._id"
-          @click="getNote(note)"
+          @click="getNote(note); changeNote(note)"
           @mousedown.right="$refs.fileMenu.open($event, note), setRightNoteInfo(note)"
         >
           <v-list-item-content>
@@ -270,28 +270,49 @@ export default {
             } 
           )
           
-          this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no,
-            res => {
-              const receiveMsg = JSON.parse(res.body);
-              console.log("/send/groupSend/content/" + receiveMsg.noteNo);
-              console.log("/send/groupSend/content/" + receiveMsg.content);
-              var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
-              // this.$store.state.noteList[idx].content = receiveMsg.content;
-              this.$store.state.selectedNoteInfo.content = receiveMsg.content;
-
-              console.log(" >>> 받은 메세지 : " + receiveMsg.content)
-
-              const win = this.remote.BrowserWindow.getFocusedWindow();
-              win.webContents.send("test", receiveMsg.content);
-
-            }
-          )
         }
       );
 
       console.log("this.stompClient", this.stompClient)
       // this.stompClient.disconnect();
     },
+
+    changeNote(note){
+      console.log(this.$store.state.selectedBandInfo.no);
+      console.log(this.$store.state.selectedNoteInfo._id);
+      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+      let socket = new SockJS(serverURL);
+      this.stompClient = Stomp.over(socket);
+
+      this.stompClient.connect(
+        { Authorization: this.$store.state.authorization },
+        frame => {
+          this.connected = true;
+          this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no + "/" + this.$store.state.selectedNoteInfo._id,
+            res => {
+              const receiveMsg = JSON.parse(res.body);
+
+              var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
+              this.$store.state.selectedNoteInfo.content = receiveMsg.content;
+              const win = this.remote.BrowserWindow.getFocusedWindow();
+              win.webContents.send("test", receiveMsg.content);
+
+              const info = {
+                accountNo: receiveMsg.accountNo,
+                bandNo: receiveMsg.bandNo,
+                noteNo: receiveMsg.noteNo,
+                subject: receiveMsg.subject,
+                content: receiveMsg.content,
+                occupiedNo: receiveMsg.occupiedNo, // 점유자의 account_no
+                occupiedName: receiveMsg.occupiedName // 점유자의 account_name
+              } 
+              this.$store.commit('SET_NOTE_CONTENT', info);
+            }
+          )
+        }
+      );
+    },
+
 
     deleteWorkspace() {
       this.$refs.bandMenu.close();

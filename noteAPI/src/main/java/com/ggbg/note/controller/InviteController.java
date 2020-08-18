@@ -9,6 +9,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
+import com.ggbg.note.service.INoteService;
 import com.ggbg.note.service.ISocketService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,9 @@ public class InviteController {
 	
 	@Autowired
 	private ISocketService socketService;
+	
+	@Autowired
+	private INoteService noteService;
 	
 	@MessageMapping("/receive/{toNo}")
 	@SendTo("/send/{toNo}")
@@ -101,11 +105,25 @@ public class InviteController {
 	}
 	
 	@MessageMapping("/groupReceive/content/{bandNo}/{noteNo}")
-	@SendTo("/send/groupSend/content/{bandNo}")
+	@SendTo("/send/groupSend/content/{bandNo}/{noteNo}")
 	public Map<String, String> content(@DestinationVariable("bandNo") String bandNo, 
 			@DestinationVariable("noteNo") String noteNo ,Map<String, String> map){
-		System.out.println(map.get("noteNo"));
-		System.out.println(map.get("content"));
+		int bandNo_ = Integer.parseInt(bandNo);
+		int noteNo_ = Integer.parseInt(noteNo);
+		int accountNo = Integer.parseInt(map.get("accountNo"));
+		map.put("bandNo", bandNo);
+		map.put("noteNo", noteNo);
+		String subject = map.get("subject");
+		String content = map.get("content");
+		map.put("occupiedNo", map.get("accountNo"));
+		String occupiedName = map.get("occupiedName");
+		
+		boolean ret = noteService.updateNoteDetail(accountNo, bandNo_, noteNo_, subject, content, accountNo, occupiedName);
+
+		if(ret)
+			map.put("msg", "success");
+		else
+			map.put("msg", "fail");
 		return map;
 	}
 }
