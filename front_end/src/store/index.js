@@ -89,7 +89,8 @@ export default new Vuex.Store({
     isLoggedIn: state => !!state.authorization,
     status: state => state.userInfo.status,
     // occupiedName: state => state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteInfo._id)].occupiedName,
-    selectedNoteInfo: state => state.selectedNoteInfo
+    selectedNoteInfo: state => state.selectedNoteInfo,
+    isShareMode: state => state.isShareMode
     // getWorkspaceMemberList: state => {
     //   return state.workspaceMemberList
     // },
