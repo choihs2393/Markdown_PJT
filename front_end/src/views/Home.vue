@@ -2,9 +2,9 @@
   <v-main>
     <v-container class="md" fluid>
       <v-row>
-        <v-btn color="primary" v-if="isLoggedIn && $store.state.selectedNoteInfo != null && $store.state.selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
-        <v-btn color="primary" v-if="$store.state.selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
-        <v-btn color="primary" v-if="$store.state.selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
+        <v-btn color="primary" v-if="isLoggedIn && selectedNoteInfo != null && selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
+        <v-btn color="primary" v-if="isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
+        <v-btn color="primary" v-if="isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
         <span v-if="isLoggedIn">{{ currentTime }}</span>
         <v-spacer></v-spacer>
         <v-btn class="mr-2" @click="isTextarea=!isTextarea">
@@ -15,6 +15,7 @@
       <v-row>
         <v-col id="editor_div" v-if="isTextarea">
           <v-textarea
+            :disabled="selectedNoteInfo.occupiedNo != $store.state.userInfo.no"
             solo
             flat
             auto-grow
@@ -237,7 +238,7 @@ export default {
       //return parse(this.input);
       // });
     },
-    ...mapGetters(["isLoggedIn", "isOccupied"]),
+    ...mapGetters(["isLoggedIn", "isOccupied", "selectedNoteInfo"]),
     currentTime() {
       return new Date();
     },
@@ -360,6 +361,9 @@ export default {
 
     // 해당 파일 점유하기.
     occupy(selectedNoteNo) {
+      this.$store.state.selectedNoteInfo.occupiedNo = this.$store.state.userInfo.no;
+      this.$store.state.selectedNoteInfo.occupiedName = this.$store.state.userInfo.name;
+
       // 1. 소켓 뚫기
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
@@ -390,6 +394,8 @@ export default {
 
     // 해당 파일 점유 포기하기.
     vacate(selectedNoteNo) {
+      this.$store.state.selectedNoteInfo.occupiedNo = 0;
+      this.$store.state.selectedNoteInfo.occupiedName = "";
       // 1. 소켓 뚫기
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";

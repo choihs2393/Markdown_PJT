@@ -101,7 +101,7 @@ public class InviteController {
 	}
 	
 	@MessageMapping("/groupReceive/content/{bandNo}/{noteNo}")
-	@SendTo("/send/groupSend/content/{bandNo}/{noteNo}")
+	@SendTo("/send/groupSend/content/{bandNo}")
 	public Map<String, String> content(@DestinationVariable("bandNo") String bandNo, 
 			@DestinationVariable("noteNo") String noteNo ,Map<String, String> map){
 		System.out.println(map.get("noteNo"));
