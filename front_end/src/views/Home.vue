@@ -233,9 +233,15 @@ export default {
     // this.$store.state.parseData = parse(data);
     this.$store.commit("setParseData", parse(this.input));
     // console.log(this.$store.state.parseData);
+
     ipcRenderer.on("template", (event, isThereTemplate) => {
       if(this.$store.state.isShareMode && isThereTemplate) {
         console.log('여깅ㅇㅇㅇㅇㅇ')
+        this.$store.dispatch('createNote', 'README')
+        // console.log(this.$store.state.noteList.slice(-1)[0])
+        this.$store.commit('SELECTED_NOTE', this.$store.state.noteList.slice(-1)[0])
+        // console.log(readmeTemplate.input)
+        this.$store.dispatch('saveNote', readmeTemplate.input)
       }
     })
   },

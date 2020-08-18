@@ -617,15 +617,15 @@ export default new Vuex.Store({
           subject: subject,
         }
         axios.post(SERVER.URL + SERVER.ROUTES.createNote, info)
-          .then(res => {
-            // console.log(res.data.map)
-            info.no = res.data.map.no
-            info.content = ''
-            // console.log(info)
-            commit('SET_NOTE', info)
-            dispatch('getNoteList', state.selectedBandInfo)
-          })
-          .catch(err => console.error(err.response.data))
+        .then(res => {
+          // console.log(res.data.map)
+          info.no = res.data.map.no
+          info.content = ''
+          // console.log(info)
+          commit('SET_NOTE', info)
+          dispatch('getNoteList', state.selectedBandInfo)
+        })
+        .catch(err => console.error(err.response.data))
       }
     },
 
