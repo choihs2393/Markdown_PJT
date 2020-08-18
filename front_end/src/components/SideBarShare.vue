@@ -68,7 +68,7 @@
           <v-toolbar-title>FILES</v-toolbar-title>
         </v-subheader> -->
         <v-list-item
-          v-for="note in this.$store.state.noteList"
+          v-for="note in noteList"
           :key="note._id"
           @click="getNote(note); changeNote(note)"
           @mousedown.right="$refs.fileMenu.open($event, note), setRightNoteInfo(note)"
@@ -76,6 +76,9 @@
           <v-list-item-content>
             <v-list-item-title>{{ note.subject }}</v-list-item-title>
           </v-list-item-content>
+          <v-list-item-icon>
+            <v-icon v-if="note.occupiedNo != 0" right>lock</v-icon>
+          </v-list-item-icon>
         </v-list-item>
       </v-list>
       <v-row justify="end">
@@ -146,7 +149,7 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 import fs from "fs";
 import { remote } from "electron";
 
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 
 // 소켓 관련 모듈
 import SockJS from "sockjs-client";
@@ -164,9 +167,10 @@ export default {
     DeleteFileModal
   },
 
-  computed: mapState([
-    'userInfo'
-  ]),
+  computed: {
+    ...mapState(['userInfo']),
+    ...mapGetters(['noteList'])
+  },
 
   data() {
     return {
@@ -240,6 +244,8 @@ export default {
               // this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
               this.$store.state.selectedNoteInfo.occupiedNo = receivedMsg.occupiedNo;
               this.$store.state.selectedNoteInfo.occupiedName = receivedMsg.occupiedName;
+
+              this.$store.dispatch('getNoteList', this.bandInfo)
             } 
           )
 
@@ -267,6 +273,8 @@ export default {
               // this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
               this.$store.state.selectedNoteInfo.occupiedNo = 0;
               this.$store.state.selectedNoteInfo.occupiedName = "";
+
+              this.$store.dispatch('getNoteList', this.bandInfo)
             } 
           )
           
@@ -283,6 +291,8 @@ export default {
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
+      
+      const win = remote.BrowserWindow.getFocusedWindow();
 
       this.stompClient.connect(
         { Authorization: this.$store.state.authorization },
@@ -294,7 +304,6 @@ export default {
 
               var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
               this.$store.state.selectedNoteInfo.content = receiveMsg.content;
-              const win = this.remote.BrowserWindow.getFocusedWindow();
               win.webContents.send("test", receiveMsg.content);
 
               const info = {
@@ -380,7 +389,7 @@ export default {
   padding: 0;
 }
 
-.v-list-item {
+ .v-list-item {
   margin: 0.5em 2em 0;
   padding: 1em 0;
   height: 1em;
