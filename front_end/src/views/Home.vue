@@ -242,7 +242,6 @@ export default {
 
     ipcRenderer.on("template", (event, isThereTemplate) => {
       if(this.$store.state.isShareMode && isThereTemplate) {
-        console.log('여깅ㅇㅇㅇㅇㅇ')
         this.$store.dispatch('createNote', 'README')
         // console.log(this.$store.state.noteList.slice(-1)[0])
         this.$store.commit('SELECTED_NOTE', this.$store.state.noteList.slice(-1)[0])
