@@ -30,7 +30,7 @@
                   name="password"
                   type="password"
                   prepend-icon="mdi-lock"
-                  @keyup.enter="login(loginData), submit()"
+                  @keyup.enter="login(loginData), submit(), changeMode()"
                 ></v-text-field>
               </ValidationProvider>
               <v-alert dense outlined type="error" v-if="isPasswordChecked">
@@ -40,7 +40,7 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="login(loginData), submit()">Login</v-btn>
+            <v-btn color="primary" @click="login(loginData), submit(), changeMode()">Login</v-btn>
             <v-btn @click="close()">Close</v-btn>
           </v-card-actions>
         </v-card>
@@ -54,6 +54,8 @@ import { mapState, mapActions } from 'vuex';
 
 import { ValidationObserver, ValidationProvider, setInteractionMode, extend } from 'vee-validate'
 import { required, email } from 'vee-validate/dist/rules';
+import { remote } from "electron";
+import serverStartInput from "../../markdown/serverStartInput.js";
 
 setInteractionMode('eager')
 
@@ -95,7 +97,21 @@ export default {
 
   methods: {
     ...mapActions(['login']),
-
+    changeMode() {
+      let win = remote.BrowserWindow.getFocusedWindow();
+      console.log('test');
+        if (!!this.$store.state.isShareMode == false) {
+        this.$store.commit("SET_IS_DRAWER_SHARE", false);
+        this.$store.commit("SET_IS_DRAWER", true);
+        win.webContents.send("serverInit", serverStartInput);
+        
+      } else if (!!this.$store.state.isShareMode == true) {
+        this.$store.commit("SET_IS_DRAWER_SHARE", true);
+        this.$store.commit("SET_IS_DRAWER", false);
+        win.webContents.send("localInit");
+        //data.input = serverStartInput.data;
+      }
+    },
     close() {
       this.loginData = {
         email: '',

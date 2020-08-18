@@ -18,8 +18,14 @@
 
       <v-dialog v-model="invitationDialog" max-width="600px">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn icon v-bind="attrs" v-on="on" @click="bellClicked">
-            <v-icon>mdi-bell</v-icon>
+          <v-btn icon v-bind="attrs" v-on="on">
+            <v-tab>
+              <v-badge color="red" :content="badgeContent" v-if="badgeContent">
+              <!-- <v-badge color="red" :content="1" > -->
+                <v-icon id="bell">mdi-bell</v-icon>
+              </v-badge>
+              <v-icon id="bell" v-if="!badgeContent">mdi-bell</v-icon>
+            </v-tab>
           </v-btn>
         </template>
         <v-card>
@@ -28,7 +34,15 @@
           </v-card-title>
 
           <v-list-item>
-            <v-list-item-group>
+            <v-list-item-group v-if="status.length == 0">
+              <v-list-item>
+                <v-list-item-content class="d-flex justify-center">
+                  새로운 알림이 없습니다.
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+
+            <v-list-item-group v-else>
               <v-list-item v-for="group in status" :key="group.no">
                 <v-list-item-avatar color="grey">
                   <v-img src="https://cdn.vuetifyjs.com/images/lists/1.jpg"></v-img>
@@ -75,7 +89,7 @@
       </v-menu>
       <LogoutModal />
       <MypageModal />
-      <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share"></v-switch>
+      <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share" @click="changeMode"></v-switch>
     </template>
   </v-app-bar>
 </template>
@@ -83,23 +97,25 @@
 <script>
 import { mapGetters } from "vuex";
 
-import LoginModal from "./modal/LoginModal.vue";
-import SignupModal from "./modal/SignupModal.vue";
-import LogoutModal from "./modal/LogoutModal.vue";
-import MypageModal from "./modal/MypageModal.vue";
+import LoginModal from "./account_modal/LoginModal.vue";
+import SignupModal from "./account_modal/SignupModal.vue";
+import LogoutModal from "./account_modal/LogoutModal.vue";
+import MypageModal from "./account_modal/MypageModal.vue";
 
 // 소켓 관련 모듈
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
+import serverStartInput from "../markdown/serverStartInput.js";
+import data from "../views/Home.vue";
 
+import { remote } from "electron";
 export default {
   name: "NavBar",
   data() {
     return {
       invitationDialog: false,
-      connected: false
-      // status: this.$store.state.userInfo.status
-      // theme: this.$vuetify.theme.dark,
+      connected: false,
+      connectionCount: 0,
     };
   },
   components: {
@@ -110,39 +126,49 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["isLoggedIn", "status"])
+    ...mapGetters(["isLoggedIn", "status"]),
+    badgeContent() {
+      return this.$store.state.userInfo.status.length
+    }
   },
 
   created() {
-    console.log("NavBar.vue -> created() 호출됨.");
   },
 
   updated() {
+    if (this.$store.getters.isLoggedIn) {
+        this.socketConnect();
+       
+      } else {
+        this.socketDisconnect();
+      }
+
     var div = document.getElementById("compiledMarkdown");
     if (this.$vuetify.theme.dark == true) div.style.color = "white";
     else div.style.color = "black";
 
-    if (!!this.$store.state.isShareMode == false) {
-      this.$store.commit("SET_IS_DRAWER_SHARE", false);
-      this.$store.commit("SET_IS_DRAWER", true);
-    } else if (!!this.$store.state.isShareMode == true) {
-      this.$store.commit("SET_IS_DRAWER_SHARE", true);
-      this.$store.commit("SET_IS_DRAWER", false);
-    }
+    
   },
 
   methods: {
-    bellClicked() {
-      console.log("bell누름!!!!!!!!!!!!!!!!!!!!!!");
-      if (this.$store.getters.isLoggedIn) {
-        console.log("로그인된 상태");
-        this.socketConnect();
-      } else {
-        console.log("로그아웃된 상태");
-        this.socketDisconnect();
+    changeMode() {
+      let win = remote.BrowserWindow.getFocusedWindow();
+      //console.log('test');
+        if (!!this.$store.state.isShareMode == false) {
+        this.$store.commit("SET_IS_DRAWER_SHARE", false);
+        this.$store.commit("SET_IS_DRAWER", true);
+        win.webContents.send("localInit");
+      } else if (!!this.$store.state.isShareMode == true) {
+        this.$store.commit("SET_IS_DRAWER_SHARE", true);
+        this.$store.commit("SET_IS_DRAWER", false);
+        win.webContents.send("serverInit", serverStartInput);
+        //data.input = serverStartInput.data;
       }
-      console.log("@@@@초대 목록 : ", this.$store.state.userInfo.status);
     },
+    // bellClicked() {
+    //   document.getElementById("bell").removeAttribute("color")
+
+    // },
     decideSideBar() {
       // 폴더트리를 보여주는 사이드바를 열어준다.
       if (!!this.$store.state.isShareMode == false) {
@@ -150,48 +176,56 @@ export default {
       }
       // 그룹을 보여주는 사이드바를 열어준다.
       else if (!!this.$store.state.isShareMode == true) {
-        this.$store.commit(
-          "SET_IS_DRAWER_SHARE",
-          !this.$store.state.drawerShare
-        );
+        this.$store.commit("SET_IS_DRAWER_SHARE", !this.$store.state.drawerShare);
       }
     },
     socketConnect() {
-      const serverURL = "http://localhost:8080/noteAPI/ws";
-      let socket = new SockJS(serverURL);
-      this.stompClient = Stomp.over(socket);
+      // console.log("socketConnect() 호출됨.")
 
-      if (!this.connected) {
+      if (this.connectionCount == 0 && !this.connected) {
+        this.connectionCount = 1;
+      
+        // const serverURL = "http://localhost:8080/noteAPI/ws";
+        const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+        let socket = new SockJS(serverURL);
+        this.stompClient = Stomp.over(socket);
+
         this.stompClient.connect(
           { Authorization: this.$store.state.authorization },
           frame => {
-            // 소켓 연결 성공
             this.connected = true;
-            console.log("소켓 연결 성공", frame);
-            this.stompClient.subscribe(
-              "/send/" + this.$store.state.userInfo.no,
+            
+            // 알림 메세지 받고있음.
+            this.stompClient.subscribe("/send/" + this.$store.state.userInfo.no,
               res => {
-                console.log(">>> 소켓으로 받은 메세지", res);
-                this.$store.userInfo.status.push({
-                  no: "",
-                  name: "groupName",
-                  master: "",
-                  bandMasterName: "fromName"
+                const receivedMsg = JSON.parse(res.body);
+
+                this.$store.state.userInfo.status.push({
+                  no: receivedMsg.groupNo,
+                  name: receivedMsg.groupName,
+                  master: receivedMsg.fromNo,
+                  bandMasterName: receivedMsg.fromName
                 });
+
+                
               }
             );
           },
           error => {
-            // 소켓 연결 실패
-            console.log("소켓 연결 실패", error);
             this.connected = false;
           }
         );
       }
     },
+
+    // 로그아웃 시 수행되는, 소켓 연결 해제 메소드
     socketDisconnect() {
       this.stompClient.disconnect();
+      this.connected = false;
+      this.connectionCount = 0;
     },
+
+    // 그룹 초대 수락 여부를 서버에 전송.
     send(flag, groupNo) {
       // 수락
       if (flag == 1) {
@@ -199,13 +233,19 @@ export default {
           accountNo: this.$store.state.userInfo.no,
           bandNo: groupNo
         };
-        console.log("accountNo : " + this.$store.state.userInfo.no);
-        console.log("bandNo : " + groupNo);
+        // console.log("accountNo : " + this.$store.state.userInfo.no);
+        // console.log("bandNo : " + groupNo);
         this.$store.dispatch("acceptInvite", info);
 
-        var idx = this.$store.state.userInfo.status.findIndex(
-          element => element.no == groupNo
-        );
+        var idx = this.$store.state.userInfo.status.findIndex(element => element.no == groupNo);
+        
+        this.$store.state.userInfo.group.push({
+          no: this.$store.state.userInfo.status[idx].no,
+          name: this.$store.state.userInfo.status[idx].name,
+          master: this.$store.state.userInfo.status[idx].master,
+          bandMasterName: this.$store.state.userInfo.status[idx].bandMasterName
+        });
+        
         this.$store.state.userInfo.status.splice(idx, 1);
       }
       // 거절
@@ -222,16 +262,6 @@ export default {
         this.$store.state.userInfo.status.splice(idx, 1);
       }
     }
-    // changeLocalShare() {
-    //   if(!!this.$store.state.isShareMode == false) {
-    //     this.$store.state.drawerShare = false
-    //     this.$store.state.drawer = true
-    //   }
-    //   else if(!!this.$store.state.isShareMode == true) {
-    //     this.$store.state.drawer = false
-    //     this.$store.state.drawerShare = true
-    //   }
-    // }
   }
 };
 </script>

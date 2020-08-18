@@ -1,90 +1,86 @@
 <template>
   <v-navigation-drawer
-      v-model="$store.state.drawer"
-      app>
-      <v-card>
-        <v-toolbar
-            prominent
-            src="https://images.unsplash.com/photo-1489781879256-fa824b56f24f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"
-            >
-            <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
-            <v-subheader class="sidesubheader">
-            <v-toolbar-title>MY FILES</v-toolbar-title>
-            </v-subheader>
-            <v-spacer></v-spacer>
-            <!-- <v-btn icon
-              @click="dialog = !dialog"
-            > -->
-            <v-btn icon @click="showOpenDialog()">
-              <v-icon>mdi-plus</v-icon>
+    v-model="$store.state.drawer"
+    app>
+    <v-card>
+      <v-toolbar
+        prominent
+        src="https://images.unsplash.com/photo-1489781879256-fa824b56f24f?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80"
+        >
+        <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
+        <v-subheader class="sidesubheader">
+          <v-toolbar-title>MY FILES</v-toolbar-title>
+        </v-subheader>
+        <v-spacer></v-spacer>
+        <!-- <v-btn icon
+          @click="dialog = !dialog"
+        > -->
+        <v-btn icon @click="showOpenDialog()">
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </v-toolbar>
+
+      <v-list subheader flat>
+        <v-subheader >FOLDERS</v-subheader>
+
+        <v-list-item 
+          v-for="folder in folders" 
+          :key="folder.title"
+          disabled color="black">
+          <!-- <v-list-item-avatar>
+            <v-icon :class="[folder.iconClass]">{{ folder.icon }}</v-icon>
+          </v-list-item-avatar> -->
+          <v-list-item-content>
+            <v-list-item-title>{{ folder.title }}</v-list-item-title>
+
+            <!-- <v-list-item-subtitle>{{ folder.subtitle }}</v-list-item-subtitle> -->
+          </v-list-item-content>
+
+          <!-- <v-list-item-action>
+            <v-btn icon>
+              <v-icon color="grey lighten-1">mdi-information</v-icon>
             </v-btn>
-            <!-- <v-btn icon>
-              <v-icon>mdi-magnify</v-icon>
-            </v-btn> -->
-        </v-toolbar>
+          </v-list-item-action> -->
+        </v-list-item>
 
-        <v-list subheader flat>
-          <v-subheader >FOLDERS</v-subheader>
+        <v-divider ></v-divider>
 
-            <v-list-item 
-              v-for="folder in folders" 
-              :key="folder.title"
-              disabled>
-              <!-- <v-list-item-avatar>
-                <v-icon :class="[folder.iconClass]">{{ folder.icon }}</v-icon>
-              </v-list-item-avatar> -->
-              <v-list-item-content>
-                <v-list-item-title>{{ folder.title }}</v-list-item-title>
+        <v-subheader >FILES</v-subheader>
 
-                <v-list-item-subtitle>{{ folder.subtitle }}</v-list-item-subtitle>
-              </v-list-item-content>
+        <v-list-item v-for="file in files" :key="file.title" @click="openFile(file.fileFullPath)">
+            <!-- <v-list-item-avatar>
+            <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
+          </v-list-item-avatar> -->
+          <v-list-item-content>
+            <v-list-item-title>{{ file.title }}</v-list-item-title>
 
-              <!-- <v-list-item-action>
-                <v-btn icon>
-                  <v-icon color="grey lighten-1">mdi-information</v-icon>
-                </v-btn>
-              </v-list-item-action> -->
-            </v-list-item>
+            <!-- <v-list-item-subtitle>{{ file.subtitle }}</v-list-item-subtitle> -->
+          </v-list-item-content>
 
-            <v-divider ></v-divider>
+          <!-- <v-list-item-action>
+            <v-btn icon ripple @click="openFile(file.fileFullPath)">
+              <v-icon color="grey lighten-1">mdi-information</v-icon>
+            </v-btn>
+          </v-list-item-action> -->
+        </v-list-item>
+      </v-list>
 
-            <v-subheader >FILES</v-subheader>
+      <v-dialog v-model="dialog" max-width="500px">
+        <v-card>
+          <v-card-text>
+            <v-text-field label="File name"></v-text-field>
+            <small class="grey--text">* This doesn't actually save.</small>
+          </v-card-text>
 
-            <v-list-item v-for="file in files" :key="file.title" @click="openFile(file.fileFullPath)">
-                <!-- <v-list-item-avatar>
-                <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
-              </v-list-item-avatar> -->
-              <v-list-item-content>
-                <v-list-item-title>{{ file.title }}</v-list-item-title>
-
-                <v-list-item-subtitle>{{ file.subtitle }}</v-list-item-subtitle>
-              </v-list-item-content>
-
-              <!-- <v-list-item-action>
-                <v-btn icon ripple @click="openFile(file.fileFullPath)">
-                  <v-icon color="grey lighten-1">mdi-information</v-icon>
-                </v-btn>
-              </v-list-item-action> -->
-            </v-list-item>
-          </v-list>
-
-        <v-dialog v-model="dialog" max-width="500px">
-          <v-card>
-            <v-card-text>
-              <v-text-field label="File name"></v-text-field>
-              <small class="grey--text">* This doesn't actually save.</small>
-            </v-card-text>
-
-            <v-card-actions>
-              <v-spacer></v-spacer>
-
-              <v-btn text color="primary" @click="dialog = false">Submit</v-btn>
-            </v-card-actions>
-          </v-card>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn text color="primary" @click="dialog = false">Submit</v-btn>
+          </v-card-actions>
+        </v-card>
       </v-dialog>
 
-      </v-card>
-    </v-navigation-drawer>
+    </v-card>
+  </v-navigation-drawer>
 </template>
 
 <script>
@@ -93,9 +89,8 @@ import fs from "fs";
 import path from "path";
 
 export default {
-  name: 'SideBar',
   
-  mounted() {
+   mounted() {
     ipcRenderer.on('ping', (event, message) => {
       var absoluteFilePath = message['absoluteFilePath'];
       // console.log('absolute', absoluteFilePath);
@@ -114,31 +109,46 @@ export default {
 
         for(var i = 0; i < fileList.length; i++) {
           // console.log(folderFullPath + "\\" + fileList[i]);
-          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
+          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md'){
             this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+          }
         }
       })
     });
-  },
+    ipcRenderer.on("addFileInList", (event, folderFullPath) => {
+        fs.readdir(folderFullPath, (err, fileList) => {
+        this.files = [];
+        // console.log(fileList)
+        if(!!fileList){
+        for(var i = 0; i < fileList.length; i++) {
+          // console.log(folderFullPath + "\\" + fileList[i]);
+          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
+            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+          }
+        }
+        })
+  })
+   },
+    data() {
+        return {
+            dialog: false,
+            folders: [
 
-  data() {
-    return {
-      dialog: false,
-      folders: [
+            ],
+            files: [
 
-      ],
-      files: [
-      ]
-    }
-  },
-
-  methods: {
-    showOpenDialog() {
+            ],
+        }
+    },
+    methods: {
+        showOpenDialog() {
       // console.log("showOpenDialog() 호출됨.");
 
-      remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(), {
-         properties: ["openDirectory"]
-      })
+      remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(),
+        {
+          properties: ["openDirectory"]
+        }
+      )
       .then(result => {
         var folderFullPath = result.filePaths[0];
 
@@ -148,7 +158,7 @@ export default {
         var isMac = navigator.platform.indexOf('Mac') > -1;
         // console.log("folderFullPath : " + folderFullPath);
         // console.log("folderName : " + folderName);
-    
+        
         // 맥과 윈도우는 폴더 경로 들어갈때 다름.
         // 예)
         // 맥 : /Users/kimmuseong/Desktop/폴더1
@@ -171,33 +181,49 @@ export default {
           for(var i = 0; i < fileList.length; i++) {
             // console.log(folderFullPath + "\\" + fileList[i]);
             if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md') {
-              if(isWindow)
-                this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
-              if(isMac)
-                this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "/" + fileList[i]});
+                if(isWindow)
+                    this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+                if(isMac)
+                    this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "/" + fileList[i]});
             }
+
           }
         })
+      let win = remote.BrowserWindow.getFocusedWindow();
+      win.webContents.send("pong", folderFullPath);
       });
     },
 
     openFile(absoluteFilePath) {
       // console.log(absoluteFilePath);
+      var folderFullPath = path.dirname(absoluteFilePath);
+      fs.readdir(folderFullPath, (err, fileList) => {
+        this.files = [];
+
+        // console.log('filelist', fileList);
+
+        for(var i = 0; i < fileList.length; i++) {
+          // console.log(folderFullPath + "\\" + fileList[i]);
+          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
+            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+        }
+      })
       fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
         // if(err) throw err;
-        console.log(data);
+        // console.log(data);
         // fileData = data;
         let openedFileData = data;
-        // console.log(openedFileData);
+        // console.log('요기',openedFileData);
+        // console.log('------------------')
 
         let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': absoluteFilePath};
         let win = remote.BrowserWindow.getFocusedWindow();
         win.webContents.send("ping", fileDataObject);
+        ipcRenderer.send("mainping", fileDataObject);
         // console.log('absolutefilepath', absoluteFilePath);
       });
     }
   }
-
 }
 </script>
 
@@ -216,7 +242,7 @@ export default {
     border-bottom: solid 1px rgba(210, 215, 217, 0.75);
   }
   .sidesubheader {
-    border-bottom: solid 3px rgb(100, 93, 102);
+    /* border-bottom: solid 3px rgb(100, 93, 102); */
     display: inline-block;
     margin: 2.5em 0 0 0;
     padding: 0 0.75em 0.5em 0;
@@ -224,29 +250,31 @@ export default {
 
   .v-subheader:not(.sidesubheader) {
     font-size: 1.25em;
-    color: rgb(95, 90, 97) !important;
-    border-bottom: solid 2px rgb(83, 81, 83);
+    /* color: rgb(95, 90, 97) !important; */
+    /* border-bottom: solid 2px rgb(83, 81, 83); */
     display: inline-block;
     margin: 0.5em;
     padding: 0.75em 0;
   }
 
   .theme--light.v-list-item:not(.v-list-item--active) {
-    color: #615f75 !important;
+    /* color: #615f75 !important; */
     font-size:0.5em;
   }
 
   .theme--light.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled):hover {
-    color: rgb(214, 198, 219) !important;
+    /* color: rgb(214, 198, 219) !important; */
+    color: rgb(255, 179, 102) !important;
   }
 
-  /* .theme--dark.v-list-item:not(.v-list-item--active) {
-    color: #615f75 !important;
+  .theme--dark.v-list-item:not(.v-list-item--active) {
+    /* color: #615f75 !important; */
     font-size:0.5em;
   }
 
   .theme--dark.v-list-item:not(.v-list-item--active):not(.v-list-item--disabled):hover {
-    color: rgb(214, 198, 219) !important;
-  } */
+    /* color: rgb(214, 198, 219) !important; */
+    color: rgb(255, 179, 102) !important;
+  }
 
 </style>

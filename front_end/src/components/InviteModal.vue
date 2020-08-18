@@ -62,6 +62,7 @@ import { mapGetters } from "vuex";
 // 소켓 관련 모듈
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
+import { integer } from 'vee-validate/dist/rules';
 
 export default {
   name: "InviteModal",
@@ -71,6 +72,9 @@ export default {
       search: "",
       isOwner: false
     };
+  },
+  props: {
+    workspaceNo: integer
   },
   mounted() {
     if (this.$store.state.isInviteModal) {
@@ -85,53 +89,55 @@ export default {
   },
   methods: {
     inviteBandMember() {
-      const findAccountList = {
-        email: this.search
-      };
-      this.$store.dispatch("findAccountList", findAccountList);
-      this.search = "";
+      this.$store.dispatch("findAccountList", this.search);
 
-      const serverURL = "http://localhost:8080/noteAPI/ws";
+      // const serverURL = "http://localhost:8080/noteAPI/ws";
+      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
 
-      if (!this.connected) {
+      // if (!this.connected) {
         this.stompClient.connect(
           { Authorization: this.$store.state.authorization },
           frame => {
             // 소켓 연결 성공
             this.connected = true;
-            console.log("[InviteModal] 소켓 연결 성공", frame);
-            // this.stompClient.send("/receive", JSON.stringify(findAccountList.email));
-            console.log("[Send 내용]")
+            // console.log("[InviteModal] 소켓 연결 성공", frame);
+            // console.log("[Send 내용]")
 
-            console.log("fromEmail : " + this.$store.state.userInfo.email)
-            console.log("fromName : " + this.$store.state.userInfo.name)
-            console.log("toEmail : " + findAccountList.email)
-            console.log("toNo : " + this.$store.state.newMemberInfo.no)
-            console.log("groupName : " + this.$store.state.workspace)
+            // console.log("workspaceNo : " + this.workspaceNo)
 
-            this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, {
+            var map = {
+              fromNo: this.$store.state.userInfo.no,
               fromEmail: this.$store.state.userInfo.email,
               fromName: this.$store.state.userInfo.name,
-              toEmail: findAccountList.email,
+              toEmail: this.search,
               toNo: this.$store.state.newMemberInfo.no,
-              groupName: this.$store.state.workspace
-            });
+              groupName: this.$store.state.selectedBandInfo.name,
+              groupNo: this.workspaceNo
+            }
+
+            this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, JSON.stringify(map));
+            // console.log("========== 알림 송신 완료 ==========")
+            // this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, {
+              //   'fromEmail': this.$store.state.userInfo.email,
+            //   'fromName': this.$store.state.userInfo.name,
+            //   'toEmail': this.search,
+            //   'toNo': this.$store.state.newMemberInfo.no,
+            //   'groupName': this.$store.state.workspace
+            // });
           },
           error => {
             // 소켓 연결 실패
-            console.log("[InviteModal] 소켓 연결 실패", error);
+            // console.log("[InviteModal] 소켓 연결 실패", error);
             this.connected = false;
           }
         );
-      }
+      this.search = "";
+      // }
     },
-    kickOutBandMember(no) {
-      const kickOutBandMemberNo = {
-        accountNo: no
-      };
-      this.$store.dispatch("kickOutBandMember", kickOutBandMemberNo);
+    kickOutBandMember(accountNo) {
+      this.$store.dispatch("kickOutBandMember", accountNo);
     }
   }
 };

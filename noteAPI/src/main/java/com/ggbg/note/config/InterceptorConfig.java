@@ -6,6 +6,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.ggbg.note.interceptor.VerifyAccountInterceptor;
+import com.ggbg.note.interceptor.VerifyBandMemberInterceptor;
 import com.ggbg.note.interceptor.VerifyTokenInterceptor;
 
 @Configuration
@@ -17,14 +18,19 @@ public class InterceptorConfig implements WebMvcConfigurer {
 //	@Autowired
 //	private VerifyTokenInterceptor verifyTokenInterceptor;
 	
+//	@Autowired
+//	private VerifyBandMemberInterceptor verifyBandMemberInterceptor;
+	
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(verifyAccountInterceptor)
 			.addPathPatterns("/account/v1/*")
 			.addPathPatterns("/band/v1/*")
-			.addPathPatterns("/accountBand/v1/*");
+			.addPathPatterns("/accountBand/v1/*")
+			.order(0);
 		
-//		registry.addInterceptor(verifyTokenInterceptor)
-//			.addPathPatterns("/token/v2/*");
+//		registry.addInterceptor(verifyBandMemberInterceptor)
+//			.addPathPatterns("/note/v2/*")
+//			.order(1);
 	}
 }

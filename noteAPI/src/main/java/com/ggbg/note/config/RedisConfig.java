@@ -24,8 +24,8 @@ public class RedisConfig {
     @Value("${spring.redis.port}")
     private int redisPort;
 //	
-    @Value("${spring.redis.password}")
-    private String redisPw;
+     @Value("${spring.redis.password}")
+     private String redisPw;
 //	 Redis의 Lettuce 사용
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {

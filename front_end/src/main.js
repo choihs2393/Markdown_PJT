@@ -57,7 +57,7 @@ axios.interceptors.request.use(
           axios.post(SERVER.URL + SERVER.ROUTES.newATBA)
           .then(res => {
             // console.log('res:', res)
-            // console.log('Access Token 기간 만료되기 전 토큰 갱신!!')
+            console.log('Access Token 기간 만료되기 전 갱신!!')
             store.commit('SET_TOKEN', res.headers)
           })
           .catch(err => console.error(err.response.data))
@@ -68,7 +68,7 @@ axios.interceptors.request.use(
           axios.post(SERVER.URL + SERVER.ROUTES.newATBA)
           .then(res => {
             // console.log('res:', res)
-            // console.log('Refresh Token 기간 만료되기 전 토큰 갱신!!')
+            console.log('Refresh Token 기간 만료되기 전 갱신!!')
             store.commit('SET_TOKEN', res.headers)
           })
           .catch(err => console.error(err.response.data))
@@ -83,18 +83,18 @@ axios.interceptors.request.use(
 
       const errorAPI = err.config
 
-      if (err.response.status===401 && errorAPI.retry===undefined) {
-      // if (err.response.status===406 && errorAPI.retry===undefined) {
+      // if (err.response.status===401 && errorAPI.retry===undefined) {
+      if (err.response.status===406 && errorAPI.retry===undefined) {
         // console.log('response interceptor 401 error!!');
 
         errorAPI.retry = true
 
         if (!!localStorage.getItem('authorization')) {
-          return axios.post(SERVER.URL + SERVER.ROUTES.newATBR, null, { headers: { RefreshToken: store.state.refreshToken } })
+          return axios.post(SERVER.URL + SERVER.ROUTES.newATBR, null, { headers: { RefreshToken: localStorage.getItem('refresh-token') } })
             .then(res => {
               
-              // console.log('기간 만료 후 토큰 갱신!!')
-              console.log(res.headers)
+              console.log('Access Token 기간 만료 후 갱신!!')
+              // console.log(res.headers)
               store.commit('SET_TOKEN', res.headers)
               // console.log('errorAPI', errorAPI)
               return axios(errorAPI)
@@ -104,10 +104,9 @@ axios.interceptors.request.use(
               store.dispatch('logout')
             })
         } else {
-
+          console.log('로그아웃 상태')
         }
-      } else {
-      // } else if (err.response.status===401) {
+      } else if (err.response.status===401) {
         store.dispatch('logout')
       }
       return Promise.reject(err)

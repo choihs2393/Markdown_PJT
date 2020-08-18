@@ -212,4 +212,27 @@ public class AccountController {
 	} // 만약 Unauthorized가 뜨면 access token 이 변조된것이다. 로그아웃 시켜야함.
 	
 	
+	@ApiOperation(value = "bandList", httpMethod = "POST", notes = "Hello this is bandList")
+	@PostMapping("/v1/bandList")
+	public ResponseEntity bandList(HttpServletRequest request) {
+		ResponseEntity response = null;
+		final SuccessResponse result = new SuccessResponse();
+
+		String accessToken = request.getHeader("Authorization").substring(7);
+
+		List<BandDTO> list = accountService.bandList(accessToken);
+		
+		result.status = true;
+		if (!list.isEmpty()) {
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("status", list);
+			result.result = "success";
+			result.map = map;
+		} else { 
+			result.result = "emptyData";
+		}
+		response = new ResponseEntity<>(result, HttpStatus.OK);
+
+		return response;
+	}
 }

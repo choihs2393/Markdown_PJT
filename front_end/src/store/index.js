@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 
 import axios from 'axios'
 import SERVER from '@/api/spring'
+import { ipcRenderer, remote } from 'electron';
 
 Vue.use(Vuex);
 
@@ -26,11 +27,35 @@ export default new Vuex.Store({
       no: ''
     },
 
-    // auth_check
-    isDuplicateChecked: false,
-    isAuthNumChecked: false,
-    isPasswordChecked: false,
-    isModifyChecked: false,
+    // selected workspace in server mode
+    selectedBandInfo: {},
+    workspaceMemberList: [],
+    newMemberInfo: {
+      email: '',
+      name: '',
+      status: '',
+      no: ''
+    },
+
+    // note_file
+    noteList: [],
+    selectedNoteInfo: {},
+    rightSelectedNoteInfo: {},
+    
+    // 파싱되는 데이터 저장.
+    parseData: '',
+    inputData: '',
+    tempData: '',
+    syncCheck: false,
+    timer: '',
+
+    // 자동 저장되는 데이터 저장.
+    storeTempData: '',
+    storeSyncCheck: false,
+    storeTimer: '',
+    
+    // note share 데이터 저장.
+    shareTimeOut: '',
 
     // modal
     drawer: false,
@@ -40,32 +65,19 @@ export default new Vuex.Store({
     isDeleteModal: false,
     isInviteModal: false,
     noSuchMemberAlert: false,
+    isRenameFileModal: false,
+    isDeleteFileModal: false,
+    
+    // auth_check
+    isDuplicateChecked: false,
+    isAuthNumChecked: false,
+    isPasswordChecked: false,
+    isModifyChecked: false,
 
     // server_check
     isShareMode: false,
 
-    // selected workspace in server mode
-    workspace: '',
-    workspaceMemberList: [],
-    newMemberInfo: {
-      email: '',
-      name: '',
-      status: '',
-      no: ''
-    },
-    fileList: [
-      {
-        no: 1,
-        band_no: 1,
-        title: '낄낄',
-      },
-      {
-        no: 2,
-        band_no: 1,
-        title: '깔깔'
-      },
-    ],
-
+    // theme
     theme: '',
 
     // 파싱되는 데이터 저장.
@@ -74,23 +86,21 @@ export default new Vuex.Store({
     tempData: '',
     longTimeData: '',
     syncCheck: false,
+    // add Readme.md in file list
+    addReadme: '',
   },
 
   // state를 (가공해서)가져올 함수들. === computed
   getters: {
     isLoggedIn: state => !!state.authorization,
-    status: state => state.userInfo.status
+    status: state => state.userInfo.status,
+    // occupiedName: state => state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteInfo._id)].occupiedName,
+    selectedNoteInfo: state => state.selectedNoteInfo,
+    isShareMode: state => state.isShareMode
     // getWorkspaceMemberList: state => {
     //   return state.workspaceMemberList
     // },
 
-    // config: state => ({
-    //   headers: {
-    //     Authorization:  state.authorization,
-    //     RefreshToken: state.refreshToken,
-    //     Email: state.userInfo.email,
-    //   }
-    // }),
    // inputData: state=> state.inputData
   },
 
@@ -99,7 +109,20 @@ export default new Vuex.Store({
   // commit 을 통해 실행함.
   // mutations은 첫 번째 인자로 state를 받아야함.
   mutations: {
-
+    //공유를 위한 스케쥴링 데이터
+    setShareTempData(state, param){
+      state.shareTimeOut = param;
+    },
+    //자동처리를 위한 스케쥴링 데이터
+    setStoreTempData(state, param) {
+      state.storeTempData = param;
+    },
+    setStoreSyncCheck(state, param) {
+      state.storeSyncCheck = param;
+    },
+    setStoreTimer(state, param){
+      state.storeTimer = param;
+    },
     //모아서처리를 위한 스케쥴링 데이터
     setLongTimeData(state, param) {
       state.longTimeData = param;
@@ -109,6 +132,9 @@ export default new Vuex.Store({
     },
     setSyncCheck(state, param) {
       state.syncCheck = param;
+    },
+    setTimer(state, param){
+      state.timer = param;
     },
     //파싱되는 데이터 저장
     setParseData(state, param) {
@@ -174,36 +200,29 @@ export default new Vuex.Store({
     // 워크스페이스 저장
     SET_WORKSPACES(state, result) {
       state.userInfo.group.push(result);
-      console.log("state.userInfo.group : ", state.userInfo.group);
     },
 
     // 선택한 워크스페이스
-    SELET_WORKSPACE(state, payload) {
-      state.workspace = payload
+    SELECTED_WORKSPACE(state, bandInfo) {
+      state.selectedBandInfo = bandInfo
     },
     
+    // 워크스페이스 삭제
     DELETE_WORKSPACE(state, param) {
-      console.log("DELETE_WORKSPACE 호출됨.")
-      console.log(param)
-      console.log(param.workspaceIdx)
-      var idx = param.workspaceIdx;
-      console.log(idx + "번째 아이템 : " + state.userInfo.group[idx].name + "[삭제]");
+      const idx = state.userInfo.group.findIndex(item => item.no===param.bandNo)
       state.userInfo.group.splice(idx, 1)
     },
 
+    // 워크스페이스 이름 변경
     UPDATE_WORKSPACE(state, param) {
-      console.log("UPDATE_WORKSPACE 호출됨.")
-      console.log(param)
-      console.log(param.workspaceIdx)
-      var idx = param.workspaceIdx
-      console.log(idx + "번째 아이템 : " + state.userInfo.group[idx].name + "[변경]")
+      const idx = state.userInfo.group.findIndex(item => item.no == param.bandNo)
       state.userInfo.group[idx].name = param.newBandName
     },
     
     
     //현재 WORKSPACE 내의 MEMBER LIST 가져오기
     SHOW_GROUP_MEMBERS(state, result) {
-      console.log('result요기', result)
+      state.workspaceMemberList=[]
       for (let i = 0; i < result.length; i += 1) {
         if (typeof (result[i]) === 'object') {
           try {
@@ -213,43 +232,88 @@ export default new Vuex.Store({
           }
         }
       }
-      // state.workspaceMemberList.push(result)
-      console.log(state.workspaceMemberList)
     },
 
     GET_NEW_MEMBER_INFO(state, result) {
       state.workspaceMemberList.push(result);
-      console.log(state.workspaceMemberList)
+      // console.log(state.workspaceMemberList)
     },
 
-    SET_IS_SHARE(state, result) {
-      state.isShareMode = result
-    },
-
-    SET_IS_DRAWER(state, result) {
-      state.drawer = result
-    },
-
-    SET_IS_DRAWER_SHARE(state, result) {
-      state.drawerShare = result
-    },
-
+    
     REMOVE_DELETE_MEMBER_INFO(state, result) {
       const idx = state.workspaceMemberList.findIndex(function(item) {return item.no === result.accountNo}) // findIndex = find + indexOf 
       state.workspaceMemberList.splice(idx, 1)
-    }
+    },
+    
+    SET_IS_RENAME_FILE_MODAL(state, payload) {
+      state.isRenameFileModal = payload
+    },
+    
+    SET_IS_DELETE_FILE_MODAL(state, payload) {
+      state.isDeleteFileModal = payload
+    },
+    
+    // 초기 noteList 정보 저장
+    INIT_NOTE_LIST(state, noteList) {
+      state.noteList = noteList
+    },
+    
+    // FileList 에 File 추가하기
+    SET_NOTE(state, noteInfo) {
+      state.noteList.push(noteInfo);
+    },
+    
+    SELECTED_NOTE(state, noteInfo) {
+      state.selectedNoteInfo = noteInfo
+    },
+    
+    RIGHT_SELECTED_NOTE(state, noteInfo) {
+      state.rightSelectedNoteInfo = noteInfo
+    },
+    
+    // File 이름 변경
+    RENAME_NOTE_SUBJECT(state, noteInfo) {
+      const idx = state.noteList.findIndex(item => item._id == noteInfo.noteNo)
+      state.noteList[idx].subject = noteInfo.subject
+    },
+    
+    // FileList 에 File 삭제하기
+    DELETE_NOTE(state, noteNo) {
+      const idx = state.noteList.findIndex(item => item._id===noteNo)
+      state.noteList.splice(idx, 1);
+    },
+    
+    // File 내용 추가
+    SET_NOTE_CONTENT(state, noteInfo) {
+      const idx = state.noteList.findIndex(item => item._id===noteInfo.noteNo)
+      state.noteList[idx].content = noteInfo.content
+    },
+
+    // modal 관련 로직
+    SET_IS_SHARE(state, result) {
+      state.isShareMode = result
+      // ipcRenderer.send("isShareMode", result);
+    },
+    SET_IS_DRAWER(state, result) {
+      state.drawer = result
+    },
+    SET_IS_DRAWER_SHARE(state, result) {
+      state.drawerShare = result
+    },
+    SET_IS_INVITE_MODAL(state, result) {
+      state.isInviteModal = result
+    },
   },
 
   // 범용적인 함수들. mutations에 정의한 함수를 actions에서 실행 가능.
   // 비동기 로직은 actions에서 정의.
   // dispatch를 통해 실행함.
   actions: {
-
     // 로그인
     login({ commit, dispatch }, loginData) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
         .then(res => {
-          console.log(res.headers)
+          // console.log(res.headers)
           commit('SET_TOKEN', res.headers)  // 토큰 저장
           commit('SET_PASSWORD_CHECKED', false)
 
@@ -297,10 +361,14 @@ export default new Vuex.Store({
           /* 서버모드로 켜놓고, 로그아웃 하면 서버모드가 유지됩니다. */
           /* 로그아웃시 로컬모드만 사용할 수 있도록 false로 고정해놨습니다. */
           commit('SET_IS_SHARE', false)
+          commit('INIT_NOTE_LIST', [])
+
+          let win = remote.BrowserWindow.getFocusedWindow();
+          win.webContents.send("contentReset", "msg")
         })
         .catch(err => console.error(err.response.data))
     },
-
+    
     // 이메일 중복확인
     checkEmailDuplicate({ commit, dispatch }, signupData) {
       axios.post(SERVER.URL + SERVER.ROUTES.email, signupData)
@@ -378,7 +446,7 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.onServerInit)
         .then(res => {
           if (res.data['result'] === 'success') {
-            console.log("################# res.data.map", res.data.map)
+            // console.log("################# res.data.map", res.data.map)
             commit('SET_INIT_USER_INFO', res.data.map)
           }
         })
@@ -386,28 +454,28 @@ export default new Vuex.Store({
     },
 
     // 워크스페이스 생성
-    createWorkspace({ commit }, workspaceName) {
+    async createWorkspace({ state, commit }, newBandName) {
       // console.log("Vuex내에 createWorkspace() 함수 진입.");
       // console.log("bandName : " + workspaceName)
       // console.log("accountNo : " + this.state.userInfo.no);
 
-      var map = {
-        bandName: workspaceName,
-        accountNo: this.state.userInfo.no,
-        bandMasterName: this.state.userInfo.name
+      const info = {
+        bandName: newBandName,
+        accountNo: state.userInfo.no,
+        bandMasterName: state.userInfo.name
       }
     
-      axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, map, { headers: { email: this.state.userInfo.email }})
+      await axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, info, { headers: { email: state.userInfo.email }})
       .then(res => {
-        console.log("then구문 진입.");
-        console.log("res.data", res.data);
-        console.log("res.data.map", res.data.map);
+        // console.log("then구문 진입.");
+        // console.log("res.data", res.data);
+        // console.log("res.data.map", res.data.map);
         console.log("res.data.map.band", res.data.map.band);
 
         commit("SET_WORKSPACES", res.data.map.band)
+        commit("SELECTED_WORKSPACE", res.data.map.band)
         // console.log("then구문 진입.");
         
-        // commit("SET_WORKSPACES", res.data.map)
       })
       .catch(err => {
 
@@ -415,15 +483,15 @@ export default new Vuex.Store({
     },
 
     // 워크스페이스 제거
-    deleteWorkspace({ commit }, deleteWorkspace) {
-      console.log("Vuex내에 deleteWorkspace() 진입.");
-      console.log("넘어온 그룹 정보 (bandNo, accountNo) : ", deleteWorkspace)
+    deleteWorkspace({ state, commit }, deleteWorkspace) {
+      // console.log("Vuex내에 deleteWorkspace() 진입.");
+      // console.log("넘어온 그룹 정보 (bandNo, accountNo) : ", deleteWorkspace)
       
-      axios.post(SERVER.URL + SERVER.ROUTES.deleteWorkspace, deleteWorkspace, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.deleteWorkspace, deleteWorkspace, { headers: { email: state.userInfo.email }})
       .then(res => {
-        console.log("res.data.result : ", res.data.result)
+        // console.log("res.data.result : ", res.data.result)
         if(res.data.result == "success") {
-          console.log("success안에 들어옴.")
+          // console.log("success안에 들어옴.")
           commit("DELETE_WORKSPACE", deleteWorkspace)
 
         } else if(res.data.result == "fail") {
@@ -436,13 +504,13 @@ export default new Vuex.Store({
     },
 
     // 워크스페이스명 변경
-    renameWorkspace({ commit }, renameWorkspace) {
-      console.log("Vuex내에 renameWorkspace() 진입")
-      console.log("넘어온 그룹 정보 (bandNo, accountNo, newBandName, workspaceIdx) :", renameWorkspace)
+    renameWorkspace({ state, commit }, renameWorkspace) {
+      // console.log("Vuex내에 renameWorkspace() 진입")
+      // console.log("넘어온 그룹 정보 (bandNo, accountNo, newBandName, workspaceIdx) :", renameWorkspace)
 
-      axios.post(SERVER.URL + SERVER.ROUTES.renameWorkspace, renameWorkspace, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.renameWorkspace, renameWorkspace, { headers: { email: state.userInfo.email }})
       .then(res => {
-        console.log("res.data.result : ", res.data.result)
+        // console.log("res.data.result : ", res.data.result)
         if(res.data.result == "success") {
           commit("UPDATE_WORKSPACE", renameWorkspace)
         }
@@ -450,80 +518,205 @@ export default new Vuex.Store({
       })
     },
     // 워크스페이스 멤버 불러오기
-    showGroupMembers({ commit }, showGroupMembers) {
+    showGroupMembers({ state, commit }, showGroupMembers) {
       // console.log(showGroupMembers)
-      axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, { headers: { email: state.userInfo.email }})
       .then(res => {
-        console.log("res.data.result : ", res.data.result)
+        // console.log("res.data.result : ", res.data.result)
         commit("SHOW_GROUP_MEMBERS", res.data.map.bandMemberList)
-        this.state.isInviteModal = !(this.state.isInviteModal)
+        state.isInviteModal = !(state.isInviteModal)
         })
     },
 
     // 가입된 회원인지 확인
-    findAccountList({ dispatch }, findAccountList) {
-      axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, findAccountList, { headers: { email: this.state.userInfo.email }})
+    findAccountList({ state, dispatch }, email) {
+      var map = {
+        email: email
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, map, { headers: { email: state.userInfo.email }})
       .then(res => {
-        this.state.newMemberInfo.no = res.data.map.primitiveAccountList[0].no; // 초대받을 사람의 account_no를 보관.
+        state.newMemberInfo.no = res.data.map.primitiveAccountList[0].no; // 초대받을 사람의 account_no를 보관.
         // console.log("res.data.map.primitiveAccountList[0].no : ", res.data.map.primitiveAccountList[0].no);
         if (res.data.result === "success") {
           const inviteBandMember = {
-            bandNo: this.state.userInfo.group.find(element => element.name == this.state.workspace).no,
-            email: findAccountList.email,
-            masterNo: this.state.userInfo.group.find(element => element.name == this.state.workspace).master,
+            bandNo: state.selectedBandInfo.no,
+            email: email,
+            masterNo: state.selectedBandInfo.master,
           }
-          // console.log("[inviteBandMember] findAccountList()", inviteBandMember)
+          // console.log("[inviteBandMember] email()", inviteBandMember)
           dispatch("inviteBandMember", inviteBandMember)
         } else {
-          this.state.noSuchMemberAlert = !(this.state.noSuchMemberAlert)
+          state.noSuchMemberAlert = !(state.noSuchMemberAlert)
         }
       })
     },
 
     // 워크스페이스에 멤버 초대하기
-    inviteBandMember({ commit }, inviteBandMember) {
-      console.log("[inviteBandMember] inviteBandMember()", inviteBandMember);
+    inviteBandMember({ state, commit }, inviteBandMember) {
+      // console.log("[inviteBandMember] inviteBandMember()", inviteBandMember);
 
-      this.state.noSuchMemberAlert = false;
-      axios.post(SERVER.URL + SERVER.ROUTES.inviteBandMember, inviteBandMember, { headers: { email: this.state.userInfo.email} })
+      state.noSuchMemberAlert = false;
+      axios.post(SERVER.URL + SERVER.ROUTES.inviteBandMember, inviteBandMember, { headers: { email: state.userInfo.email} })
       .then(res => {
-        console.log("res.data.result : ", res.data.map.bandMember)
+        // console.log("res.data.result : ", res.data.map.bandMember)
         commit("GET_NEW_MEMBER_INFO", res.data.map.bandMember)
       })
     },
 
     // 워크스페이스 초대 수락
-    acceptInvite({}, info) {
-      console.log("[acceptInvite] info : ", info)
-      axios.post(SERVER.URL + SERVER.ROUTES.acceptInvite, info, { headers: { email: this.state.userInfo.email }})
+    acceptInvite({state}, info) {
+      // console.log("[acceptInvite] info : ", info)
+      axios.post(SERVER.URL + SERVER.ROUTES.acceptInvite, info, { headers: { email: state.userInfo.email } })
       .then(res => {
-        console.log("초대 수락 확인")
+        // console.log("초대 수락 확인")
       }) 
     },
 
     // 워크스페이스 초대 거절
-    declineInvite({}, info) {
-      console.log("[declineInvite] info : ", info)
-      axios.post(SERVER.URL + SERVER.ROUTES.declineInvite, info, { headers: { email: this.state.userInfo.email }})
+    declineInvite({state}, info) {
+      // console.log("[declineInvite] info : ", info)
+      axios.post(SERVER.URL + SERVER.ROUTES.declineInvite, info, { headers: { email: state.userInfo.email } })
       .then(res => {
-        console.log("초대 거부 확인")
+        // console.log("초대 거부 확인")
       })
     },
 
     //워크스페이스 멤버 내보내기
-    kickOutBandMember({commit}, kickOutBandMemberNo) {
-      const workspaceNo = this.state.userInfo.group.find(element => element.name == this.state.workspace).no;
+    kickOutBandMember({ state, commit }, accountNo) {
       const kickOutBandMember = {
-        accountNo: kickOutBandMemberNo.accountNo,
-        bandNo: workspaceNo, 
-        masterNo: this.state.userInfo.no
+        accountNo: accountNo,
+        bandNo: state.selectedBandInfo.no, 
+        masterNo: state.userInfo.no
       }
-      axios.post(SERVER.URL + SERVER.ROUTES.deleteMember, kickOutBandMember, { headers: { email: this.state.userInfo.email }})
+      axios.post(SERVER.URL + SERVER.ROUTES.deleteMember, kickOutBandMember, { headers: { email: state.userInfo.email }})
       .then(res => {
         if(res.data.result == "success") {
         commit("REMOVE_DELETE_MEMBER_INFO", kickOutBandMember)
         }
       })
+    },
+
+    // noteList 조회
+    getNoteList({ state, commit }, bandInfo) {
+      if (!!bandInfo.no) {
+        const info = {
+          accountNo: state.userInfo.no,
+          bandNo: bandInfo.no,
+        }
+        axios.post(SERVER.URL + SERVER.ROUTES.noteList, info)
+          .then(res => {
+            // console.log(res.data)
+            if (res.data.result==='success') {
+              // console.log(res.data.map.noteDetailDTOList)
+              commit('INIT_NOTE_LIST', res.data.map.noteDetailDTOList)
+            } else if (res.data.result==='empty') {
+              commit('INIT_NOTE_LIST', [])
+            }
+          })
+          .catch(err => console.error(err.response.data))
+      }
+    },
+
+    // note 추가
+    createNote({ state, commit, dispatch }, subject) {
+      if (!!subject) {
+        const info = {
+          accountNo: state.userInfo.no,
+          bandNo: state.selectedBandInfo.no,
+          subject: subject,
+        }
+        axios.post(SERVER.URL + SERVER.ROUTES.createNote, info)
+          .then(res => {
+            // console.log(res.data.map)
+            info.no = res.data.map.no
+            info.content = ''
+            // console.log(info)
+            commit('SET_NOTE', info)
+            dispatch('getNoteList', state.selectedBandInfo)
+          })
+          .catch(err => console.error(err.response.data))
+      }
+    },
+
+    // note 삭제
+    deleteNote({ state, commit, dispatch }, noteInfo) {
+      const info = {
+        accountNo: state.userInfo.no,
+        bandNo: state.selectedBandInfo.no,
+        noteNo: noteInfo._id,
+      }
+      // console.log(noteInfo)
+      axios.post(SERVER.URL + SERVER.ROUTES.deleteNote, info)
+        .then(() => {
+          commit('DELETE_NOTE', info.noteNo)
+          dispatch('getNoteList', state.selectedBandInfo)
+        })
+        .catch(err => console.error(err.response.data))
+    },
+
+    // note 이름 변경
+    renameNote({ state, commit, dispatch }, newSubject) {
+      const info = {
+        accountNo: state.userInfo.no,
+        bandNo: state.selectedBandInfo.no,
+        subject: newSubject,
+      }
+      if (state.rightSelectedNoteInfo===state.selectedNoteInfo) {
+        info.noteNo = state.selectedNoteInfo._id
+      } else {
+        info.noteNo = state.rightSelectedNoteInfo._id
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.renameNote, info)
+        .then(() => {
+          commit('RENAME_NOTE_SUBJECT', info)
+          dispatch('getNoteList', state.selectedBandInfo)
+        })
+        .catch(err => console.error(err.response.data))
+    },
+
+    // note 열기
+    getNote({ state, commit }, noteInfo) {
+      const info = {
+        accountNo: state.userInfo.no,
+        bandNo: state.selectedBandInfo.no,
+        noteNo: noteInfo._id,
+      }
+      axios.post(SERVER.URL + SERVER.ROUTES.getNote, info)
+        .then((res) => {
+          commit('SELECTED_NOTE', res.data.map.content)
+          const win = remote.BrowserWindow.getFocusedWindow();
+          if (res.data.result==='success') {
+            win.webContents.send('getNote', res.data.map.content, info.accountNo)
+            // win.webContents.send('getNote', res.data.map.content, state.noteList.find(item => item._id === info.noteNo).accountNo)
+            state.storeTimer = '';
+          } else if (res.data.result==='empty') {
+            win.webContents.send('getNote', '')
+          }
+        })
+        .catch(err => console.error(err.response.data))
+    },
+
+    // note 저장
+    saveNote({ state, commit }, content) {
+      console.log("saveNote() 호출됨.")
+      console.log("content : " + content)
+      
+      const info = {
+        accountNo: state.userInfo.no,
+        bandNo: state.selectedBandInfo.no,
+        noteNo: state.selectedNoteInfo._id,
+        subject: state.selectedNoteInfo.subject,
+        content: content,
+        occupiedNo: state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteInfo._id)].occupiedNo, // 점유자의 account_no
+        occupiedName: state.userInfo.name // 점유자의 account_name
+      }
+      // console.log(info)
+      axios.post(SERVER.URL + SERVER.ROUTES.saveNote, info)
+        .then(() => {
+          // console.log(res)
+          commit('SET_NOTE_CONTENT', info)
+        })
+        .catch(err => console.error(err.response.data))
     }
   },
   modules: {}

@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 
 @Data
-public class NoteDTO {
+public class NoteInfoDTO {
 	private int _id;
-	private List<NoteDetailDTO> note;
+	private int no;
 }
