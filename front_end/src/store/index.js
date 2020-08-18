@@ -54,9 +54,6 @@ export default new Vuex.Store({
     storeSyncCheck: false,
     storeTimer: '',
     
-    // note share 데이터 저장.
-    shareTimeOut: '',
-
     // modal
     drawer: false,
     drawerShare: false,
@@ -103,10 +100,6 @@ export default new Vuex.Store({
   // commit 을 통해 실행함.
   // mutations은 첫 번째 인자로 state를 받아야함.
   mutations: {
-    //공유를 위한 스케쥴링 데이터
-    setShareTempData(state, param){
-      state.shareTimeOut = param;
-    },
     //자동처리를 위한 스케쥴링 데이터
     setStoreTempData(state, param) {
       state.storeTempData = param;
