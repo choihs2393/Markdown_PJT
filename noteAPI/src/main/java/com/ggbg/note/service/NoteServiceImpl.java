@@ -67,7 +67,7 @@ public class NoteServiceImpl implements INoteService{
 		if(ne.getNote() == null)
 			return new NoteDetailDTO();
 		else {
-			NoteDetailDTO dto = mapperUtil.convertToDTO(ne.getNote(), NoteDetailDTO.class);
+			NoteDetailDTO dto = mapperUtil.convertToDTO(ne.getNote().get(0), NoteDetailDTO.class);
 //			String str = ne.getNote().get(0).getContent();
 			return dto;
 		}
