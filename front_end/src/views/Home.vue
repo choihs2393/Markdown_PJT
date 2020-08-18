@@ -11,6 +11,8 @@
           v-model="input"
           id="editor_textarea"
           @keyup.native="whenKeyUp"
+          @keydown="whenKeyDown"
+          @keypress="whenKeyPress"
           onkeydown=
             "
             if(event.keyCode === 9) {
@@ -181,6 +183,15 @@ export default {
   //   return await data;
   // }
   methods: {
+    whenKeyPress() {
+      console.log(event);
+    },
+    whenKeyDown() {
+      
+      console.log(event);
+      console.log(event.key);
+     // console.log(event.target.value.type);
+    },
     whenKeyUp() {
       var tmp = event.target.value;
       var getTempData = this.$store.state.tempData;
@@ -191,11 +202,13 @@ export default {
           clearTimeout(getTempData);
           parse(tmp);
           getStore.commit('setSyncCheck',false);
-        }, 800);
+        }, 700);
+        getStore.commit('setLongTimeData',timer);
       }
       clearTimeout(this.$store.state.tempData);
       //parse(event.target.value);
       var timeOut = setTimeout(function() {
+        clearTimeout(getStore.state.longTimeData);
         parse(tmp);
       }, 200);
       this.$store.commit('setTempData',timeOut);

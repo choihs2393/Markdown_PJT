@@ -79,9 +79,10 @@ export default class Replacer {
     static paragraph(fullMatch) {
         return '<p>' + fullMatch + '</p>\n';
     }
-    static async img(fullMatch, tagStart, tagContents) {
-        var src = await convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1));
-        return '<img src="' + src + '"/>';
+    static img(fullMatch, tagStart, tagContents) {
+     //   var src = await convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1));
+     //   return '<img src="' + src + '"/>';
+     return '<img src="' + tagContents.substring(1,tagContents.length-1) + '"/>';
         // convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1), function (result) {
         //         asdf = result;
         //     })

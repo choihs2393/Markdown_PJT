@@ -72,6 +72,7 @@ export default new Vuex.Store({
     parseData: '',
     inputData: '',
     tempData: '',
+    longTimeData: '',
     syncCheck: false,
   },
 
@@ -100,6 +101,9 @@ export default new Vuex.Store({
   mutations: {
 
     //모아서처리를 위한 스케쥴링 데이터
+    setLongTimeData(state, param) {
+      state.longTimeData = param;
+    },
     setTempData(state, param) {
       state.tempData = param;
     },
