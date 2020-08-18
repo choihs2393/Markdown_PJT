@@ -341,7 +341,7 @@ export default {
     },
     
 
-    share(inputContent){
+    shareNote(inputContent){
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);

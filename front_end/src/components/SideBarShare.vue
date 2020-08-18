@@ -216,7 +216,7 @@ export default {
         frame => {
           this.connected = true;
           // 워크스페이스에서의 현재 파일 점유 유무를 받고 있음.
-          this.stompClient.subscribe("/send/groupSend/occupy/" + this.$store.state.selectedNoteInfo._id + "/" + this.$store.state.selectedBandInfo.no,
+          this.stompClient.subscribe("/send/groupSend/occupy/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
@@ -229,7 +229,7 @@ export default {
             }
           )
           
-          this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo._id + "/" + this.$store.state.selectedNoteInfo.no,
+          this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receiveMsg = JSON.parse(res.body);
 
