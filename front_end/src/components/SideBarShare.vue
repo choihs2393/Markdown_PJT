@@ -197,7 +197,7 @@ export default {
       }
       this.$refs.form_workspace.reset();
       this.workspaceDialog = false;
-      this.$store.commit("SELET_WORKSPACE", this.selected);
+      this.$store.commit("SELECTED_WORKSPACE", this.selected);
       this.workspaces = this.$store.state.userInfo.group;
     },
 

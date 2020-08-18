@@ -243,10 +243,10 @@ export default {
       if(this.$store.state.isShareMode && isThereTemplate && !!this.$store.state.selectedBandInfo) {
         console.log('여깅ㅇㅇㅇㅇㅇ')
         this.$store.dispatch('createNote', 'README')
-        // console.log(this.$store.state.noteList.slice(-1)[0])
+        console.log(this.$store.state.noteList.slice(-1)[0])
         // this.$store.commit('SELECTED_NOTE', this.$store.state.noteList.slice(-1)[0])
         // console.log(readmeTemplate.input)
-        this.$store.dispatch('saveNote', readmeTemplate.input)
+        // this.$store.dispatch('saveNote', readmeTemplate.input)
       }
     })
   },
