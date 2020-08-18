@@ -11,6 +11,11 @@
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
   },
+  "build": {
+    "win": {
+      "icon": "./src/assets/smenote_icon.png"
+    }
+  },
   "main": "background.js",
   "dependencies": {
     "axios": "^0.19.2",
