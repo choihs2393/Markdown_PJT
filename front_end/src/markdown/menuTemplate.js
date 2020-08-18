@@ -1,10 +1,8 @@
-import { app, BrowserWindow, dialog } from "electron";
+import { app, BrowserWindow, dialog, ipcMain } from "electron";
 import { createWindow } from "../background";
 import sampleData from './sampleData.js';
 const fs = require("fs");
 const isMac = process.platform === "darwin"
-
-const {ipcMain} = require('electron');
 
 export let openedFileData = "test";
 
@@ -38,6 +36,12 @@ const template = [
             },
             {
                 label: 'Save As ...',
+                click() {
+                    saveAsFile();
+                }
+            },
+            {
+                label: 'Save',
                 accelerator: 'CommandOrControl+S',
                 click() {
                     saveFile();
@@ -148,32 +152,6 @@ function openNewWindow() {
     createWindow();
 }
 
-function saveFile() {
-    var fileData = '';
-
-    BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
-    .then(result => {
-        fileData = result;
-        // console.log(fileData);
-    });
-
-    var fileName = dialog.showSaveDialog(BrowserWindow.getFocusedWindow(),
-        {
-            title: "파일 저장하기!!!",
-            filters: [
-                { name: 'Markdown', extensions: ['md'] },
-            ],
-            message: "TEST"
-        }
-    )
-    .then(result => {
-        fileName = result.filePath;
-        fs.writeFile(fileName, fileData, (err) => {
-
-        })
-    });
-}
-
 function openFile() {
     var fileData = '';
     
@@ -274,6 +252,46 @@ ipcMain.on("mainping", (event, message)=>{
     absoluteFilePath = message['absoluteFilePath'];
     }
 )
+
+function saveAsFile() {
+    var fileData = '';
+
+    BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
+    .then(result => {
+        fileData = result;
+        // console.log(fileData);
+    });
+
+    var fileName = dialog.showSaveDialog(BrowserWindow.getFocusedWindow(),
+        {
+            title: "파일 저장하기",
+            filters: [
+                { name: 'Markdown', extensions: ['md'] },
+            ],
+            message: "TEST"
+        }
+    )
+    .then(result => {
+        fileName = result.filePath;
+        fs.writeFile(fileName, fileData, (err) => {
+        })
+        ipcMain.send("mainping", fileName);
+    })
+}
+
+function saveFile(){
+    var fileData = '';
+    BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
+    .then(result => {
+        fileData = result;
+        if (!absoluteFilePath){
+            saveAsFile();
+        } else {
+            fs.writeFile(absoluteFilePath, fileData, (err) => { })
+        }
+    })
+ }
+
 function openNewReadme() {
 
 
