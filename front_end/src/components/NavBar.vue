@@ -2,7 +2,7 @@
   <v-app-bar app elevate-on-scroll>
     <!-- <v-app-bar-nav-icon @click="$store.state.drawer = !$store.state.drawer"></v-app-bar-nav-icon> -->
     <v-app-bar-nav-icon @click="decideSideBar()"></v-app-bar-nav-icon>
-    <v-toolbar-title class="mr-3">SMENOTE</v-toolbar-title>
+    <v-toolbar-title class="mr-3" style="font-weight: bold;">SMENOTE</v-toolbar-title>
     <v-spacer></v-spacer>
 
     <!-- 로그인 전 화면의 상단바 -->
@@ -14,7 +14,7 @@
 
     <!-- 로그인 후 화면의 상단바 -->
     <template v-if="isLoggedIn">
-      <v-toolbar-title class="mr-2">{{ $store.state.userInfo.name }}님</v-toolbar-title>
+      <v-toolbar-title class="mr-2" style="font-weight: bold;">{{ $store.state.userInfo.name }}님</v-toolbar-title>
 
       <v-dialog v-model="invitationDialog" max-width="600px">
         <template v-slot:activator="{ on, attrs }">
@@ -89,7 +89,11 @@
       </v-menu>
       <LogoutModal />
       <MypageModal />
+<<<<<<< HEAD
       <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share" @click="changeMode"></v-switch>
+=======
+      <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share" style="font-weight: bold;"></v-switch>
+>>>>>>> ee3a04addc9fa730c26ee60fd368c4f54cea5fff
     </template>
   </v-app-bar>
 </template>

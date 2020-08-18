@@ -1,16 +1,22 @@
 <template>
   <v-main>
     <v-container class="md" fluid>
-      <v-row>
-        <v-btn color="primary" v-if="isShareMode &&isLoggedIn && selectedNoteInfo != null && selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
-        <v-btn color="primary" v-if="isShareMode &&isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
-        <v-btn color="primary" v-if="isShareMode && isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
-        <span v-if="isLoggedIn">{{ currentTime }}</span>
-        <v-spacer></v-spacer>
-        <v-btn class="mr-2" @click="isTextarea=!isTextarea">
-          <!-- <v-icon left>mdi-pencil</v-icon> -->
-          {{ showTextarea }}
-        </v-btn>
+      <v-row justify-center>
+        <span style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="selectedNoteInfo != null">{{selectedNoteInfo.subject}}</span>
+        <div style="flex-grow: 100; text-align: center; padding-top:7px">
+          <span v-if="isLoggedIn" style="color: rgb(98, 98, 98)">{{savedTime}}</span>
+          
+        </div>
+        <!-- <v-spacer></v-spacer> -->
+        <div>
+          <v-btn right color="primary" v-if="isShareMode &&isLoggedIn && selectedBandInfo != null && selectedNoteInfo != null && selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
+          <v-btn right color="primary" v-if="isShareMode &&isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
+          <v-btn right color="primary" v-if="isShareMode && isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
+          <v-btn right class="mr-2" @click="isTextarea=!isTextarea">
+            <!-- <v-icon left>mdi-pencil</v-icon> -->
+            {{ showTextarea }}
+          </v-btn>
+        </div>
       </v-row>
       <v-row>
         <v-col id="editor_div" v-if="isTextarea">
@@ -64,8 +70,6 @@ import Stomp from "webstomp-client";
 import { setInterval } from 'timers';
 import serverStartInput from "../markdown/serverStartInput.js";
 
-import store from '../store'
-
 var data = sampleData;
 
 // var data = new Promise(function(resolve, reject) {
@@ -87,9 +91,6 @@ ipcRenderer.on("pong", (event, folderPath) => {
 })
 
 ipcRenderer.on("template", (event, isThereTemplate) => {
-  if (!store.state.selectedBandInfo.no && store.state.isShareMode) {
-    return
-  }
   // console.log(message);
   isTemplate = isThereTemplate;
   data.input = readmeTemplate.input;
@@ -255,15 +256,9 @@ export default {
     // this.$store.state.parseData = parse(data);
     this.$store.commit("setParseData", parse(this.input));
     // console.log(this.$store.state.parseData);
-
     ipcRenderer.on("template", (event, isThereTemplate) => {
-      if(this.$store.state.isShareMode && isThereTemplate && !!this.$store.state.selectedBandInfo) {
+      if(this.$store.state.isShareMode && isThereTemplate) {
         console.log('여깅ㅇㅇㅇㅇㅇ')
-        this.$store.dispatch('createNote', 'README')
-        console.log(this.$store.state.noteList.slice(-1)[0])
-        // this.$store.commit('SELECTED_NOTE', this.$store.state.noteList.slice(-1)[0])
-        // console.log(readmeTemplate.input)
-        // this.$store.dispatch('saveNote', readmeTemplate.input)
       }
     })
   },
@@ -284,10 +279,7 @@ export default {
       //return parse(this.input);
       // });
     },
-    ...mapGetters(["isLoggedIn", "isOccupied", "selectedNoteInfo", "isShareMode"]),
-    currentTime() {
-      return new Date();
-    },
+    ...mapGetters(["isLoggedIn", "isOccupied", "selectedNoteInfo", "isShareMode", "selectedBandInfo", "savedTime"]),
     showTextarea() {
       if (data.isTextarea) {
         return '입력창 숨기기'
@@ -451,6 +443,11 @@ export default {
     vacate(selectedNoteNo) {
       this.$store.state.selectedNoteInfo.occupiedNo = 0;
       this.$store.state.selectedNoteInfo.occupiedName = "";
+
+      var idx = this.$store.state.noteList.findIndex(item => item._id ==this.$store.state.selectedNoteInfo._id)
+      this.$store.state.noteList[idx].occupiedNo = 0;
+      this.$store.state.noteList[idx].occupiedName = "";
+
       // 1. 소켓 뚫기
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";

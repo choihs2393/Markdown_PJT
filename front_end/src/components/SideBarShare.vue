@@ -68,7 +68,7 @@
           <v-toolbar-title>FILES</v-toolbar-title>
         </v-subheader> -->
         <v-list-item
-          v-for="note in this.$store.state.noteList"
+          v-for="note in noteList"
           :key="note._id"
           @click="getNote(note); changeNote(note, note._id)"
           @mousedown.right="$refs.fileMenu.open($event, note), setRightNoteInfo(note)"
@@ -76,6 +76,9 @@
           <v-list-item-content>
             <v-list-item-title>{{ note.subject }}</v-list-item-title>
           </v-list-item-content>
+          <v-list-item-icon>
+            <v-icon v-if="note.occupiedNo != 0" right>lock</v-icon>
+          </v-list-item-icon>
         </v-list-item>
       </v-list>
       <v-row justify="end">
@@ -146,7 +149,7 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 import fs from "fs";
 import { remote } from "electron";
 
-import { mapState, mapActions } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 
 // 소켓 관련 모듈
 import SockJS from "sockjs-client";
@@ -164,9 +167,10 @@ export default {
     DeleteFileModal
   },
 
-  computed: mapState([
-    'userInfo'
-  ]),
+  computed: {
+    ...mapState(['userInfo']),
+    ...mapGetters(['noteList'])
+  },
 
   data() {
     return {
@@ -202,6 +206,8 @@ export default {
     },
 
     changeWorkspace(bandInfo) {
+      if(this.$store.state.shareGroupSocket.connected)
+        this.$store.state.shareGroupSocket.disconnect();
       console.log("bandInfo: ", bandInfo)
       this.$store.commit('SELECTED_WORKSPACE', bandInfo)
       this.$store.dispatch('getNoteList', bandInfo)
@@ -215,6 +221,8 @@ export default {
         { Authorization: this.$store.state.authorization },
         frame => {
           this.connected = true;
+          this.$store.commit('setShareGroupSocket',this.stompClient);
+
           // 워크스페이스에서의 현재 파일 점유 유무를 받고 있음.
           this.stompClient.subscribe("/send/groupSend/occupy/" + this.$store.state.selectedBandInfo.no,
             res => {
@@ -240,6 +248,8 @@ export default {
               // this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
               this.$store.state.selectedNoteInfo.occupiedNo = receivedMsg.occupiedNo;
               this.$store.state.selectedNoteInfo.occupiedName = receivedMsg.occupiedName;
+
+              this.$store.dispatch('getNoteList', this.bandInfo)
             } 
           )
 
@@ -267,6 +277,8 @@ export default {
               // this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
               this.$store.state.selectedNoteInfo.occupiedNo = 0;
               this.$store.state.selectedNoteInfo.occupiedName = "";
+
+              this.$store.dispatch('getNoteList', this.bandInfo)
             } 
           )
           
@@ -384,7 +396,7 @@ export default {
   padding: 0;
 }
 
-.v-list-item {
+ .v-list-item {
   margin: 0.5em 2em 0;
   padding: 1em 0;
   height: 1em;
