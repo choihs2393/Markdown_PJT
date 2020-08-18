@@ -275,9 +275,15 @@ export default {
               const receiveMsg = JSON.parse(res.body);
               console.log("/send/groupSend/content/" + receiveMsg.noteNo);
               console.log("/send/groupSend/content/" + receiveMsg.content);
-              var idx = this.$store.state.userInfo.noteList.findIndex(element => element._id == receiveMsg.noteNo);
-              this.$store.state.noteList[idx].content = receiveMsg.content;
-            
+              var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
+              // this.$store.state.noteList[idx].content = receiveMsg.content;
+              this.$store.state.selectedNoteInfo.content = receiveMsg.content;
+
+              console.log(" >>> 받은 메세지 : " + receiveMsg.content)
+
+              const win = this.remote.BrowserWindow.getFocusedWindow();
+              win.webContents.send("test", receiveMsg.content);
+
             }
           )
         }
