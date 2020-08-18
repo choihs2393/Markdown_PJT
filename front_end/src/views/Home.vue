@@ -22,7 +22,7 @@
       <v-row>
         <v-col id="editor_div" v-if="isTextarea">
           <v-textarea
-            :disabled="isShareMode && isLoggedIn && selectedNoteInfo.occupiedNo != $store.state.userInfo.no"
+            :readonly="isShareMode && isLoggedIn && selectedNoteInfo.occupiedNo != $store.state.userInfo.no"
             solo
             flat 
             auto-grow
