@@ -8,11 +8,12 @@
           
         </div>
         <!-- <v-spacer></v-spacer> -->
-        <div>
-          <v-btn right color="primary" v-if="isShareMode &&isLoggedIn && selectedBandInfo != null && selectedNoteInfo != null && selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
-          <v-btn right color="primary" v-if="isShareMode &&isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
-          <v-btn right color="primary" v-if="isShareMode && isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
-          <v-btn right class="mr-2" @click="isTextarea=!isTextarea">
+        <div>      
+
+          <v-btn small right color="primary" dark v-if="isShareMode &&isLoggedIn && selectedBandInfo != null && selectedNoteInfo != null && selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
+          &nbsp;<v-btn small right color="primary" dark v-if="isShareMode &&isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
+          &nbsp;<v-btn small right color="primary" dark v-if="isShareMode && isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
+          &nbsp;<v-btn small right class="mr-2" dark @click="isTextarea=!isTextarea">
             <!-- <v-icon left>mdi-pencil</v-icon> -->
             {{ showTextarea }}
           </v-btn>
@@ -388,6 +389,21 @@ export default {
     
 
     shareNote(inputContent){
+      var d = new Date(),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear(),
+      hour = ("0" + d.getHours()).slice(-2),
+      min = ("0" + d.getMinutes()).slice(-2),
+      sec = ("0" + d.getSeconds()).slice(-2);
+
+      if (month.length < 2) 
+          month = '0' + month;
+      if (day.length < 2) 
+          day = '0' + day;
+
+      this.$store.state.savedTime = "저장 일시 : " + [year, month, day].join('-') + " " + [hour, min, sec].join(':');
+
       console.log(inputContent);
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
