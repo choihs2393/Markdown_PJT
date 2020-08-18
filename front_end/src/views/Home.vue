@@ -138,6 +138,12 @@ ipcRenderer.on("contentReset", (event, message) => {
   parse(data.input)
 });
 
+ipcRenderer.on("test", (event, message) => {
+  console.log(message);
+  data.input = message;
+  parse(data.input);
+})
+
 // 드래그 후 드랍을 하면,
 document.addEventListener("drop", event => {
   var openedFileData = "";
