@@ -92,10 +92,6 @@ ipcRenderer.on("pong", (event, folderPath) => {
 });
 
 ipcRenderer.on("template", (event, isThereTemplate) => {
-<<<<<<< HEAD
-  // console.log(message);
-=======
->>>>>>> feature/server-create-readme
   isTemplate = isThereTemplate;
   data.input = readmeTemplate.input;
   if (isTemplate){
@@ -261,17 +257,10 @@ export default {
   },
   mounted() {
     this.$store.commit("setParseData", parse(this.input));
-<<<<<<< HEAD
-    // console.log(this.$store.state.parseData);
-    ipcRenderer.on("template", (event, isThereTemplate) => {
-      if(this.$store.state.isShareMode && isThereTemplate) {
-        console.log('여깅ㅇㅇㅇㅇㅇ')
-=======
 
     ipcRenderer.on("template", (event, isThereTemplate) => {
       if(this.$store.state.isShareMode && isThereTemplate && !!this.$store.state.selectedBandInfo) {
         this.$store.dispatch('createNote', 'README')
->>>>>>> feature/server-create-readme
       }
     })
   },
