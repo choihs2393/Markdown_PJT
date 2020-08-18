@@ -61,8 +61,6 @@ import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
 import { setInterval } from 'timers';
 
-import store from '../store'
-
 var data = sampleData;
 
 // var data = new Promise(function(resolve, reject) {
@@ -84,9 +82,6 @@ ipcRenderer.on("pong", (event, folderPath) => {
 })
 
 ipcRenderer.on("template", (event, isThereTemplate) => {
-  if (!store.state.selectedBandInfo.no && store.state.isShareMode) {
-    return
-  }
   // console.log(message);
   isTemplate = isThereTemplate;
   data.input = readmeTemplate.input;
@@ -244,15 +239,9 @@ export default {
     // this.$store.state.parseData = parse(data);
     this.$store.commit("setParseData", parse(this.input));
     // console.log(this.$store.state.parseData);
-
     ipcRenderer.on("template", (event, isThereTemplate) => {
-      if(this.$store.state.isShareMode && isThereTemplate && !!this.$store.state.selectedBandInfo) {
+      if(this.$store.state.isShareMode && isThereTemplate) {
         console.log('여깅ㅇㅇㅇㅇㅇ')
-        this.$store.dispatch('createNote', 'README')
-        console.log(this.$store.state.noteList.slice(-1)[0])
-        // this.$store.commit('SELECTED_NOTE', this.$store.state.noteList.slice(-1)[0])
-        // console.log(readmeTemplate.input)
-        // this.$store.dispatch('saveNote', readmeTemplate.input)
       }
     })
   },
