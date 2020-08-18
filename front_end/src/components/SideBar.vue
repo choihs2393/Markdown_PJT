@@ -25,8 +25,7 @@
 
         <v-list-item 
           v-for="folder in folders" 
-          :key="folder.title"
-          disabled color="black">
+          :key="folder.title">
           <!-- <v-list-item-avatar>
             <v-icon :class="[folder.iconClass]">{{ folder.icon }}</v-icon>
           </v-list-item-avatar> -->
