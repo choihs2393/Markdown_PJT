@@ -89,9 +89,16 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
     if (isPathExist){
       
       fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'\\readme.md'};
-      fs.writeFile(fileDataObject['absoluteFilePath'], readmeTemplate.input, (err) => {
-        // console.log('파일경로', fileDataObject['absoluteFilePath'])
-      })
+      fs.exists(fileDataObject['absoluteFilePath'], (exists) => { 
+        if (!exists){
+          fs.writeFile(fileDataObject['absoluteFilePath'], readmeTemplate.input, (err) => {
+            // console.log('파일경로', fileDataObject['absoluteFilePath'])
+          })
+        } else{
+          fs.writeFile(folderFullPath+'\\somangReadme'+Math.floor(Math.random() * 5000)+'.md', readmeTemplate.input, (err) => {
+          })
+        }
+      }); 
     }else {
       fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': ''};
     }
@@ -221,7 +228,14 @@ export default {
     // this.$store.state.parseData = parse(data);
     this.$store.commit("setParseData", parse(this.input));
     // console.log(this.$store.state.parseData);
+    ipcRenderer.on("template", (event, isThereTemplate) => {
+      if(this.$store.state.isShareMode && isThereTemplate) {
+        console.log('여깅ㅇㅇㅇㅇㅇ')
+      }
+    })
   },
+      
+  
 
   computed: {
     compiledMarkdown: function() {
