@@ -234,7 +234,7 @@ export default {
               console.log("???" + receivedMsg.noteNo);
               console.log("???" + receivedMsg.occupiedNo);
               console.log("???" + receivedMsg.occupiedName);
-              var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
+              const idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
               
               this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
               this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
@@ -246,7 +246,7 @@ export default {
               const receiveMsg = JSON.parse(res.body);
               console.log("/send/groupSend/content/" + receiveMsg.noteNo);
               console.log("/send/groupSend/content/" + receiveMsg.content);
-              var idx = this.$store.state.userInfo.noteList.findIndex(element => element._id == receiveMsg.noteNo);
+              const idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
               this.$store.state.noteList[idx].content = receiveMsg.content;
             
             }

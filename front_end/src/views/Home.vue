@@ -17,7 +17,7 @@
           <v-textarea
             :disabled="selectedNoteInfo.occupiedNo != $store.state.userInfo.no"
             solo
-            flat
+            flat 
             auto-grow
             row-height="100%"
             full-width
@@ -348,12 +348,12 @@ export default {
         }, 1000 * 60 * 3);
         this.$store.commit('setStoreTempData', timeOut_);
 
+
+        clearTimeout(this.$store.state.shareTimeOut)
         let shareTimeOut = setTimeout(() => {
-            // console.log('로직 안 this', this);
             console.log("영복이의 Share 로그추적 " + tmp);
-            // console.log(this.$store.state.stroeTimer);
             this.shareNote(tmp);
-        }, 1000 * 3);
+        }, 700);
         this.$store.commit('setShareTempData', shareTimeOut);
       }
     },
@@ -481,6 +481,7 @@ code {
   margin: 0;
   height: 85vh;
   overflow-y: scroll;
+  word-break: break-all;
   /* color: #333; */
 }
 
@@ -497,6 +498,7 @@ code {
   outline: none;
   padding: 10px;
   height: 100vh;
+  display: block;
   /* background-color: #f6f6f6; */
 }
 

@@ -2,7 +2,7 @@
   <v-app-bar app elevate-on-scroll>
     <!-- <v-app-bar-nav-icon @click="$store.state.drawer = !$store.state.drawer"></v-app-bar-nav-icon> -->
     <v-app-bar-nav-icon @click="decideSideBar()"></v-app-bar-nav-icon>
-    <v-toolbar-title class="mr-3">소망이 노트</v-toolbar-title>
+    <v-toolbar-title class="mr-3">SMENOTE</v-toolbar-title>
     <v-spacer></v-spacer>
 
     <!-- 로그인 전 화면의 상단바 -->
