@@ -219,11 +219,19 @@ export default {
           this.stompClient.subscribe("/send/groupSend/occupy/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
+              
+              console.log(receivedMsg)
+              console.log(receivedMsg.noteNo)
+              console.log(receivedMsg.occupiedNo)
+              console.log(receivedMsg.content)
+
+
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
               console.log("this.$store.state.noteList", this.$store.state.noteList)
-              var idx = this.$store.state.noteList.findIndex(element => element._id == res.body.noteNo);
+              var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
+              console.log("idx는 >>> " + idx)
               this.$store.state.noteList[idx].occupiedNo = res.body.occupiedNo;
               this.$store.state.noteList[idx].occupiedName = res.body.occupiedName;
             }
