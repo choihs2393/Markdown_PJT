@@ -236,8 +236,37 @@ export default {
               console.log("???" + receivedMsg.occupiedName);
               const idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
               
-              this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
-              this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
+              // this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
+              // this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
+              this.$store.state.selectedNoteInfo.occupiedNo = receivedMsg.occupiedNo;
+              this.$store.state.selectedNoteInfo.occupiedName = receivedMsg.occupiedName;
+            } 
+          )
+
+          this.stompClient.subscribe("/send/groupSend/vacate/" + this.$store.state.selectedBandInfo.no,
+            res => {
+              const receivedMsg = JSON.parse(res.body);
+              
+              console.log(receivedMsg)
+              console.log(receivedMsg.noteNo)
+              console.log(receivedMsg.occupiedNo)
+              console.log(receivedMsg.content)
+
+
+              // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
+              //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
+              //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
+              console.log("this.$store.state.noteList", this.$store.state.noteList)
+              console.log("너 어딨음 ?? " + receivedMsg.noteNo);
+              console.log("???" + receivedMsg.noteNo);
+              console.log("???" + receivedMsg.occupiedNo);
+              console.log("???" + receivedMsg.occupiedName);
+              var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
+              
+              // this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
+              // this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
+              this.$store.state.selectedNoteInfo.occupiedNo = 0;
+              this.$store.state.selectedNoteInfo.occupiedName = "";
             } 
           )
           
@@ -246,9 +275,21 @@ export default {
               const receiveMsg = JSON.parse(res.body);
               console.log("/send/groupSend/content/" + receiveMsg.noteNo);
               console.log("/send/groupSend/content/" + receiveMsg.content);
+<<<<<<< HEAD
               const idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
               this.$store.state.noteList[idx].content = receiveMsg.content;
             
+=======
+              var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
+              // this.$store.state.noteList[idx].content = receiveMsg.content;
+              this.$store.state.selectedNoteInfo.content = receiveMsg.content;
+
+              console.log(" >>> 받은 메세지 : " + receiveMsg.content)
+
+              const win = this.remote.BrowserWindow.getFocusedWindow();
+              win.webContents.send("test", receiveMsg.content);
+
+>>>>>>> 34e86eb065519497a26cebf8a93ee11572544fb7
             }
           )
         }

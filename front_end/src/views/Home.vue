@@ -2,9 +2,9 @@
   <v-main>
     <v-container class="md" fluid>
       <v-row>
-        <v-btn color="primary" v-if="isLoggedIn && selectedNoteInfo != null && selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
-        <v-btn color="primary" v-if="isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
-        <v-btn color="primary" v-if="isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
+        <v-btn color="primary" v-if="isShareMode &&isLoggedIn && selectedNoteInfo != null && selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
+        <v-btn color="primary" v-if="isShareMode &&isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
+        <v-btn color="primary" v-if="isShareMode && isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
         <span v-if="isLoggedIn">{{ currentTime }}</span>
         <v-spacer></v-spacer>
         <v-btn class="mr-2" @click="isTextarea=!isTextarea">
@@ -15,7 +15,7 @@
       <v-row>
         <v-col id="editor_div" v-if="isTextarea">
           <v-textarea
-            :disabled="selectedNoteInfo.occupiedNo != $store.state.userInfo.no"
+            :disabled="isShareMode && isLoggedIn && selectedNoteInfo.occupiedNo != $store.state.userInfo.no"
             solo
             flat 
             auto-grow
@@ -138,6 +138,12 @@ ipcRenderer.on("contentReset", (event, message) => {
   parse(data.input)
 });
 
+ipcRenderer.on("test", (event, message) => {
+  console.log(message);
+  data.input = message;
+  parse(data.input);
+})
+
 // 드래그 후 드랍을 하면,
 document.addEventListener("drop", event => {
   var openedFileData = "";
@@ -256,7 +262,7 @@ export default {
       //return parse(this.input);
       // });
     },
-    ...mapGetters(["isLoggedIn", "isOccupied", "selectedNoteInfo"]),
+    ...mapGetters(["isLoggedIn", "isOccupied", "selectedNoteInfo", "isShareMode"]),
     currentTime() {
       return new Date();
     },
@@ -438,7 +444,7 @@ export default {
       )
 
       // 4. send 했으면, 소켓 disconnect를 진행해준다.
-      this.stompClient.disconnect();
+      // this.stompClient.disconnect();
     }
   }
 };
