@@ -89,7 +89,7 @@
       </v-menu>
       <LogoutModal />
       <MypageModal />
-      <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share" style="font-weight: bold;"@click="changeMode"></v-switch>
+      <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share" style="font-weight: bold;" @click="changeMode"></v-switch>
     </template>
   </v-app-bar>
 </template>

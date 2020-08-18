@@ -194,32 +194,33 @@ export default {
     },
 
     openFile(absoluteFilePath) {
-      // console.log(absoluteFilePath);
+      console.log(absoluteFilePath);
       var folderFullPath = path.dirname(absoluteFilePath);
+      console.log(folderFullPath);
       fs.readdir(folderFullPath, (err, fileList) => {
         this.files = [];
 
-        // console.log('filelist', fileList);
+         console.log('filelist', fileList);
 
         for(var i = 0; i < fileList.length; i++) {
-          // console.log(folderFullPath + "\\" + fileList[i]);
+           console.log(folderFullPath + "\\" + fileList[i]);
           if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
             this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
         }
       })
       fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
         // if(err) throw err;
-        // console.log(data);
+         console.log(data);
         // fileData = data;
         let openedFileData = data;
         // console.log('요기',openedFileData);
-        // console.log('------------------')
+         console.log('------------------')
 
         let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': absoluteFilePath};
         let win = remote.BrowserWindow.getFocusedWindow();
         win.webContents.send("ping", fileDataObject);
         ipcRenderer.send("mainping", fileDataObject);
-        // console.log('absolutefilepath', absoluteFilePath);
+         console.log('absolutefilepath', absoluteFilePath);
       });
     }
   }

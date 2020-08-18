@@ -88,7 +88,7 @@ ipcRenderer.on("pong", (event, folderPath) => {
     isPathExist = true;
   }
   // console.log('absoluteee', folderFullPath);
-})
+});
 
 ipcRenderer.on("template", (event, isThereTemplate) => {
   // console.log(message);
@@ -120,8 +120,13 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
     isTemplate = false;
     parse(data.input)
   }
-})
+});
 
+ipcRenderer.on("ping", (event, message) => {
+   console.log(message);
+  data.input = message["openedFileData"];
+  parse(data.input);
+});
 
 ipcRenderer.on("serverInit", (event, message) => {
   data.input = message;
