@@ -290,6 +290,8 @@ export default {
     },
 
     changeNote(note, _id){
+      if(this.$store.state.savedTime != '')
+        this.$store.state.savedTime = '';
       if(this.$store.state.shareNoteSocket.connected)
         this.$store.state.shareNoteSocket.disconnect();
       // console.log(this.$store.state.selectedBandInfo.no);
