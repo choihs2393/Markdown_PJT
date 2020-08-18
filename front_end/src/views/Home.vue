@@ -428,17 +428,14 @@ export default {
 }
 
 #editor_div div {
-  display: inline-block;
-  width: 49%;
   height: 100%;
   vertical-align: top;
   box-sizing: border-box;
-  padding: 0 20px;
+  /* padding: 0 20px; */
 }
 
 .v-textarea {
   border: none;
-  border-right: 1px solid #ccc;
   resize: none;
   outline: none;
   /* height: 100%; */
