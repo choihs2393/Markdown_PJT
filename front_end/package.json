@@ -1,7 +1,8 @@
 {
-  "name": "front_end",
+  "name": "smenote",
   "version": "0.1.0",
   "private": true,
+  
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -10,11 +11,6 @@
     "electron:serve": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
     "postuninstall": "electron-builder install-app-deps"
-  },
-  "build": {
-    "win": {
-      "icon": "./src/assets/smenote_icon.png"
-    }
   },
   "main": "background.js",
   "dependencies": {
