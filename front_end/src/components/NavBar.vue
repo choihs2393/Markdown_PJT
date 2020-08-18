@@ -102,6 +102,11 @@ import SignupModal from "./account_modal/SignupModal.vue";
 import LogoutModal from "./account_modal/LogoutModal.vue";
 import MypageModal from "./account_modal/MypageModal.vue";
 
+import { remote, ipcRenderer } from "electron";
+const { dialog } = require('electron').remote;
+
+import fs from "fs";
+
 // 소켓 관련 모듈
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
@@ -113,8 +118,15 @@ export default {
       invitationDialog: false,
       connected: false,
       connectionCount: 0,
+      absoluteFilePath: '',
     };
   },
+  mounted() {
+    ipcRenderer.on("ping", (event, message) => {
+    this.absoluteFilePath = message['absoluteFilePath'];
+    })
+  },
+
   components: {
     LoginModal,
     SignupModal,
@@ -150,6 +162,7 @@ export default {
     } else if (!!this.$store.state.isShareMode == true) {
       this.$store.commit("SET_IS_DRAWER_SHARE", true);
       this.$store.commit("SET_IS_DRAWER", false);
+      this.changeModeLocaltoServer();
     }
   },
 
@@ -158,6 +171,87 @@ export default {
     //   document.getElementById("bell").removeAttribute("color")
 
     // },
+    changeModeLocaltoServer() {
+    const optionsForJustSaveas = {
+      type: "question",
+      title: "Question",
+      message: "Are you sure you want to quit without saving?",
+      detail: "Click the save button if you want to save this text to your md file",
+      buttons: ["Do Not Save", "Save As...", "Close"],
+      defaultId: 1
+  };
+    var fileData = '';
+    remote.BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
+    .then(result => {
+      fileData = result;
+      if (fileData === ''){ 
+      }else if (!this.absoluteFilePath){
+          dialog.showMessageBox(optionsForJustSaveas)
+          .then(result => {
+          if(result.response == 1) {
+            // 1 : Save
+                dialog.showSaveDialog(
+                    {
+                        title: "파일 저장하기",
+                        filters: [
+                            { name: 'Markdown', extensions: ['md'] },
+                        ],
+                        message: "TEST"
+                    }
+                )
+                .then(result => {
+                    // console.log(result.filePath);
+                    var fileName = result.filePath;
+                    fs.writeFile(fileName, fileData, (err) => {    
+                    })
+                });   
+           }
+        }) 
+      } else{ 
+        const options = {
+          type: "question",
+          title: "Question",
+          message: "Are you sure you want to quit without saving?",
+          detail: "Click the save button if you want to save this text to your md file",
+          buttons: ["Do Not Save", "Save As...", "Save", "Close"],
+          defaultId: 1
+        };
+        dialog.showMessageBox(options)
+        .then(result => {
+          // 1 : SaveAs
+          if(result.response == 1) {
+            dialog.showSaveDialog(
+                {
+                    title: "파일 저장하기",
+                    filters: [
+                        { name: 'Markdown', extensions: ['md'] },
+                    ],
+                    message: "TEST"
+                }
+            )
+            .then(result => {
+              if(!result.canceled){
+                
+              
+              console.log(result.filePath);
+
+                var fileName = result.filePath;
+                fs.writeFile(fileName, fileData, (err) => {
+                })
+              }
+            });
+          }
+          // 2 : Save
+          else if(result.response == 2){
+            fs.writeFile(this.absoluteFilePath, fileData, (err) => {
+            })
+          }
+        });
+        }
+        remote.BrowserWindow.getFocusedWindow().webContents.send("contentReset", "msg");
+      });
+    },
+
     decideSideBar() {
       // 폴더트리를 보여주는 사이드바를 열어준다.
       if (!!this.$store.state.isShareMode == false) {
