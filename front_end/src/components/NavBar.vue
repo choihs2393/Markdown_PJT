@@ -89,11 +89,7 @@
       </v-menu>
       <LogoutModal />
       <MypageModal />
-<<<<<<< HEAD
-      <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share" @click="changeMode"></v-switch>
-=======
       <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share" style="font-weight: bold;"></v-switch>
->>>>>>> ee3a04addc9fa730c26ee60fd368c4f54cea5fff
     </template>
   </v-app-bar>
 </template>
@@ -117,7 +113,6 @@ import Stomp from "webstomp-client";
 import serverStartInput from "../markdown/serverStartInput.js";
 import data from "../views/Home.vue";
 
-import { remote } from "electron";
 export default {
   name: "NavBar",
   data() {
