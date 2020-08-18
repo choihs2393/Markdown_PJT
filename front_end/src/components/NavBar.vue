@@ -7,8 +7,8 @@
 
     <!-- 로그인 전 화면의 상단바 -->
     <template v-if="!isLoggedIn">
-      <LoginModal />
-      <SignupModal />
+      <!-- <LoginModal /> -->
+      <!-- <SignupModal /> -->
       <v-switch v-model="$vuetify.theme.dark" hide-details label="Dark"></v-switch>
     </template>
 
