@@ -54,7 +54,9 @@ export default new Vuex.Store({
     storeSyncCheck: false,
     storeTimer: '',
     
+    // 소켓 데이터 저장
     shareNoteSocket: '',
+    shareGroupSocket: '',
 
 
 
@@ -105,8 +107,12 @@ export default new Vuex.Store({
   // commit 을 통해 실행함.
   // mutations은 첫 번째 인자로 state를 받아야함.
   mutations: {
+    //소켓처리를 위한 데이터
     setShareNoteSocket(state, param){
       state.shareNoteSocket = param;
+    },
+    setShareGroupSocket(state, param){
+      state.shareGroupSocket = param;
     },
     //자동처리를 위한 스케쥴링 데이터
     setStoreTempData(state, param) {

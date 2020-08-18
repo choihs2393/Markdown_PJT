@@ -202,6 +202,8 @@ export default {
     },
 
     changeWorkspace(bandInfo) {
+      if(this.$store.state.shareGroupSocket.connected)
+        this.$store.state.shareGroupSocket.disconnect();
       console.log("bandInfo: ", bandInfo)
       this.$store.commit('SELECTED_WORKSPACE', bandInfo)
       this.$store.dispatch('getNoteList', bandInfo)
@@ -215,6 +217,8 @@ export default {
         { Authorization: this.$store.state.authorization },
         frame => {
           this.connected = true;
+          this.$store.commit('setShareGroupSocket',this.stompClient);
+
           // 워크스페이스에서의 현재 파일 점유 유무를 받고 있음.
           this.stompClient.subscribe("/send/groupSend/occupy/" + this.$store.state.selectedBandInfo.no,
             res => {
