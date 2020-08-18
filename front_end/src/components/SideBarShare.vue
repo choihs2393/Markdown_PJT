@@ -223,18 +223,24 @@ export default {
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
               console.log("this.$store.state.noteList", this.$store.state.noteList)
-              var idx = this.$store.state.noteList.findIndex(element => element._id == res.body.noteNo);
-              this.$store.state.noteList[idx].occupiedNo = res.body.occupiedNo;
-              this.$store.state.noteList[idx].occupiedName = res.body.occupiedName;
+              console.log("너 어딨음 ?? " + receivedMsg.noteNo);
+              console.log("???" + receivedMsg.noteNo);
+              console.log("???" + receivedMsg.occupiedNo);
+              console.log("???" + receivedMsg.occupiedName);
+              var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
+              
+              this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
+              this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
             } 
           )
           
           this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receiveMsg = JSON.parse(res.body);
-
-              var idx = this.$store.state.userInfo.noteList.findIndex(element => element._id == res.body.noteNo);
-              this.$store.state.noteList[idx].content = res.body.content;
+              console.log("/send/groupSend/content/" + receiveMsg.noteNo);
+              console.log("/send/groupSend/content/" + receiveMsg.content);
+              var idx = this.$store.state.userInfo.noteList.findIndex(element => element._id == receiveMsg.noteNo);
+              this.$store.state.noteList[idx].content = receiveMsg.content;
             
             }
           )

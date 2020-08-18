@@ -283,7 +283,6 @@ export default {
         var timer = setTimeout(() => {
           // clearTimeout(getTempData);
           parse(tmp);
-          console.log("ㅋㅋㅋㅋㅋ" + tmp);
           getStore.commit('setSyncCheck',false);
           
         }, 800);
@@ -302,11 +301,11 @@ export default {
       let noteNo = this.$store.state.selectedNoteInfo._id;
       let occupyAccountNo = this.$store.state.selectedNoteInfo.occupiedNo;
       let loginAccountNo = this.$store.state.userInfo.no;
-      // console.log("영복이의 로그추적"  + bandNo);
-      // console.log("영복이의 로그추적 " + noteNo);
-      // console.log("영복이의 로그추적 " + occupyAccountNo);
-      // console.log("영복이의 로그추적 " + loginAccountNo);
-      // console.log("영복이의 로그추적 " + tmp);
+      console.log("영복이의 로그추적"  + bandNo);
+      console.log("영복이의 로그추적 " + noteNo);
+      console.log("영복이의 로그추적 " + occupyAccountNo);
+      console.log("영복이의 로그추적 " + loginAccountNo);
+      console.log("영복이의 로그추적 " + tmp);
       if(noteNo !== '' && bandNo !== '' && occupyAccountNo !== '' && occupyAccountNo === loginAccountNo){
         if(this.$store.state.storeSyncCheck === false){
           this.$store.commit('setStoreSyncCheck', true);
@@ -334,14 +333,17 @@ export default {
             // console.log('로직 안 this', this);
             console.log("영복이의 Share 로그추적 " + tmp);
             // console.log(this.$store.state.stroeTimer);
-            shareNote(tmp);
+            this.shareNote(tmp);
         }, 1000 * 3);
         this.$store.commit('setShareTempData', shareTimeOut);
       }
     },
     
 
-    share(inputContent){
+    shareNote(inputContent){
+      console.log(this.$store.state.selectedBandInfo.no);
+      console.log(this.$store.state.selectedNoteInfo._id);
+      console.log(inputContent);
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
@@ -350,7 +352,7 @@ export default {
         frame => {
           var map = {
               noteNo: this.$store.state.selectedNoteInfo._id,
-              content: this.inputContent
+              content: inputContent
           }
           this.stompClient.send("/groupReceive/content/" + this.$store.state.selectedBandInfo.no + "/" + this.$store.state.selectedNoteInfo._id, JSON.stringify(map));
         }
