@@ -89,7 +89,7 @@
       </v-menu>
       <LogoutModal />
       <MypageModal />
-      <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share"></v-switch>
+      <v-switch class="mt-0" v-model="$store.state.isShareMode" hide-details label="Share" @click="changeMode"></v-switch>
     </template>
   </v-app-bar>
 </template>
@@ -110,7 +110,10 @@ import fs from "fs";
 // 소켓 관련 모듈
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
+import serverStartInput from "../markdown/serverStartInput.js";
+import data from "../views/Home.vue";
 
+import { remote } from "electron";
 export default {
   name: "NavBar",
   data() {
@@ -156,22 +159,39 @@ export default {
     if (this.$vuetify.theme.dark == true) div.style.color = "white";
     else div.style.color = "black";
 
-    if (!!this.$store.state.isShareMode == false) {
+
+if (!!this.$store.state.isShareMode == false) {
       this.$store.commit("SET_IS_DRAWER_SHARE", false);
       this.$store.commit("SET_IS_DRAWER", true);
     } else if (!!this.$store.state.isShareMode == true) {
       this.$store.commit("SET_IS_DRAWER_SHARE", true);
       this.$store.commit("SET_IS_DRAWER", false);
       this.changeModeLocaltoServer();
-    }
+    }    
+
+
   },
 
   methods: {
+    changeMode() {
+      let win = remote.BrowserWindow.getFocusedWindow();
+      //console.log('test');
+        if (!!this.$store.state.isShareMode == false) {
+        this.$store.commit("SET_IS_DRAWER_SHARE", false);
+        this.$store.commit("SET_IS_DRAWER", true);
+        win.webContents.send("localInit");
+      } else if (!!this.$store.state.isShareMode == true) {
+        this.$store.commit("SET_IS_DRAWER_SHARE", true);
+        this.$store.commit("SET_IS_DRAWER", false);
+        win.webContents.send("serverInit", serverStartInput);
+        //data.input = serverStartInput.data;
+      }
+    },
     // bellClicked() {
     //   document.getElementById("bell").removeAttribute("color")
 
     // },
-    changeModeLocaltoServer() {
+     changeModeLocaltoServer() {
     const optionsForJustSaveas = {
       type: "question",
       title: "Question",

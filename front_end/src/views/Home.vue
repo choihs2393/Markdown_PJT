@@ -25,6 +25,8 @@
             v-model="input"
             id="editor_textarea"
             @keyup.native="whenKeyUp"
+            @keydown="whenKeyDown"
+            @keypress="whenKeyPress"
             onkeydown="
               if(event.keyCode === 9) {
                 var v=this.value, s=this.selectionStart, e=this.selectionEnd;
@@ -60,6 +62,7 @@ import { is } from 'vee-validate/dist/rules';
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
 import { setInterval } from 'timers';
+import serverStartInput from "../markdown/serverStartInput.js";
 
 import store from '../store'
 
@@ -119,12 +122,14 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
 })
 
 
-ipcRenderer.on("ping", (event, message) => {
-  // console.log(message);
-  data.input = message["openedFileData"];
+ipcRenderer.on("serverInit", (event, message) => {
+  data.input = message;
   parse(data.input)
 });
-
+ipcRenderer.on("localInit", (event) => {
+  data.input = '';
+  parse(data.input)
+});
 ipcRenderer.on("getNote", (event, message, accountNo) => {
   // console.log(message);
   data.input = message.content;
@@ -147,7 +152,12 @@ ipcRenderer.on("test", (event, message) => {
   console.log(message);
   data.input = message;
   parse(data.input);
-})
+}),
+
+ipcRenderer.on("serverInitInput", (event, message) => {
+  data.input = message;
+  parse(data.input);
+}),
 
 // 드래그 후 드랍을 하면,
 document.addEventListener("drop", event => {
@@ -237,6 +247,7 @@ export default {
   },
   updated() {
     //this.$store.commit('setParseData', parse(this.input));
+    
   },
   mounted() {
     // console.log(data);
@@ -303,6 +314,16 @@ export default {
   //   return await data;
   // }
   methods: {
+    whenKeyPress() {
+    //   data = ClipboardEvent.clipboardData;
+    //  // console.log('클립보드 정보를 내놔 ' +ClipboardEvent.clipboardData.getData("test"));
+    //   var pasteEvent = new ClipboardEvent('paste');
+    //   pasteEvent.clipboardData.items.add('My string', 'text/plain');
+    //   document.dispatchEvent(pasteEvent);
+    },
+    whenKeyDown() {
+     // console.log(event.target.value.type);
+    },
     ...mapActions(["saveNote"]),
 
     whenKeyUp() {

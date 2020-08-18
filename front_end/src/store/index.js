@@ -82,6 +82,12 @@ export default new Vuex.Store({
     // theme
     theme: '',
 
+    // 파싱되는 데이터 저장.
+    parseData: '',
+    inputData: '',
+    tempData: '',
+    longTimeData: '',
+    syncCheck: false,
     // add Readme.md in file list
     addReadme: '',
   },
@@ -119,6 +125,9 @@ export default new Vuex.Store({
       state.storeTimer = param;
     },
     //모아서처리를 위한 스케쥴링 데이터
+    setLongTimeData(state, param) {
+      state.longTimeData = param;
+    },
     setTempData(state, param) {
       state.tempData = param;
     },
