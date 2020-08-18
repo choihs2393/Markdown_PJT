@@ -275,11 +275,6 @@ export default {
               const receiveMsg = JSON.parse(res.body);
               console.log("/send/groupSend/content/" + receiveMsg.noteNo);
               console.log("/send/groupSend/content/" + receiveMsg.content);
-<<<<<<< HEAD
-              const idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
-              this.$store.state.noteList[idx].content = receiveMsg.content;
-            
-=======
               var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
               // this.$store.state.noteList[idx].content = receiveMsg.content;
               this.$store.state.selectedNoteInfo.content = receiveMsg.content;
@@ -289,7 +284,6 @@ export default {
               const win = this.remote.BrowserWindow.getFocusedWindow();
               win.webContents.send("test", receiveMsg.content);
 
->>>>>>> 34e86eb065519497a26cebf8a93ee11572544fb7
             }
           )
         }
