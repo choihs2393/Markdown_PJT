@@ -70,7 +70,7 @@
         <v-list-item
           v-for="note in this.$store.state.noteList"
           :key="note._id"
-          @click="getNote(note); changeNote(note)"
+          @click="getNote(note); changeNote(note, note._id)"
           @mousedown.right="$refs.fileMenu.open($event, note), setRightNoteInfo(note)"
         >
           <v-list-item-content>
@@ -277,24 +277,27 @@ export default {
       // this.stompClient.disconnect();
     },
 
-    changeNote(note){
-      console.log(this.$store.state.selectedBandInfo.no);
-      console.log(this.$store.state.selectedNoteInfo._id);
+    changeNote(note, _id){
+      if(this.$store.state.shareNoteSocket.connected)
+        this.$store.state.shareNoteSocket.disconnect();
+      // console.log(this.$store.state.selectedBandInfo.no);
+      // console.log(_id);
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
-
+      const win = remote.BrowserWindow.getFocusedWindow();
       this.stompClient.connect(
         { Authorization: this.$store.state.authorization },
         frame => {
           this.connected = true;
-          this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no + "/" + this.$store.state.selectedNoteInfo._id,
+          console.log(this.stompClient);
+          this.$store.commit('setShareNoteSocket',this.stompClient);
+          this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no + "/" + _id,
             res => {
               const receiveMsg = JSON.parse(res.body);
 
               var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
               this.$store.state.selectedNoteInfo.content = receiveMsg.content;
-              const win = this.remote.BrowserWindow.getFocusedWindow();
               win.webContents.send("test", receiveMsg.content);
 
               const info = {
@@ -305,7 +308,8 @@ export default {
                 content: receiveMsg.content,
                 occupiedNo: receiveMsg.occupiedNo, // 점유자의 account_no
                 occupiedName: receiveMsg.occupiedName // 점유자의 account_name
-              } 
+              }
+              // console.log(info);
               this.$store.commit('SET_NOTE_CONTENT', info);
             }
           )
