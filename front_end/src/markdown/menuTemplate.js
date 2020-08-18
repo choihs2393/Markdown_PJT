@@ -257,7 +257,7 @@ function createHelpWindow() {
         nodeIntegration: true
       }
     });
-    win.loadURL(`file://${__dirname}/../src/help.html`)
+    win.loadURL(`file://${__dirname}/../src/markdown/help.html`)
     win.setTitle("도움말");
     win.on('page-title-updated', function(e) {
     e.preventDefault()

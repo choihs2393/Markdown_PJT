@@ -50,7 +50,7 @@ public class SocketServiceImpl implements ISocketService{
 		map.put("noteNo", Integer.toString(noteNo));
 		map.put("subject", subject);
 		map.put("content", content);
-		map.put("accountNo", Integer.toString(accountNo));
+		map.put("occupiedNo", Integer.toString(accountNo));
 		map.put("occupiedName", occupiedName);
 		
 		return map;

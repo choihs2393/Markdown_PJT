@@ -2,9 +2,9 @@
   <v-main>
     <v-container class="md" fluid>
       <v-row>
-        <v-btn color="primary" v-if="isLoggedIn && $store.state.selectedNoteInfo != null && $store.state.selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
-        <v-btn color="primary" v-if="$store.state.selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
-        <v-btn color="primary" v-if="$store.state.selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
+        <v-btn color="primary" v-if="isLoggedIn && selectedNoteInfo != null && selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
+        <v-btn color="primary" v-if="isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
+        <v-btn color="primary" v-if="isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
         <span v-if="isLoggedIn">{{ currentTime }}</span>
         <v-spacer></v-spacer>
         <v-btn class="mr-2" @click="isTextarea=!isTextarea">
@@ -15,6 +15,7 @@
       <v-row>
         <v-col id="editor_div" v-if="isTextarea">
           <v-textarea
+            :disabled="selectedNoteInfo.occupiedNo != $store.state.userInfo.no"
             solo
             flat
             auto-grow
@@ -88,10 +89,17 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
     let fileDataObject = {}
     if (isPathExist){
       
-      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'\\readme.md'};
-      fs.writeFile(fileDataObject['absoluteFilePath'], readmeTemplate.input, (err) => {
-        // console.log('파일경로', fileDataObject['absoluteFilePath'])
-      })
+      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'\\README.md'};
+      fs.exists(fileDataObject['absoluteFilePath'], (exists) => { 
+        if (!exists){
+          fs.writeFile(fileDataObject['absoluteFilePath'], readmeTemplate.input, (err) => {
+            // console.log('파일경로', fileDataObject['absoluteFilePath'])
+          })
+        } else{
+          fs.writeFile(folderFullPath+'\\somangReadme'+Math.floor(Math.random() * 5000)+'.md', readmeTemplate.input, (err) => {
+          })
+        }
+      }); 
     }else {
       fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': ''};
     }
@@ -101,6 +109,7 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
     ipcRenderer.send("template", isTemplate);
     win.webContents.send("addFileInList", folderFullPath);
     isTemplate = false;
+    parse(data.input)
   }
 })
 
@@ -108,6 +117,7 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
 ipcRenderer.on("ping", (event, message) => {
   // console.log(message);
   data.input = message["openedFileData"];
+  parse(data.input)
 });
 
 ipcRenderer.on("getNote", (event, message, accountNo) => {
@@ -120,10 +130,12 @@ ipcRenderer.on("getNote", (event, message, accountNo) => {
   //   this.isOccupied = false;
   //   document.getElementById("editor_div").setAttribute("disabled", false);
   // }
+  parse(data.input)
 });
 
 ipcRenderer.on("contentReset", (event, message) => {
   data.input = ""
+  parse(data.input)
 });
 
 // 드래그 후 드랍을 하면,
@@ -221,7 +233,14 @@ export default {
     // this.$store.state.parseData = parse(data);
     this.$store.commit("setParseData", parse(this.input));
     // console.log(this.$store.state.parseData);
+    ipcRenderer.on("template", (event, isThereTemplate) => {
+      if(this.$store.state.isShareMode && isThereTemplate) {
+        console.log('여깅ㅇㅇㅇㅇㅇ')
+      }
+    })
   },
+      
+  
 
   computed: {
     compiledMarkdown: function() {
@@ -237,7 +256,7 @@ export default {
       //return parse(this.input);
       // });
     },
-    ...mapGetters(["isLoggedIn", "isOccupied"]),
+    ...mapGetters(["isLoggedIn", "isOccupied", "selectedNoteInfo"]),
     currentTime() {
       return new Date();
     },
@@ -362,6 +381,9 @@ export default {
 
     // 해당 파일 점유하기.
     occupy(selectedNoteNo) {
+      this.$store.state.selectedNoteInfo.occupiedNo = this.$store.state.userInfo.no;
+      this.$store.state.selectedNoteInfo.occupiedName = this.$store.state.userInfo.name;
+
       // 1. 소켓 뚫기
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
@@ -392,6 +414,8 @@ export default {
 
     // 해당 파일 점유 포기하기.
     vacate(selectedNoteNo) {
+      this.$store.state.selectedNoteInfo.occupiedNo = 0;
+      this.$store.state.selectedNoteInfo.occupiedName = "";
       // 1. 소켓 뚫기
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
@@ -430,17 +454,14 @@ export default {
 }
 
 #editor_div div {
-  display: inline-block;
-  width: 49%;
   height: 100%;
   vertical-align: top;
   box-sizing: border-box;
-  padding: 0 20px;
+  /* padding: 0 20px; */
 }
 
 .v-textarea {
   border: none;
-  border-right: 1px solid #ccc;
   resize: none;
   outline: none;
   /* height: 100%; */
