@@ -92,7 +92,10 @@ ipcRenderer.on("pong", (event, folderPath) => {
 });
 
 ipcRenderer.on("template", (event, isThereTemplate) => {
+<<<<<<< HEAD
   // console.log(message);
+=======
+>>>>>>> feature/server-create-readme
   isTemplate = isThereTemplate;
   data.input = readmeTemplate.input;
   if (isTemplate){
@@ -138,7 +141,7 @@ ipcRenderer.on("localInit", (event) => {
   parse(data.input)
 });
 ipcRenderer.on("getNote", (event, message, accountNo) => {
-  // console.log(message);
+  // console.log(message.content);
   data.input = message.content;
   // if(accountNo != 0) {
   //   this.isOccupied = true;
@@ -257,14 +260,18 @@ export default {
     
   },
   mounted() {
-    // console.log(data);
-    // this.$store.state.inputData = data.input;
-    // this.$store.state.parseData = parse(data);
     this.$store.commit("setParseData", parse(this.input));
+<<<<<<< HEAD
     // console.log(this.$store.state.parseData);
     ipcRenderer.on("template", (event, isThereTemplate) => {
       if(this.$store.state.isShareMode && isThereTemplate) {
         console.log('여깅ㅇㅇㅇㅇㅇ')
+=======
+
+    ipcRenderer.on("template", (event, isThereTemplate) => {
+      if(this.$store.state.isShareMode && isThereTemplate && !!this.$store.state.selectedBandInfo) {
+        this.$store.dispatch('createNote', 'README')
+>>>>>>> feature/server-create-readme
       }
     })
   },
