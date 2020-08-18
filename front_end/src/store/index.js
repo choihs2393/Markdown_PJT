@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import SERVER from '@/api/spring'
 import { ipcRenderer, remote } from 'electron';
+import readmeTemplate from '../markdown/readmeTemplate'
 
 Vue.use(Vuex);
 
@@ -610,7 +611,7 @@ export default new Vuex.Store({
 
     // note 추가
     createNote({ state, commit, dispatch }, subject) {
-      if (!!subject) {
+      if (!!subject && !!state.selectedBandInfo.no) {
         const info = {
           accountNo: state.userInfo.no,
           bandNo: state.selectedBandInfo.no,
@@ -618,13 +619,24 @@ export default new Vuex.Store({
         }
         axios.post(SERVER.URL + SERVER.ROUTES.createNote, info)
         .then(res => {
-          // console.log(res.data.map)
+          // info._id = res.data.map.no
           info.no = res.data.map.no
           info.content = ''
-          // console.log(info)
           commit('SET_NOTE', info)
-          dispatch('getNoteList', state.selectedBandInfo)
-        })
+          
+            if (info.subject==='README') {
+              const selectedInfo = {
+                content : readmeTemplate.input,
+                occupiedName: "",
+                occupiedNo: 0,
+                subject: "README",
+                _id: info.no
+              }
+              commit('SELECTED_NOTE', selectedInfo)
+            }
+            
+            dispatch('getNoteList', state.selectedBandInfo)
+          })
         .catch(err => console.error(err.response.data))
       }
     },
@@ -674,6 +686,7 @@ export default new Vuex.Store({
       }
       axios.post(SERVER.URL + SERVER.ROUTES.getNote, info)
         .then((res) => {
+          console.log(res.data.map.content)
           commit('SELECTED_NOTE', res.data.map.content)
           const win = remote.BrowserWindow.getFocusedWindow();
           if (res.data.result==='success') {
@@ -689,9 +702,9 @@ export default new Vuex.Store({
 
     // note 저장
     saveNote({ state, commit }, content) {
-      console.log("saveNote() 호출됨.")
-      console.log("content : " + content)
-      
+      // console.log("saveNote() 호출됨.")
+      // console.log("content : " + content)
+
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.selectedBandInfo.no,
@@ -701,7 +714,8 @@ export default new Vuex.Store({
         occupiedNo: state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteInfo._id)].occupiedNo, // 점유자의 account_no
         occupiedName: state.userInfo.name // 점유자의 account_name
       }
-      // console.log(info)
+      
+      console.log(info)
       axios.post(SERVER.URL + SERVER.ROUTES.saveNote, info)
         .then(() => {
           // console.log(res)

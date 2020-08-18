@@ -84,10 +84,6 @@ ipcRenderer.on("pong", (event, folderPath) => {
 })
 
 ipcRenderer.on("template", (event, isThereTemplate) => {
-  if (!store.state.selectedBandInfo.no && store.state.isShareMode) {
-    return
-  }
-  // console.log(message);
   isTemplate = isThereTemplate;
   data.input = readmeTemplate.input;
   if (isTemplate){
@@ -126,7 +122,7 @@ ipcRenderer.on("ping", (event, message) => {
 });
 
 ipcRenderer.on("getNote", (event, message, accountNo) => {
-  // console.log(message);
+  // console.log(message.content);
   data.input = message.content;
   // if(accountNo != 0) {
   //   this.isOccupied = true;
@@ -233,20 +229,11 @@ export default {
     //this.$store.commit('setParseData', parse(this.input));
   },
   mounted() {
-    // console.log(data);
-    // this.$store.state.inputData = data.input;
-    // this.$store.state.parseData = parse(data);
     this.$store.commit("setParseData", parse(this.input));
-    // console.log(this.$store.state.parseData);
 
     ipcRenderer.on("template", (event, isThereTemplate) => {
       if(this.$store.state.isShareMode && isThereTemplate && !!this.$store.state.selectedBandInfo) {
-        console.log('여깅ㅇㅇㅇㅇㅇ')
         this.$store.dispatch('createNote', 'README')
-        console.log(this.$store.state.noteList.slice(-1)[0])
-        // this.$store.commit('SELECTED_NOTE', this.$store.state.noteList.slice(-1)[0])
-        // console.log(readmeTemplate.input)
-        // this.$store.dispatch('saveNote', readmeTemplate.input)
       }
     })
   },
