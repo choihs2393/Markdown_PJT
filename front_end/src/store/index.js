@@ -54,6 +54,11 @@ export default new Vuex.Store({
     storeSyncCheck: false,
     storeTimer: '',
     
+    shareNoteSocket: '',
+
+
+
+
     // modal
     drawer: false,
     drawerShare: false,
@@ -100,6 +105,9 @@ export default new Vuex.Store({
   // commit 을 통해 실행함.
   // mutations은 첫 번째 인자로 state를 받아야함.
   mutations: {
+    setShareNoteSocket(state, param){
+      state.shareNoteSocket = param;
+    },
     //자동처리를 위한 스케쥴링 데이터
     setStoreTempData(state, param) {
       state.storeTempData = param;
@@ -269,7 +277,7 @@ export default new Vuex.Store({
     
     // File 내용 추가
     SET_NOTE_CONTENT(state, noteInfo) {
-      const idx = state.noteList.findIndex(item => item._id===noteInfo.noteNo)
+      const idx = state.noteList.findIndex(item => item._id==noteInfo.noteNo)
       state.noteList[idx].content = noteInfo.content
     },
 
