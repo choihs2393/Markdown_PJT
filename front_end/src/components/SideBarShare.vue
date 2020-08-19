@@ -13,7 +13,7 @@
 
     <v-container>
       <v-subheader class="mr-3">My Workspace</v-subheader>
-      <v-btn class="ma-4" tile large color="teal" icon @click="initUserInfo()">
+      <v-btn class="ma-4" tile large color="teal" icon @click="getNoteList($store.state.selectedBandInfo)">
         <v-icon>refresh</v-icon>
       </v-btn>  
       
