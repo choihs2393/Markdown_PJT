@@ -90,6 +90,9 @@ import path from "path";
 export default {
   
    mounted() {
+    var isWindow = navigator.platform.indexOf('Win') > -1;
+    var isMac = navigator.platform.indexOf('Mac') > -1;
+
     ipcRenderer.on("ping", (event, message) => {
       var absoluteFilePath = message['absoluteFilePath'];
       console.log('absolute', absoluteFilePath);
@@ -109,7 +112,12 @@ export default {
         for(var i = 0; i < fileList.length; i++) {
           // console.log(folderFullPath + "\\" + fileList[i]);
           if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md'){
+            if(isWindow) {
             this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+          }
+            if(isMac) {
+            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "/" + fileList[i]});
+          }
           }
         }
       })
@@ -133,7 +141,12 @@ export default {
         for(var i = 0; i < fileList.length; i++) {
           // console.log(folderFullPath + "\\" + fileList[i]);
           if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md'){
+            if(isWindow) {
             this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+            }
+            if(isMac) {
+            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "/" + fileList[i]});
+            }
           }
         }
       })
@@ -146,7 +159,12 @@ export default {
         for(var i = 0; i < fileList.length; i++) {
           // console.log(folderFullPath + "\\" + fileList[i]);
           if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
+          if(isWindow) {
             this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+          }
+          if(isMac) {
+            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "/" + fileList[i]});
+          }
           }
         }
         })
@@ -220,6 +238,8 @@ export default {
     openFile(absoluteFilePath) {
       console.log(absoluteFilePath);
       var folderFullPath = path.dirname(absoluteFilePath);
+      var isWindow = navigator.platform.indexOf('Win') > -1;
+      var isMac = navigator.platform.indexOf('Mac') > -1;
       console.log(folderFullPath);
       fs.readdir(folderFullPath, (err, fileList) => {
         this.files = [];
@@ -227,9 +247,15 @@ export default {
          console.log('filelist', fileList);
 
         for(var i = 0; i < fileList.length; i++) {
-           console.log(folderFullPath + "\\" + fileList[i]);
-          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
+          //  console.log(folderFullPath + "\\" + fileList[i]);
+          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md'){
+            if(isWindow){
             this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
+            }
+            if(isMac){
+            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "/" + fileList[i]});
+            }
+          }
         }
       })
       fs.readFile(absoluteFilePath, 'utf8', (err, data) => {

@@ -81,6 +81,8 @@ var data = sampleData;
 let isPathExist = false;
 let isTemplate = false;
 let folderFullPath = ''
+var isWindow = navigator.platform.indexOf('Win') > -1;
+var isMac = navigator.platform.indexOf('Mac') > -1;
 
 ipcRenderer.on("pong", (event, folderPath) => {
   // console.log('folderPath', folderPath)
@@ -98,15 +100,27 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
   if (isTemplate){
     let fileDataObject = {}
     if (isPathExist){
-      
+      if (isWindow){
       fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'\\README.md'};
+      }
+      if (isMac){
+      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'/README.md'};
+      }
       fs.exists(fileDataObject['absoluteFilePath'], (exists) => { 
         if (!exists){
           fs.writeFile(fileDataObject['absoluteFilePath'], readmeTemplate.input, (err) => {
             // console.log('파일경로', fileDataObject['absoluteFilePath'])
           })
         } else{
-          fs.writeFile(folderFullPath+'\\somangReadme'+Math.floor(Math.random() * 5000)+'.md', readmeTemplate.input, (err) => {
+          var readmeFileName = '';
+          if (isWindow){
+            readmeFileName = '\\somangReadme'+Math.floor(Math.random() * 5000)+'.md';
+          }
+          if (isMac){
+            readmeFileName = '/somangReadme'+Math.floor(Math.random() * 5000)+'.md';
+          }
+          fs.writeFile(folderFullPath+readmeFileName, readmeTemplate.input, (err) => {
+            fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+readmeFileName};
           })
         }
       }); 
