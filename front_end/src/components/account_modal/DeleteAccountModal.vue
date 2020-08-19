@@ -4,7 +4,7 @@
       <v-card-title class="headline">정말 계정을 탈퇴하시겠습니까?</v-card-title>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="deleteAccount(deleteUserInfo), close()">Yes</v-btn>
+        <v-btn color="primary" @click="deleteAccount(userInfo), close()">Yes</v-btn>
         <v-btn @click="close()">No</v-btn>
       </v-card-actions>
     </v-card>
@@ -13,23 +13,12 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { userInfo } from 'os'
 
 export default {
   name: 'DeleteAccountModal',
 
   props: {
     userInfo: Object,
-  },
-
-  data() {
-    return {
-      deleteUserInfo: {
-        no: this.$store.state.userInfo.no,
-        email: userInfo.email,
-        password: userInfo.password
-      }
-    }
   },
 
   methods: {

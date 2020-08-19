@@ -137,6 +137,7 @@ export default {
         password: '',
         newPassword: '',
         newPasswordConfirm: '',
+        no: this.$store.state.userInfo.no
       },
     }
   },
