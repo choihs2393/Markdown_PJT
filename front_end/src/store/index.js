@@ -58,7 +58,7 @@ export default new Vuex.Store({
     shareNoteSocket: '',
     shareGroupSocket: '',
 
-
+    canInvite: false,
 
 
     // modal
@@ -69,7 +69,7 @@ export default new Vuex.Store({
     isDeleteModal: false,
     isInviteModal: false,
     noSuchMemberAlert: false,
-    aleadyMemberAlert: false,
+    alreadyMemberAlert: false,
     isRenameFileModal: false,
     isDeleteFileModal: false,
     
@@ -305,7 +305,9 @@ export default new Vuex.Store({
       state.drawerShare = result
     },
     SET_IS_INVITE_MODAL(state, result) {
-      state.isInviteModal = result
+      state.isInviteModal = result,
+      state.noSuchMemberAlert = false,
+      state.alreadyMemberAlert = false;
     },
   },
 
@@ -564,6 +566,7 @@ export default new Vuex.Store({
           dispatch("inviteBandMember", inviteBandMember)
         } else {
           state.noSuchMemberAlert = !(state.noSuchMemberAlert)
+          state.canInvite = false;
         }
       })
     },
@@ -579,7 +582,8 @@ export default new Vuex.Store({
           console.log("res.data.result : ", res.data.map.bandMember)
           commit("GET_NEW_MEMBER_INFO", res.data.map.bandMember)
         }else{
-          state.aleadyMemberAlert = !(state.aleadyMemberAlert)
+          state.alreadyMemberAlert = !(state.alreadyMemberAlert)
+          state.canInvite = false;
         }
       })
     },
