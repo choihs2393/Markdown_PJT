@@ -165,7 +165,7 @@ if (!!this.$store.state.isShareMode == false) {
     } else if (!!this.$store.state.isShareMode == true) {
       this.$store.commit("SET_IS_DRAWER_SHARE", true);
       this.$store.commit("SET_IS_DRAWER", false);
-      this.changeModeLocaltoServer();
+      // this.changeModeLocaltoServer();
     }    
 
 
@@ -184,13 +184,13 @@ if (!!this.$store.state.isShareMode == false) {
         this.$store.commit("SET_IS_DRAWER", false);
         win.webContents.send("serverInit", serverStartInput);
         //data.input = serverStartInput.data;
-      }
-    },
+      // }
+    // },
     // bellClicked() {
     //   document.getElementById("bell").removeAttribute("color")
 
     // },
-     changeModeLocaltoServer() {
+    //  changeModeLocaltoServer() {
     const optionsForJustSaveas = {
       type: "question",
       title: "Question",
@@ -203,7 +203,8 @@ if (!!this.$store.state.isShareMode == false) {
     remote.BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
     .then(result => {
       fileData = result;
-      if (fileData === ''){ 
+        // console.log('fileData', fileData)
+      if (fileData === '' || fileData === serverStartInput){ 
       }else if (!this.absoluteFilePath){
           dialog.showMessageBox(optionsForJustSaveas)
           .then(result => {
@@ -269,6 +270,7 @@ if (!!this.$store.state.isShareMode == false) {
         }
         remote.BrowserWindow.getFocusedWindow().webContents.send("serverInit", serverStartInput);
       });
+      }
     },
 
     decideSideBar() {
