@@ -14,7 +14,7 @@
     <v-container>
       <v-subheader>My Workspace</v-subheader>
         
-       <v-btn @click="initUserInfo()" color="blue-grey" class="white--text">
+       <v-btn @click="getNoteList($store.state.selectedBandInfo)" color="blue-grey" class="white--text">
         <v-icon dark >refresh</v-icon>
       </v-btn>  
       
@@ -82,7 +82,8 @@
             <v-list-item-title>{{ note.subject }}</v-list-item-title>
           </v-list-item-content>
           <v-list-item-icon>
-            <v-icon v-if="note.occupiedNo != 0" right>lock</v-icon>
+            <v-icon v-if="note.occupiedNo != 0 && note.occupiedNo != userInfo.no" right>lock</v-icon>
+            <v-icon v-if="note.occupiedNo != 0 && note.occupiedNo == userInfo.no" right color="red">lock</v-icon>
           </v-list-item-icon>
         </v-list-item>
       </v-list>
@@ -189,8 +190,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(["getNote"]),
-    ...mapActions(['initUserInfo']),
+    ...mapActions(["getNote","initUserInfo", "getNoteList"]),
 
     cancelCreateWorkspace() {
       this.$refs.form_workspace.reset();
@@ -198,10 +198,10 @@ export default {
     },
 
     // 워크스페이스 새로 추가하는 함수.
-    async createWorkspace(newBandName) {
+    createWorkspace(newBandName) {
       // event.preventDefault();
       if (!!newBandName) {
-        await this.$store.dispatch("createWorkspace", newBandName);
+        this.$store.dispatch("createWorkspace", newBandName);
         this.bandInfo = this.$store.state.selectedBandInfo;
         this.$store.dispatch('getNoteList', this.bandInfo)
       }

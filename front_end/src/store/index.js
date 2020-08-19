@@ -323,7 +323,7 @@ export default new Vuex.Store({
   // dispatch를 통해 실행함.
   actions: {
     // 로그인
-    login({ commit, dispatch }, loginData) {
+    login({ state, commit, dispatch }, loginData) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
         .then(res => {
           // console.log(res.headers)
@@ -336,6 +336,10 @@ export default new Vuex.Store({
           setTimeout(function(){
             commit('SET_IS_SHARE', true);
             }, 70);
+
+
+          state.noteList = [];
+          state.selectedNoteInfo = null;
         })
         .catch(err => {
           console.error(err.response.data)
