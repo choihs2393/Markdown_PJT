@@ -15,8 +15,8 @@
       <v-subheader>My Workspace</v-subheader>
         
        <v-btn @click="initUserInfo()" color="blue-grey" class="white--text">
-        <v-icon dark >refresh</v-icon>
-      </v-btn>  
+        <v-icon dark>refresh</v-icon>
+      </v-btn>
       
       <!-- 워크스페이스 추가 다이얼로그 -->
       <!-- Add a workspace를 눌렀을 때 보이는 다이얼로그 -->

@@ -5,7 +5,7 @@
         <span style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="isShareMode && isLoggedIn && selectedNoteInfo != null">{{selectedNoteInfo.subject}}</span>
         <span style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="!isShareMode">{{ fileName }}</span>
         <div style="flex-grow: 100; text-align: center; padding-top:7px">
-          <span v-if="isLoggedIn" style="color: rgb(98, 98, 98)">{{savedTime}}</span>
+          <span v-if="isShareMode" style="color: rgb(98, 98, 98)">{{savedTime}}</span>
           
         </div>
         <!-- <v-spacer></v-spacer> -->
