@@ -372,11 +372,11 @@ export default {
       let noteNo = this.$store.state.selectedNoteInfo._id;
       let occupyAccountNo = this.$store.state.selectedNoteInfo.occupiedNo;
       let loginAccountNo = this.$store.state.userInfo.no;
-      console.log("영복이의 로그추적"  + bandNo);
-      console.log("영복이의 로그추적 " + noteNo);
-      console.log("영복이의 로그추적 " + occupyAccountNo);
-      console.log("영복이의 로그추적 " + loginAccountNo);
-      console.log("영복이의 로그추적 " + tmp);
+      // console.log("영복이의 로그추적"  + bandNo);
+      // console.log("영복이의 로그추적 " + noteNo);
+      // console.log("영복이의 로그추적 " + occupyAccountNo);
+      // console.log("영복이의 로그추적 " + loginAccountNo);
+      // console.log("영복이의 로그추적 " + tmp);
 
       /*
       * this is a auto save + share part
@@ -399,7 +399,7 @@ export default {
             // console.log('로직 안 this', this);
             // console.log("영복이의 로그추적 " + tmp);
             // console.log(this.$store.state.stroeTimer);
-            console.log("영복이의 Share 로그추적 " + tmp);
+            // console.log("영복이의 Share 로그추적 " + tmp);
             this.shareNote(tmp);
             this.$store.commit('setStoreSyncCheck', false);
             clearTimeout(this.$store.state.storeTimer);

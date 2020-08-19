@@ -339,7 +339,7 @@ export default new Vuex.Store({
 
 
           state.noteList = [];
-          state.selectedNoteInfo = null;
+          state.selectedNoteInfo = {};
         })
         .catch(err => {
           console.error(err.response.data)

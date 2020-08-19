@@ -182,7 +182,7 @@ if (!!this.$store.state.isShareMode == false) {
         win.webContents.send("localInit");
 
         this.$store.state.noteList = [];
-        this.$store.state.selectedNoteInfo = null;
+        this.$store.state.selectedNoteInfo = {};
       }
       // 서버->로컬
       else if (!!this.$store.state.isShareMode == true) {
@@ -191,7 +191,7 @@ if (!!this.$store.state.isShareMode == false) {
         win.webContents.send("serverInit", serverStartInput);
 
         this.$store.state.noteList = [];
-        this.$store.state.selectedNoteInfo = null;
+        this.$store.state.selectedNoteInfo = {};
 
         //data.input = serverStartInput.data;
       // }
