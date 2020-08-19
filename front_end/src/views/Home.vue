@@ -16,10 +16,7 @@
           <v-btn small right color="primary" dark v-if="isShareMode &&isLoggedIn && selectedBandInfo != null && selectedNoteInfo != null && selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
           &nbsp;<v-btn small right color="primary" dark v-if="isShareMode &&isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
           &nbsp;<v-btn small right color="primary" dark v-if="isShareMode && isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
-          &nbsp;<v-btn small right class="mr-2" dark @click="isTextarea=!isTextarea">
-            <!-- <v-icon left>mdi-pencil</v-icon> -->
-            {{ showTextarea }}
-          </v-btn>
+          &nbsp;<v-btn small right class="mr-2" dark @click="isTextarea=!isTextarea">{{ showTextarea }}</v-btn>
         </div>
       </v-row>
       <v-row>
