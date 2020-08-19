@@ -27,4 +27,9 @@ public interface AccountRepo extends JpaRepository<AccountEntity, Integer> {
 	@Modifying
 	@Query(value = "update account set account_name = :account_name, account_password = :account_password where account_email = :account_email", nativeQuery = true)
 	int updateAccount(String account_email, String account_name, String account_password);
+    
+    @Transactional
+	@Modifying
+	@Query(value = "delete from account where account_no = :no", nativeQuery = true)
+	int deleteAccount(int no);
 }
