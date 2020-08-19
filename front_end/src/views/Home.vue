@@ -351,7 +351,7 @@ export default {
         clearTimeout(this.$store.state.timer);
       }, 200);
       this.$store.commit('setTempData',timeOut);
-
+/*-------------------------------------------------*/
       let bandNo = this.$store.state.selectedBandInfo.no;
       let noteNo = this.$store.state.selectedNoteInfo._id;
       let occupyAccountNo = this.$store.state.selectedNoteInfo.occupiedNo;
