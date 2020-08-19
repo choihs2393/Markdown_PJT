@@ -172,6 +172,8 @@ if (!!this.$store.state.isShareMode == false) {
   },
 
   methods: {
+    // ...mapActions(['initUserInfo']),
+
     changeMode() {
       let win = remote.BrowserWindow.getFocusedWindow();
       //console.log('test');
