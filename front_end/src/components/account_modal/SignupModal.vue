@@ -46,6 +46,9 @@
                   </template>
                 </v-text-field>
               </ValidationProvider>
+              <v-alert dense outlined type="success" v-if="isAuthNumAlert && isAuthNumChecked">
+                인증코드가 확인되었습니다.
+              </v-alert>
               <v-alert dense outlined type="error" v-if="isAuthNumAlert && !isAuthNumChecked">
                 인증코드를 다시 확인해주세요.
               </v-alert>
