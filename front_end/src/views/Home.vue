@@ -366,30 +366,31 @@ export default {
       /*
       * this is a auto save + share part
       */
-
-      if(noteNo !== '' && bandNo !== '' && occupyAccountNo !== '' && occupyAccountNo === loginAccountNo){
-        if(this.$store.state.storeSyncCheck === false){
-          this.$store.commit('setStoreSyncCheck', true);
-          let storeTimer = setTimeout(() => {
-            // clearTimeout(this.$store.state.storeTempData);
-            // console.log('로직 안 this22222', this);
-            // console.log("영복이의 로그추적 " + tmp);
-            this.shareNote(tmp);
-            this.$store.commit('setStoreSyncCheck', false);
+      if(this.$store.state.isShareMode){
+        if(noteNo !== '' && bandNo !== '' && occupyAccountNo !== '' && occupyAccountNo === loginAccountNo){
+          if(this.$store.state.storeSyncCheck === false){
+            this.$store.commit('setStoreSyncCheck', true);
+            let storeTimer = setTimeout(() => {
+              // clearTimeout(this.$store.state.storeTempData);
+              // console.log('로직 안 this22222', this);
+              // console.log("영복이의 로그추적 " + tmp);
+              this.shareNote(tmp);
+              this.$store.commit('setStoreSyncCheck', false);
+            }, 1000 * 5);
+            this.$store.commit('setStoreTimer',storeTimer)
+          }
+          clearTimeout(this.$store.state.storeTempData);
+          let timeOut_ = setTimeout(() => {
+              // console.log('로직 안 this', this);
+              // console.log("영복이의 로그추적 " + tmp);
+              // console.log(this.$store.state.stroeTimer);
+              console.log("영복이의 Share 로그추적 " + tmp);
+              this.shareNote(tmp);
+              this.$store.commit('setStoreSyncCheck', false);
+              clearTimeout(this.$store.state.storeTimer);
           }, 1000 * 2);
-           this.$store.commit('setStoreTimer',storeTimer)
+          this.$store.commit('setStoreTempData', timeOut_);
         }
-        clearTimeout(this.$store.state.storeTempData);
-        let timeOut_ = setTimeout(() => {
-            // console.log('로직 안 this', this);
-            // console.log("영복이의 로그추적 " + tmp);
-            // console.log(this.$store.state.stroeTimer);
-            console.log("영복이의 Share 로그추적 " + tmp);
-            this.shareNote(tmp);
-            this.$store.commit('setStoreSyncCheck', false);
-            clearTimeout(this.$store.state.storeTimer);
-        }, 500);
-        this.$store.commit('setStoreTempData', timeOut_);
       }
     },
     

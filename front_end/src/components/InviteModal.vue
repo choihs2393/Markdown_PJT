@@ -10,7 +10,7 @@
           hide-details
           @click:append="inviteBandMember"
           @keyup.enter="inviteBandMember"
-          @keyup="$store.state.noSuchMemberAlert=false"
+          @keyup="$store.state.inviteMemberAlert=false; $store.state.alreadyMemberAlert=false"
         ></v-text-field>
       </v-toolbar>
       <v-alert
@@ -22,6 +22,15 @@
         icon="mdi-cloud-alert"
         v-model="$store.state.noSuchMemberAlert"
       >가입된 회원이 아닙니다.</v-alert>
+      <v-alert
+        class="ma-2"
+        dense
+        outlined
+        persistent
+        type="error"
+        icon="mdi-cloud-alert"
+        v-model="$store.state.alreadyMemberAlert"
+      >초대 또는 가입된 회원입니다.</v-alert>
       <v-list>
         <v-list-item v-for="item in $store.state.workspaceMemberList" :key="item.no">
           <v-list-item-icon>
@@ -117,6 +126,7 @@ export default {
               groupName: this.$store.state.selectedBandInfo.name,
               groupNo: this.workspaceNo
             }
+            console.log(map);
 
             this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, JSON.stringify(map));
             // console.log("========== 알림 송신 완료 ==========")

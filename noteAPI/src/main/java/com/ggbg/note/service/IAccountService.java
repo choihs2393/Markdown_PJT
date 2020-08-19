@@ -15,7 +15,7 @@ public interface IAccountService {
 	//modify account
 	public boolean validAccountCheck(String email, String password);
 	public boolean saveAccount(AccountDTO accountDTO);
-	public boolean deleteAccount(String email);
+	public boolean deleteAccount(String email, int no);
 
 	//init
 	public Map<String, Object> onLocalInit(String accessToken);

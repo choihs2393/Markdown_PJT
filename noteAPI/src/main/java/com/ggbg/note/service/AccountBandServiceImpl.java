@@ -66,7 +66,7 @@ public class AccountBandServiceImpl implements IAccountBandService{
 			bandMemberDTO.setStatus(2);
 			Integer ret = -1;
 			ret = accountBandRepo.findAccountBandByAccountNoAndBandNo(bandMemberDTO.getNo(), bandNo);
-			if(ret == -1 || ret != 0 || ret == null) {
+			if(ret != null && ret > 0) {
 				return null;
 			}
 		}
