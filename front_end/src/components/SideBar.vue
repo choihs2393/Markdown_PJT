@@ -46,7 +46,7 @@
 
         <v-subheader >FILES</v-subheader>
 
-        <v-list-item v-for="file in files" :key="file.title" @click="openFile(file.fileFullPath)">
+        <v-list-item v-for="file in files" :key="file.title" @click="openFile(file.fileFullPath, file)">
             <!-- <v-list-item-avatar>
             <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
           </v-list-item-avatar> -->
@@ -227,15 +227,18 @@ export default {
                 if(isMac)
                     this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "/" + fileList[i]});
             }
-
           }
         })
-      let win = remote.BrowserWindow.getFocusedWindow();
-      win.webContents.send("pong", folderFullPath);
+        let win = remote.BrowserWindow.getFocusedWindow();
+        win.webContents.send("pong", folderFullPath);
+        win.webContents.send("contentReset", "msg");
+
+        
+        // document.getElementById("serverFileName").innerHTML(file.title);
       });
     },
 
-    openFile(absoluteFilePath) {
+    openFile(absoluteFilePath, file) {
       console.log(absoluteFilePath);
       var folderFullPath = path.dirname(absoluteFilePath);
       var isWindow = navigator.platform.indexOf('Win') > -1;
@@ -270,7 +273,10 @@ export default {
         let win = remote.BrowserWindow.getFocusedWindow();
         win.webContents.send("ping", fileDataObject);
         ipcRenderer.send("mainping", fileDataObject);
-         console.log('absolutefilepath', absoluteFilePath);
+        console.log('absolutefilepath', absoluteFilePath);
+
+        console.log("document.getElementById('localFileName')", document.getElementById("localFileName"))
+        document.getElementById("localFileName").innerHTML = file.title;
       });
     }
   }
