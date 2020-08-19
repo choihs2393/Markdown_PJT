@@ -106,7 +106,7 @@ axios.interceptors.request.use(
         } else {
           console.log('로그아웃 상태')
         }
-      } else if (err.response.status===401) {
+      } else if (err.response.status===401 && !!localStorage.getItem('authorization')) {
         store.dispatch('logout')
       }
       return Promise.reject(err)

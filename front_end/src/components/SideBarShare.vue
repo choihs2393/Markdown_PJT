@@ -317,19 +317,21 @@ export default {
 
               var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
               this.$store.state.selectedNoteInfo.content = receiveMsg.content;
-              win.webContents.send("test", receiveMsg.content);
 
-              const info = {
-                accountNo: receiveMsg.accountNo,
-                bandNo: receiveMsg.bandNo,
-                noteNo: receiveMsg.noteNo,
-                subject: receiveMsg.subject,
-                content: receiveMsg.content,
-                occupiedNo: receiveMsg.occupiedNo, // 점유자의 account_no
-                occupiedName: receiveMsg.occupiedName // 점유자의 account_name
+              if(this.$store.state.userInfo.no != receiveMsg.occupiedNo)                         {
+                win.webContents.send("test", receiveMsg.content);
               }
-              // console.log(info);
-              this.$store.commit('SET_NOTE_CONTENT', info);
+                  const info = {
+                    accountNo: receiveMsg.accountNo,
+                    bandNo: receiveMsg.bandNo,
+                    noteNo: receiveMsg.noteNo,
+                    subject: receiveMsg.subject,
+                    content: receiveMsg.content,
+                    occupiedNo: receiveMsg.occupiedNo, // 점유자의 account_no
+                    occupiedName: receiveMsg.occupiedName // 점유자의 account_name
+                // console.log(info);
+              }
+                this.$store.commit('SET_NOTE_CONTENT', info);
             }
           )
         }
