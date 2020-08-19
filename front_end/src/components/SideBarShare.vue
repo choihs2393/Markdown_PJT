@@ -198,10 +198,10 @@ export default {
     },
 
     // 워크스페이스 새로 추가하는 함수.
-    createWorkspace(newBandName) {
+    async createWorkspace(newBandName) {
       // event.preventDefault();
       if (!!newBandName) {
-        this.$store.dispatch("createWorkspace", newBandName);
+        await this.$store.dispatch("createWorkspace", newBandName);
         this.bandInfo = this.$store.state.selectedBandInfo;
         this.$store.dispatch('getNoteList', this.bandInfo)
       }
