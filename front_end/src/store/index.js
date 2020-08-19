@@ -58,7 +58,7 @@ export default new Vuex.Store({
     shareNoteSocket: '',
     shareGroupSocket: '',
 
-    canInvite: false,
+    canInvite: true,
 
 
     // modal
@@ -566,7 +566,7 @@ export default new Vuex.Store({
           dispatch("inviteBandMember", inviteBandMember)
         } else {
           state.noSuchMemberAlert = !(state.noSuchMemberAlert)
-          state.canInvite = false;
+          state.canInvite = true;
         }
       })
     },
@@ -583,7 +583,7 @@ export default new Vuex.Store({
           commit("GET_NEW_MEMBER_INFO", res.data.map.bandMember)
         }else{
           state.alreadyMemberAlert = !(state.alreadyMemberAlert)
-          state.canInvite = false;
+          state.canInvite = true;
         }
       })
     },
