@@ -135,7 +135,8 @@ var data = {
     // + '----------------------------------------------------------------------------------------------------\n'
     // + '## 10. 동영상\n'
     // + '@[video](https://www.youtube.com/watch?v=mgvZ0Gmo02k)'
-    isTextarea: true
+    isTextarea: true,
+    fileName: '',
 };
 
 export default data;

@@ -2,7 +2,8 @@
   <v-main>
     <v-container class="md" fluid>
       <v-row justify-center>
-        <span style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="selectedNoteInfo != null">{{selectedNoteInfo.subject}}</span>
+        <span style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="isShareMode && isLoggedIn && selectedNoteInfo != null">{{selectedNoteInfo.subject}}</span>
+        <span style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="!isShareMode">{{ fileName }}</span>
         <div style="flex-grow: 100; text-align: center; padding-top:7px">
           <span v-if="isLoggedIn" style="color: rgb(98, 98, 98)">{{savedTime}}</span>
           
@@ -92,7 +93,6 @@ ipcRenderer.on("pong", (event, folderPath) => {
 });
 
 ipcRenderer.on("template", (event, isThereTemplate) => {
-  // console.log(message);
   isTemplate = isThereTemplate;
   data.input = readmeTemplate.input;
   if (isTemplate){
@@ -138,7 +138,7 @@ ipcRenderer.on("localInit", (event) => {
   parse(data.input)
 });
 ipcRenderer.on("getNote", (event, message, accountNo) => {
-  // console.log(message);
+  // console.log(message.content);
   data.input = message.content;
   // if(accountNo != 0) {
   //   this.isOccupied = true;
@@ -204,8 +204,8 @@ document.addEventListener("drop", event => {
             }
           )
             .then(result => {
-              var fileName = result.filePath;
-              fs.writeFile(fileName, textingFileData, (err) => {
+              var filePath = result.filePath;
+              fs.writeFile(filePath, textingFileData, (err) => {
 
               })
             });
@@ -257,15 +257,16 @@ export default {
     
   },
   mounted() {
-    // console.log(data);
-    // this.$store.state.inputData = data.input;
-    // this.$store.state.parseData = parse(data);
     this.$store.commit("setParseData", parse(this.input));
-    // console.log(this.$store.state.parseData);
+
     ipcRenderer.on("template", (event, isThereTemplate) => {
-      if(this.$store.state.isShareMode && isThereTemplate) {
-        console.log('여깅ㅇㅇㅇㅇㅇ')
+      if(this.$store.state.isShareMode && isThereTemplate && !!this.$store.state.selectedBandInfo) {
+        this.$store.dispatch('createNote', 'README')
       }
+    })
+
+    ipcRenderer.on("ping", (event, fileDataObject) => {
+      data.fileName = path.basename(fileDataObject['absoluteFilePath'])
     })
   },
       

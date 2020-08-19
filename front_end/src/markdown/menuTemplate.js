@@ -275,7 +275,9 @@ function saveAsFile() {
         fileName = result.filePath;
         fs.writeFile(fileName, fileData, (err) => {
         })
-        ipcMain.send("mainping", fileName);
+        let fileDataObject = {'openedFileData': fileData, 'absoluteFilePath': fileName};
+        let win = BrowserWindow.getFocusedWindow();
+        win.webContents.send("addInSidebar", fileDataObject);
     })
 }
 

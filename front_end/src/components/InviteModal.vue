@@ -9,6 +9,7 @@
           label="Search Email"
           hide-details
           @click:append="inviteBandMember"
+          @keyup.enter="inviteBandMember"
           @keyup="$store.state.noSuchMemberAlert=false"
         ></v-text-field>
       </v-toolbar>
