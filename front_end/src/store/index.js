@@ -444,7 +444,7 @@ export default new Vuex.Store({
 
       axios.post(SERVER.URL + SERVER.ROUTES.delete, map, { headers: { email: userInfo.email } })
         .then(res => {
-
+          console.log(res)
           if (res.data['result'] === 'success') {
             commit('SET_MODIFY_RESULT', false)
             dispatch('logout')

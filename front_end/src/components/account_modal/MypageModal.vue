@@ -68,7 +68,11 @@
           <v-card-actions>
             <v-btn class="mb-4 ml-4" color="error" @click="$store.state.isDeleteModal=!$store.state.isDeleteModal">Delete Account</v-btn>
             <v-spacer></v-spacer>
-            <v-btn class="mb-4 mr-1" color="primary" @click="updateUserInfo(userInfo), submit()">Update</v-btn>
+            <v-btn
+            class="mb-4 mr-1"
+            color="primary"
+            @click="updateUserInfo(userInfo), submit()"
+            >Update</v-btn>
             <v-btn class="mb-4 mr-4" @click="close()">close</v-btn>
           </v-card-actions>
         </v-card>
@@ -132,8 +136,8 @@ export default {
   data() {
     return {
       userInfo: {
-        email: this.$store.state.userInfo.email,
-        newName: this.$store.state.userInfo.name,
+        email: '',
+        newName: '',
         password: '',
         newPassword: '',
         newPasswordConfirm: '',
@@ -153,9 +157,13 @@ export default {
     },
 
     close() {
-      this.userInfo.password = ''
-      this.userInfo.newPassword = ''
-      this.userInfo.newPasswordConfirm = ''
+      this.userInfo = {
+        email: '',
+        newName: '',
+        password: '',
+        newPassword: '',
+        newPasswordConfirm: '',
+      },
       this.$refs.observer.reset()
       this.$store.commit('SET_MODIFY_RESULT', false)
       this.$store.state.isMypageModal = false
