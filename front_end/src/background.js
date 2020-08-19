@@ -93,7 +93,7 @@ function createWindow() {
       title: "Question",
       message: "Are you sure you want to quit without saving?",
       detail: "Click the save button if you want to save this text to your md file",
-      buttons: ["Do Not Save", "Save As...", "Save", "Close"],
+      buttons: ["cancel", "Do Not Save", "Save As...", "Save"],
       defaultId: 1
     };
     const optionsForJustSaveas = {
@@ -101,7 +101,7 @@ function createWindow() {
       title: "Question",
       message: "Are you sure you want to quit without saving?",
       detail: "Click the save button if you want to save this text to your md file",
-      buttons: ["Do Not Save", "Save As...", "Close"],
+      buttons: ["cancel", "Do Not Save", "Save As..."],
       defaultId: 1
   };
     var fileData = '';
@@ -114,8 +114,8 @@ function createWindow() {
         } else{
           dialog.showMessageBox(optionsForJustSaveas)
           .then(result => {
-          if(result.response == 1) {
-            // 1 : Save
+          if(result.response == 2) {
+            // 2 : SaveAs
                 dialog.showSaveDialog(
                     {
                         title: "파일 저장하기",
@@ -132,11 +132,13 @@ function createWindow() {
                     fs.writeFile(fileName, fileData, (err) => {
     
                     })
-                  BrowserWindow.getFocusedWindow().destroy();
+                    if (!result.canceled){
+                      BrowserWindow.getFocusedWindow().destroy();
+                    }
 
 
                 });   
-        } else if(result.response == 0) {
+        } else if(result.response == 1) {
           BrowserWindow.getFocusedWindow().destroy();
         }
         })
@@ -150,7 +152,7 @@ function createWindow() {
     .then(result => {
 
       // 1 : SaveAs
-      if(result.response == 1) {
+      if(result.response == 2) {
 
 
         dialog.showSaveDialog(
@@ -178,13 +180,13 @@ function createWindow() {
         });
       }
 
-      // 0 : Do not save
-      else if(result.response == 0) {
+      // 1 : Do not save
+      else if(result.response == 1) {
         BrowserWindow.getFocusedWindow().destroy();
       }
 
-      // 2 : Save
-      else if(result.response == 2){
+      // 3 : Save
+      else if(result.response == 3){
         fs.writeFile(absoluteFilePath, fileData, (err) => {
         })
         BrowserWindow.getFocusedWindow().destroy();
