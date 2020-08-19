@@ -136,8 +136,8 @@ export default {
   data() {
     return {
       userInfo: {
-        email: '',
-        newName: '',
+        email: this.$store.state.userInfo.email,
+        newName: this.$store.state.userInfo.name,
         password: '',
         newPassword: '',
         newPasswordConfirm: '',
@@ -158,11 +158,12 @@ export default {
 
     close() {
       this.userInfo = {
-        email: '',
-        newName: '',
+        email: this.$store.state.userInfo.email,
+        newName: this.$store.state.userInfo.name,
         password: '',
         newPassword: '',
         newPasswordConfirm: '',
+        no: this.$store.state.userInfo.no
       },
       this.$refs.observer.reset()
       this.$store.commit('SET_MODIFY_RESULT', false)
