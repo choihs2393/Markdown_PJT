@@ -5,7 +5,8 @@
         <span style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="isShareMode && isLoggedIn && selectedNoteInfo != null">{{selectedNoteInfo.subject}}</span>
         <span style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="!isShareMode">{{ fileName }}</span>
         <div style="flex-grow: 100; text-align: center; padding-top:7px">
-          <span v-if="isLoggedIn" style="color: rgb(98, 98, 98)">{{savedTime}}</span>
+          <span v-if="isShareMode" style="color: rgb(98, 98, 98)">{{savedTime}}</span>
+          <span v-if="isLoggedIn && selectedNoteInfo != {} && selectedNoteInfo.occupiedNo != 0 && selectedNoteInfo.occupiedNo != $store.state.userInfo.no">{{ selectedNoteInfo.occupiedName }}님 작성중...</span>
           
         </div>
         <!-- <v-spacer></v-spacer> -->
@@ -61,7 +62,7 @@ import readmeTemplate from "../markdown/readmeTemplate.js";
 
 import { mapActions, mapGetters } from "vuex";
 
-import { remote, ipcRenderer } from "electron";
+import { remote, ipcRenderer, shell } from "electron";
 import fs from "fs";
 import path from "path";
 import { is } from 'vee-validate/dist/rules';
@@ -72,6 +73,13 @@ import Stomp from "webstomp-client";
 import { setInterval } from 'timers';
 import serverStartInput from "../markdown/serverStartInput.js";
 
+document.body.addEventListener('click', event => {
+  if (event.target.tagName.toLowerCase() === 'a') {
+    event.preventDefault();
+    shell.openExternal(event.target.href);
+  }
+});
+
 var data = sampleData;
 
 // var data = new Promise(function(resolve, reject) {
@@ -81,6 +89,8 @@ var data = sampleData;
 let isPathExist = false;
 let isTemplate = false;
 let folderFullPath = ''
+var isWindow = navigator.platform.indexOf('Win') > -1;
+var isMac = navigator.platform.indexOf('Mac') > -1;
 
 ipcRenderer.on("pong", (event, folderPath) => {
   // console.log('folderPath', folderPath)
@@ -98,15 +108,27 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
   if (isTemplate){
     let fileDataObject = {}
     if (isPathExist){
-      
+      if (isWindow){
       fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'\\README.md'};
+      }
+      if (isMac){
+      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'/README.md'};
+      }
       fs.exists(fileDataObject['absoluteFilePath'], (exists) => { 
         if (!exists){
           fs.writeFile(fileDataObject['absoluteFilePath'], readmeTemplate.input, (err) => {
             // console.log('파일경로', fileDataObject['absoluteFilePath'])
           })
         } else{
-          fs.writeFile(folderFullPath+'\\somangReadme'+Math.floor(Math.random() * 5000)+'.md', readmeTemplate.input, (err) => {
+          var readmeFileName = '';
+          if (isWindow){
+            readmeFileName = '\\somangReadme'+Math.floor(Math.random() * 5000)+'.md';
+          }
+          if (isMac){
+            readmeFileName = '/somangReadme'+Math.floor(Math.random() * 5000)+'.md';
+          }
+          fs.writeFile(folderFullPath+readmeFileName, readmeTemplate.input, (err) => {
+            fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+readmeFileName};
           })
         }
       }); 
@@ -357,11 +379,11 @@ export default {
       let noteNo = this.$store.state.selectedNoteInfo._id;
       let occupyAccountNo = this.$store.state.selectedNoteInfo.occupiedNo;
       let loginAccountNo = this.$store.state.userInfo.no;
-      console.log("영복이의 로그추적"  + bandNo);
-      console.log("영복이의 로그추적 " + noteNo);
-      console.log("영복이의 로그추적 " + occupyAccountNo);
-      console.log("영복이의 로그추적 " + loginAccountNo);
-      console.log("영복이의 로그추적 " + tmp);
+      // console.log("영복이의 로그추적"  + bandNo);
+      // console.log("영복이의 로그추적 " + noteNo);
+      // console.log("영복이의 로그추적 " + occupyAccountNo);
+      // console.log("영복이의 로그추적 " + loginAccountNo);
+      // console.log("영복이의 로그추적 " + tmp);
 
       /*
       * this is a auto save + share part
@@ -384,7 +406,7 @@ export default {
             // console.log('로직 안 this', this);
             // console.log("영복이의 로그추적 " + tmp);
             // console.log(this.$store.state.stroeTimer);
-            console.log("영복이의 Share 로그추적 " + tmp);
+            // console.log("영복이의 Share 로그추적 " + tmp);
             this.shareNote(tmp);
             this.$store.commit('setStoreSyncCheck', false);
             clearTimeout(this.$store.state.storeTimer);

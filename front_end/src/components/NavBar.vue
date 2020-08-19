@@ -172,17 +172,29 @@ if (!!this.$store.state.isShareMode == false) {
   },
 
   methods: {
+    // ...mapActions(['initUserInfo']),
+
     changeMode() {
       let win = remote.BrowserWindow.getFocusedWindow();
       //console.log('test');
+        // 로컬->서버
         if (!!this.$store.state.isShareMode == false) {
         this.$store.commit("SET_IS_DRAWER_SHARE", false);
         this.$store.commit("SET_IS_DRAWER", true);
         win.webContents.send("localInit");
-      } else if (!!this.$store.state.isShareMode == true) {
+
+        this.$store.state.noteList = [];
+        this.$store.state.selectedNoteInfo = {};
+      }
+      // 서버->로컬
+      else if (!!this.$store.state.isShareMode == true) {
         this.$store.commit("SET_IS_DRAWER_SHARE", true);
         this.$store.commit("SET_IS_DRAWER", false);
         win.webContents.send("serverInit", serverStartInput);
+
+        this.$store.state.noteList = [];
+        this.$store.state.selectedNoteInfo = {};
+
         //data.input = serverStartInput.data;
       // }
     // },
