@@ -206,11 +206,10 @@ export default {
       }
       this.$refs.form_workspace.reset();
       this.workspaceDialog = false;
-      this.$store.commit("SELECTED_WORKSPACE", this.selected);
-      this.workspaces = this.$store.state.userInfo.group;
     },
 
     changeWorkspace(bandInfo) {
+      console.log('들어왔는감?')
       if(this.$store.state.shareGroupSocket.connected)
         this.$store.state.shareGroupSocket.disconnect();
       console.log("bandInfo: ", bandInfo)
