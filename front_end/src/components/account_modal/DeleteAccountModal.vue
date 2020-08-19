@@ -13,7 +13,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { userInfo } from 'os'
+// import { userInfo } from 'os'
 
 export default {
   name: 'DeleteAccountModal',

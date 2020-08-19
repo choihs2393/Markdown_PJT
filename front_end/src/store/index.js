@@ -434,9 +434,10 @@ export default new Vuex.Store({
 
     // 회원탈퇴
     deleteAccount({ commit, dispatch }, userInfo) {
+      console.log(userInfo)
       axios.post(SERVER.URL + SERVER.ROUTES.delete, userInfo, { headers: { email: userInfo.email } })
         .then(res => {
-
+          console.log(res)
           if (res.data['result'] === 'success') {
             commit('SET_MODIFY_RESULT', false)
             dispatch('logout')
