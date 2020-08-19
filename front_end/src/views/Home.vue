@@ -406,7 +406,7 @@ export default {
               // console.log('로직 안 this', this);
               // console.log("영복이의 로그추적 " + tmp);
               // console.log(this.$store.state.stroeTimer);
-              console.log("영복이의 Share 로그추적 " + tmp);
+              //console.log("영복이의 Share 로그추적 " + tmp);
               this.shareNote(tmp);
               this.$store.commit('setStoreSyncCheck', false);
               clearTimeout(this.$store.state.storeTimer);
