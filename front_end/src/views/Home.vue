@@ -62,7 +62,7 @@ import readmeTemplate from "../markdown/readmeTemplate.js";
 
 import { mapActions, mapGetters } from "vuex";
 
-import { remote, ipcRenderer } from "electron";
+import { remote, ipcRenderer, shell } from "electron";
 import fs from "fs";
 import path from "path";
 import { is } from 'vee-validate/dist/rules';
@@ -72,6 +72,13 @@ import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
 import { setInterval } from 'timers';
 import serverStartInput from "../markdown/serverStartInput.js";
+
+document.body.addEventListener('click', event => {
+  if (event.target.tagName.toLowerCase() === 'a') {
+    event.preventDefault();
+    shell.openExternal(event.target.href);
+  }
+});
 
 var data = sampleData;
 
