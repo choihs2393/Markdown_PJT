@@ -12,10 +12,9 @@
     </v-card>
 
     <v-container>
-      <v-subheader>My Workspace</v-subheader>
-        
-       <v-btn @click="getNoteList($store.state.selectedBandInfo)" color="blue-grey" class="white--text">
-        <v-icon dark >refresh</v-icon>
+      <v-subheader class="mr-3">My Workspace</v-subheader>
+      <v-btn class="ma-4" tile large color="teal" icon @click="initUserInfo()">
+        <v-icon>refresh</v-icon>
       </v-btn>  
       
       <!-- 워크스페이스 추가 다이얼로그 -->

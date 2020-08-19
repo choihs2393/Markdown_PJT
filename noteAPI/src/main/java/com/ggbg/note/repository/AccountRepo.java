@@ -13,7 +13,7 @@ import org.springframework.data.repository.query.Param;
 import com.ggbg.note.domain.entity.AccountEntity;
 
 
-public interface AccountRepo extends JpaRepository<AccountEntity, String> {
+public interface AccountRepo extends JpaRepository<AccountEntity, Integer> {
 	Optional<AccountEntity> findAccountByEmail(String email);
 	
 	@Query(value = "SELECT account_email, account_name FROM account where account_email = :email", nativeQuery = true) 

@@ -159,8 +159,8 @@ public class AccountServiceImpl implements IAccountService {
 
 	@Transactional
 	@Override
-	public boolean deleteAccount(String email) {
-		accountRepo.deleteById(email); // 여기서 에러 나면 false 출력하게 어떻게?
+	public boolean deleteAccount(String email, int no) {
+		accountRepo.deleteById(no); // 여기서 에러 나면 false 출력하게 어떻게?
 
 		ValueOperations<String, Object> vop = redisTemplate.opsForValue();
 		Token token = (Token) vop.get(email);

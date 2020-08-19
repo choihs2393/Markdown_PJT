@@ -25,6 +25,7 @@ public class SocketServiceImpl implements ISocketService{
 	@Autowired
 	private MapperUtil mapperUtill;
 	
+	
 	public boolean verify(int accountNo, int bandNo) {
 		//db 들러서 해당 그룹에 있는 사람이 맞는지 확인
 		Integer ret = -1;

@@ -108,12 +108,13 @@ public class AccountController {
 			@RequestBody(required = true) Map<String, String> map) {
 		ResponseEntity response = null;
 		final SuccessResponse result = new SuccessResponse();
+		int no = Integer.parseInt(map.get("accountNo"));
 		String email = map.get("email");
 		String password = map.get("password");
 		boolean isValidAccount = accountService.validAccountCheck(email, password);
 
 		if (isValidAccount) {
-			boolean res = accountService.deleteAccount(email);
+			boolean res = accountService.deleteAccount(email, no);
 			if (res) {
 				result.status = true;
 				result.result = "success";

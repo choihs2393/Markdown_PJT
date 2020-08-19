@@ -32,7 +32,7 @@ public class BandMemberRepo{
 	public List<PrimitiveAccountDTO> getAPrimitiveAccountDTOList(String email){
 		String str = "select account_no, account_email, account_name"
 				+ " from account"
-				+ " where account_email like '%" + email +"%'";	
+				+ " where account_email = '"+ email + "'";	
 		
 		JpaResultMapper jpaResultMapper = new JpaResultMapper();
 		Query query = em.createNativeQuery(str);
