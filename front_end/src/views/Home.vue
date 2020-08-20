@@ -112,13 +112,14 @@ ipcRenderer.on("newFile", (event) => {
           if (isMac){
             newFileName = '/somangNewFile'+Math.floor(Math.random() * 5000)+'.md';
           }
-          fs.writeFile(folderFullPath+newFileName, readmeTemplate.input, (err) => {
-            fileDataObject = {'openedFileData': '', 'absoluteFilePath': folderFullPath+newFileName};
-          })
+          fs.writeFile(folderFullPath+newFileName, '', (err) => {
+            })
+          fileDataObject = {'openedFileData': '', 'absoluteFilePath': folderFullPath+newFileName};
+          let win = remote.BrowserWindow.getFocusedWindow();
+          win.webContents.send("ping", fileDataObject);
+          win.webContents.send("addFileInList", folderFullPath);
+          ipcRenderer.send("mainping", fileDataObject);
         }
-    let win = remote.BrowserWindow.getFocusedWindow();
-    ipcRenderer.send("mainping", fileDataObject);
-    win.webContents.send("addFileInList", folderFullPath);
     parse(data.input)
     document.getElementById("localFileName").innerHTML = newFileName.substring(1, newFileName.length);
 });
@@ -128,20 +129,8 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
   data.input = readmeTemplate.input;
   if (isTemplate){
     let fileDataObject = {}
+    let readmeFileName = '';
     if (isPathExist){
-      if (isWindow){
-      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'\\README.md'};
-      }
-      if (isMac){
-      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'/README.md'};
-      }
-      fs.exists(fileDataObject['absoluteFilePath'], (exists) => { 
-        if (!exists){
-          fs.writeFile(fileDataObject['absoluteFilePath'], readmeTemplate.input, (err) => {
-            // console.log('파일경로', fileDataObject['absoluteFilePath'])
-          })
-        } else{
-          var readmeFileName = '';
           if (isWindow){
             readmeFileName = '\\somangReadme'+Math.floor(Math.random() * 5000)+'.md';
           }
@@ -149,16 +138,15 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
             readmeFileName = '/somangReadme'+Math.floor(Math.random() * 5000)+'.md';
           }
           fs.writeFile(folderFullPath+readmeFileName, readmeTemplate.input, (err) => {
-            fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+readmeFileName};
-          })
-        }
-      }); 
+            })
       document.getElementById("localFileName").innerHTML = readmeFileName.substring(1, readmeFileName.length);
+      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+readmeFileName};
     }else {
       fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': ''};
     }
     let win = remote.BrowserWindow.getFocusedWindow();
     // win.webContents.send("ping", fileDataObject);
+    win.webContents.send("ping", fileDataObject);
     ipcRenderer.send("mainping", fileDataObject);
     ipcRenderer.send("template", isTemplate);
     win.webContents.send("addFileInList", folderFullPath);
