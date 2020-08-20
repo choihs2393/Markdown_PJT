@@ -184,6 +184,8 @@ if (!!this.$store.state.isShareMode == false) {
 
         this.$store.state.noteList = [];
         this.$store.state.selectedNoteInfo = {};
+        console.log("zzzz");
+        console.log(this.$store.state.selectedNoteInfo);
         
         document.getElementById("serverFileName").innerText="";
         document.getElementById("writing").innerText="";

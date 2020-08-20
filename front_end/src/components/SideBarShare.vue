@@ -74,7 +74,7 @@
         <v-list-item
           v-for="note in noteList"
           :key="note._id"
-          @click="getNote(note)"
+          @click="getNote(note); changeNote()"
           @mousedown.right="$refs.fileMenu.open($event, note), setRightNoteInfo(note)"
         >
           <v-list-item-content>
@@ -217,7 +217,8 @@ export default {
       const win = remote.BrowserWindow.getFocusedWindow();
       win.webContents.send("contentReset", "");
       this.$store.state.selectedNoteInfo = {};
-
+      let curBandNo = bandInfo.no;
+      console.log(curBandNo);
       if(this.$store.state.shareGroupSocket.connected)
         this.$store.state.shareGroupSocket.disconnect();
       console.log("bandInfo: ", bandInfo)
@@ -238,56 +239,40 @@ export default {
           this.stompClient.subscribe("/send/groupSend/occupy/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
-              
-              console.log(receivedMsg)
-              console.log(receivedMsg.noteNo)
-              console.log(receivedMsg.occupiedNo)
-              console.log(receivedMsg.content)
-
-
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
-              console.log("this.$store.state.noteList", this.$store.state.noteList)
-              console.log("너 어딨음 ?? " + receivedMsg.noteNo);
-              console.log("???" + receivedMsg.noteNo);
-              console.log("???" + receivedMsg.occupiedNo);
-              console.log("???" + receivedMsg.occupiedName);
-              const idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
-              
-              // this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
-              // this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
-              this.$store.state.selectedNoteInfo.occupiedNo = receivedMsg.occupiedNo;
-              this.$store.state.selectedNoteInfo.occupiedName = receivedMsg.occupiedName;
-
-              this.$store.dispatch('getNoteList', this.bandInfo)
+              if(receivedMsg.bandNo == curBandNo){
+                const idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
+                
+                this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
+                this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
+                if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
+                  this.$store.state.selectedNoteInfo.occupiedNo = receivedMsg.occupiedNo;
+                  this.$store.state.selectedNoteInfo.occupiedName = receivedMsg.occupiedName;
+                }
+  
+                this.$store.dispatch('getNoteList', this.bandInfo)
+              }
             } 
           )
 
           this.stompClient.subscribe("/send/groupSend/vacate/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
-              
-              console.log(receivedMsg)
-              console.log(receivedMsg.noteNo)
-              console.log(receivedMsg.occupiedNo)
-              console.log(receivedMsg.content)
-
-
+    
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
-              console.log("this.$store.state.noteList", this.$store.state.noteList)
-              console.log("너 어딨음 ?? " + receivedMsg.noteNo);
-              console.log("???" + receivedMsg.noteNo);
-              console.log("???" + receivedMsg.occupiedNo);
-              console.log("???" + receivedMsg.occupiedName);
-              var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
-              
-              // this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
-              // this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
-              this.$store.state.selectedNoteInfo.occupiedNo = 0;
-              this.$store.state.selectedNoteInfo.occupiedName = "";
+              if(receivedMsg.bandNo == curBandNo){
+                var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
+                this.$store.state.noteList[idx].occupiedNo = 0;
+                this.$store.state.noteList[idx].occupiedName = '';
+                if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
+                  this.$store.state.selectedNoteInfo.occupiedNo = 0;
+                  this.$store.state.selectedNoteInfo.occupiedName = '';
+                }
+              }
 
               this.$store.dispatch('getNoteList', this.bandInfo)
             } 
@@ -296,24 +281,26 @@ export default {
           this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receiveMsg = JSON.parse(res.body);
-              
-              var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
-              this.$store.state.selectedNoteInfo.content = receiveMsg.content;
-
-              if(this.$store.state.userInfo.no != receiveMsg.occupiedNo)                         {
-                win.webContents.send("test", receiveMsg.content);
+              if(receivedMsg.bandNo == curBandNo){
+                var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
+                if(this.$store.state.selectedNoteInfo != null && this.$store.state.selectedNoteInfo) 
+                this.$store.state.selectedNoteInfo.content = receiveMsg.content;
+                
+                if(this.$store.state.userInfo.no != receiveMsg.occupiedNo){
+                  win.webContents.send("test", receiveMsg.content);
+                }
+                    const info = {
+                      accountNo: receiveMsg.accountNo,
+                      bandNo: receiveMsg.bandNo,
+                      noteNo: receiveMsg.noteNo,
+                      subject: receiveMsg.subject,
+                      content: receiveMsg.content,
+                      occupiedNo: receiveMsg.occupiedNo, // 점유자의 account_no
+                      occupiedName: receiveMsg.occupiedName // 점유자의 account_name
+                  // console.log(info);
+                }
+                  this.$store.commit('SET_NOTE_CONTENT', info);
               }
-                  const info = {
-                    accountNo: receiveMsg.accountNo,
-                    bandNo: receiveMsg.bandNo,
-                    noteNo: receiveMsg.noteNo,
-                    subject: receiveMsg.subject,
-                    content: receiveMsg.content,
-                    occupiedNo: receiveMsg.occupiedNo, // 점유자의 account_no
-                    occupiedName: receiveMsg.occupiedName // 점유자의 account_name
-                // console.log(info);
-              }
-                this.$store.commit('SET_NOTE_CONTENT', info);
             }
           )
           
@@ -322,9 +309,10 @@ export default {
       document.getElementById("serverFileName").style.display = "none";
     },
 
-    // changeNote(note, _id){
-    //   if(this.$store.state.savedTime != '')
-    //     this.$store.state.savedTime = '';
+    changeNote(){
+      if(this.$store.state.savedTime != '')
+        this.$store.state.savedTime = '';
+    },
     //   if(this.$store.state.shareNoteSocket.connected)
     //     this.$store.state.shareNoteSocket.disconnect();
     //   // console.log(this.$store.state.selectedBandInfo.no);

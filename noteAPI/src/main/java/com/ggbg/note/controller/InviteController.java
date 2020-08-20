@@ -61,6 +61,7 @@ public class InviteController {
 		/*
 		 * input
 		 */
+		map.put("bandNo", bandNo);
 		int bandId = Integer.parseInt(bandNo);
 		int noteId = Integer.parseInt(map.get("noteId"));
 		int accountNo = Integer.parseInt(map.get("accountNo"));
@@ -86,7 +87,7 @@ public class InviteController {
 	@MessageMapping("/groupReceive/vacate/{bandNo}")
 	@SendTo("/send/groupSend/vacate/{bandNo}")
 	public Map<String, String> vacate(@DestinationVariable("bandNo") String bandNo, Map<String, String> map) {
-
+		map.put("bandNo", bandNo);
 		int noteId = Integer.parseInt(map.get("noteId"));
 		int accountNo = Integer.parseInt(map.get("accountNo"));
 		String subject = map.get("subject");
