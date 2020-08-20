@@ -16,9 +16,12 @@
           @click="dialog = !dialog"
         > -->
         <v-btn icon @click="showOpenDialog()">
-          <v-icon>mdi-plus</v-icon>
+          <v-icon>fas fa-file-import</v-icon>
         </v-btn>
       </v-toolbar>
+      <v-container>
+        <v-list subheader flat>
+          <v-subheader >FOLDERS</v-subheader>
 
       <v-list subheader flat>
         <v-subheader >FOLDERS</v-subheader>
@@ -55,22 +58,47 @@
 
         <v-list-item v-for="file in files" :key="file.title" @click="openFile(file.fileFullPath, file)">
             <!-- <v-list-item-avatar>
-            <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
-          </v-list-item-avatar> -->
-          <v-list-item-content>
-            <v-list-item-title>{{ file.title }}</v-list-item-title>
+              <v-icon :class="[folder.iconClass]">{{ folder.icon }}</v-icon>
+            </v-list-item-avatar> -->
+            <v-list-item-content>
+              <v-list-item-title>{{ folder.title }}</v-list-item-title>
 
-            <!-- <v-list-item-subtitle>{{ file.subtitle }}</v-list-item-subtitle> -->
-          </v-list-item-content>
+              <!-- <v-list-item-subtitle>{{ folder.subtitle }}</v-list-item-subtitle> -->
+            </v-list-item-content>
 
-          <!-- <v-list-item-action>
-            <v-btn icon ripple @click="openFile(file.fileFullPath)">
-              <v-icon color="grey lighten-1">mdi-information</v-icon>
+            <!-- <v-list-item-action>
+              <v-btn icon>
+                <v-icon color="grey lighten-1">mdi-information</v-icon>
+              </v-btn>
+            </v-list-item-action> -->
+          </v-list-item>
+          <!-- <v-divider ></v-divider> -->
+          <v-row style="margin-left:0px" align="center">
+            <v-subheader>FILES</v-subheader>
+            <!-- <v-btn v-if="isNewFile" style="margin-left: 60px;" text color="grey darken-1" tile @click="addNewFile()"> -->
+              <v-spacer></v-spacer>
+            <v-btn class="mr-3 mt-3" icon v-if="isNewFile" @click="addNewFile()">
+              <v-icon>mdi-plus</v-icon>
             </v-btn>
-          </v-list-item-action> -->
-        </v-list-item>
-      </v-list>
+          </v-row>
+          <v-list-item v-for="file in files" :key="file.title" @click="openFile(file.fileFullPath, file)">
+              <!-- <v-list-item-avatar>
+              <v-icon :class="[file.iconClass]">{{ file.icon }}</v-icon>
+            </v-list-item-avatar> -->
+            <v-list-item-content>
+              <v-list-item-title>{{ file.title }}</v-list-item-title>
 
+              <!-- <v-list-item-subtitle>{{ file.subtitle }}</v-list-item-subtitle> -->
+            </v-list-item-content>
+
+            <!-- <v-list-item-action>
+              <v-btn icon ripple @click="openFile(file.fileFullPath)">
+                <v-icon color="grey lighten-1">mdi-information</v-icon>
+              </v-btn>
+            </v-list-item-action> -->
+          </v-list-item>
+        </v-list>
+      </v-container>
       <v-dialog v-model="dialog" max-width="500px">
         <v-card>
           <v-card-text>
@@ -180,6 +208,7 @@ export default {
     data() {
         return {
             dialog: false,
+            isNewFile: false,
             folders: [
 
             ],
@@ -190,14 +219,14 @@ export default {
         }
     },
     methods: {
-
       addNewFile() {
         if (this.folderFullPath != '') {
           let win = remote.BrowserWindow.getFocusedWindow();
           win.webContents.send("newFile");
         }
       },
-        showOpenDialog() {
+
+      showOpenDialog() {
       // console.log("showOpenDialog() 호출됨.");
 
       remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(),
@@ -250,7 +279,7 @@ export default {
         win.webContents.send("contentReset", "msg");
 
         document.getElementById("localFileName").innerHTML = "";
-        
+        this.isNewFile = true
         // document.getElementById("serverFileName").innerHTML(file.title);
       });
     },
