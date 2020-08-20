@@ -21,7 +21,6 @@ export default class Replacer {
     //     const exitRegex = /(\n\n)/g;
     //     //const exitRegex = /<p><\/p>/g;
     //     const tapReplacer = function() {
-    //         console.log('check');
     //         return '</li><ol><li>';
     //     }
     //     const tempReplacer = function(group4) {
@@ -98,7 +97,6 @@ export default class Replacer {
         // })
         
         // .then(function(resolvedData) {
-        //     console.log(resolvedData);
         // })
         
         //await convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1), function(resolvedData) {
@@ -113,7 +111,6 @@ export default class Replacer {
         //     return new Promise(function(resolve, reject) {
         //         let src = '';
         //         convertImg.convertImgToDataURLviaCanvas(tagContents.substring(1,tagContents.length-1), function (result) {
-        //             console.log('result : ' +result);
         //             src = result;
         //             callback(src);
         //         });
@@ -121,7 +118,6 @@ export default class Replacer {
         //     });
         // }
         // getBase64().then(function(resolvedData) {
-        //     console.log('result : ' + resolvedData);
         //     base64data = resolvedData;
         // });
         //return '<img src="' + base64data + '">';

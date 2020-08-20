@@ -85,7 +85,6 @@ function createWindow() {
   }
 
   win.on("close", (event) => {
-    console.log("win.on(close) 호출됨.");
     if(!isShareMode){
     event.preventDefault();
     
@@ -127,8 +126,6 @@ function createWindow() {
                     }
                 )
                 .then(result => {
-                    // console.log(result.filePath);
-        
                     var fileName = result.filePath;
                     fs.writeFile(fileName, fileData, (err) => {
     
@@ -167,10 +164,6 @@ function createWindow() {
         )
         .then(result => {
           if(!result.canceled){
-            
-          
-          console.log(result.filePath);
-
             var fileName = result.filePath;
             fs.writeFile(fileName, fileData, (err) => {
 

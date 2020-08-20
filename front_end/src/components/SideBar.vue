@@ -89,22 +89,17 @@ export default {
 
     ipcRenderer.on("ping", (event, message) => {
       var absoluteFilePath = message['absoluteFilePath'];
-      console.log('absolute', absoluteFilePath);
       var folderFullPath = path.dirname(absoluteFilePath);
       var folderName = path.basename(path.dirname(absoluteFilePath));
 
-      // console.log("folderFullPath : " + folderFullPath);
-      // console.log("folderName : " + folderName);
       this.folders = [];
       this.folders.push({icon: 'folder',  iconClass: 'grey lighten-1 white--text', title: folderName});
 
       fs.readdir(folderFullPath, (err, fileList) => {
         this.files = [];
 
-        // console.log('filelist', fileList);
 
         for(var i = 0; i < fileList.length; i++) {
-          // console.log(folderFullPath + "\\" + fileList[i]);
           if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md'){
             if(isWindow) {
             this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
@@ -121,10 +116,8 @@ export default {
     ipcRenderer.on("addFileInList", (event, folderFullPath) => {
         fs.readdir(folderFullPath, (err, fileList) => {
         this.files = [];
-        // console.log(fileList)
         if(!!fileList){
         for(var i = 0; i < fileList.length; i++) {
-          // console.log(folderFullPath + "\\" + fileList[i]);
           if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
           if(isWindow) {
             this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
@@ -159,7 +152,6 @@ export default {
       },
 
       showOpenDialog() {
-      // console.log("showOpenDialog() 호출됨.");
 
       remote.dialog.showOpenDialog(remote.BrowserWindow.getFocusedWindow(),
         {
@@ -173,8 +165,6 @@ export default {
         
         var isWindow = navigator.platform.indexOf('Win') > -1;
         var isMac = navigator.platform.indexOf('Mac') > -1;
-        // console.log("folderFullPath : " + folderFullPath);
-        // console.log("folderName : " + folderName);
         
         // 맥과 윈도우는 폴더 경로 들어갈때 다름.
         // 예)
@@ -193,10 +183,8 @@ export default {
         fs.readdir(folderFullPath, (err, fileList) => {
           this.files = [];
 
-          // console.log(fileList);
 
           for(var i = 0; i < fileList.length; i++) {
-            // console.log(folderFullPath + "\\" + fileList[i]);
             if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md') {
                 if(isWindow)
                     this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
@@ -217,18 +205,14 @@ export default {
     },
 
     openFile(absoluteFilePath, file) {
-      console.log(absoluteFilePath);
       var folderFullPath = path.dirname(absoluteFilePath);
       var isWindow = navigator.platform.indexOf('Win') > -1;
       var isMac = navigator.platform.indexOf('Mac') > -1;
-      console.log(folderFullPath);
       fs.readdir(folderFullPath, (err, fileList) => {
         this.files = [];
 
-         console.log('filelist', fileList);
 
         for(var i = 0; i < fileList.length; i++) {
-          //  console.log(folderFullPath + "\\" + fileList[i]);
           if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md'){
             if(isWindow){
             this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
@@ -241,19 +225,14 @@ export default {
       })
       fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
         // if(err) throw err;
-         console.log(data);
         // fileData = data;
         let openedFileData = data;
-        // console.log('요기',openedFileData);
-         console.log('------------------')
 
         let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': absoluteFilePath};
         let win = remote.BrowserWindow.getFocusedWindow();
         win.webContents.send("ping", fileDataObject);
         ipcRenderer.send("mainping", fileDataObject);
-        console.log('absolutefilepath', absoluteFilePath);
 
-        console.log("document.getElementById('localFileName')", document.getElementById("localFileName"))
         document.getElementById("localFileName").innerHTML = file.title;
       });
     }

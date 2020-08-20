@@ -252,7 +252,6 @@ export default new Vuex.Store({
 
     GET_NEW_MEMBER_INFO(state, result) {
       state.workspaceMemberList.push(result);
-      // console.log(state.workspaceMemberList)
     },
 
     
@@ -334,7 +333,6 @@ export default new Vuex.Store({
     login({ state, commit, dispatch }, loginData) {
       axios.post(SERVER.URL + SERVER.ROUTES.login, loginData)
         .then(res => {
-          // console.log(res.headers)
           commit('SET_TOKEN', res.headers)  // 토큰 저장
           commit('SET_PASSWORD_CHECKED', false)
 
@@ -463,7 +461,6 @@ export default new Vuex.Store({
 
       axios.post(SERVER.URL + SERVER.ROUTES.delete, map, { headers: { email: userInfo.email } })
         .then(res => {
-          console.log(res)
           if (res.data['result'] === 'success') {
             commit('SET_MODIFY_RESULT', false)
             commit('SET_IS_MYPAGE_MODAL', false)
@@ -482,7 +479,6 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.onServerInit)
         .then(res => {
           if (res.data['result'] === 'success') {
-            // console.log("################# res.data.map", res.data.map)
             commit('SET_INIT_USER_INFO', res.data.map)
           }
         })
@@ -491,10 +487,6 @@ export default new Vuex.Store({
 
     // 워크스페이스 생성
     async createWorkspace({ state, commit }, newBandName) {
-      // console.log("Vuex내에 createWorkspace() 함수 진입.");
-      // console.log("bandName : " + workspaceName)
-      // console.log("accountNo : " + this.state.userInfo.no);
-
       const info = {
         bandName: newBandName,
         accountNo: state.userInfo.no,
@@ -503,14 +495,8 @@ export default new Vuex.Store({
     
       await axios.post(SERVER.URL + SERVER.ROUTES.createWorkspace, info, { headers: { email: state.userInfo.email }})
       .then(res => {
-        // console.log("then구문 진입.");
-        // console.log("res.data", res.data);
-        // console.log("res.data.map", res.data.map);
-        console.log("res.data.map.band", res.data.map.band);
-
         commit("SET_WORKSPACES", res.data.map.band)
         commit("SELECTED_WORKSPACE", res.data.map.band)
-        // console.log("then구문 진입.");
         
       })
       .catch(err => {
@@ -520,14 +506,10 @@ export default new Vuex.Store({
 
     // 워크스페이스 제거
     deleteWorkspace({ state, commit }, deleteWorkspace) {
-      // console.log("Vuex내에 deleteWorkspace() 진입.");
-      // console.log("넘어온 그룹 정보 (bandNo, accountNo) : ", deleteWorkspace)
       
       axios.post(SERVER.URL + SERVER.ROUTES.deleteWorkspace, deleteWorkspace, { headers: { email: state.userInfo.email }})
       .then(res => {
-        // console.log("res.data.result : ", res.data.result)
         if(res.data.result == "success") {
-          // console.log("success안에 들어옴.")
           commit("DELETE_WORKSPACE", deleteWorkspace)
 
         } else if(res.data.result == "fail") {
@@ -541,12 +523,8 @@ export default new Vuex.Store({
 
     // 워크스페이스명 변경
     renameWorkspace({ state, commit }, renameWorkspace) {
-      // console.log("Vuex내에 renameWorkspace() 진입")
-      // console.log("넘어온 그룹 정보 (bandNo, accountNo, newBandName, workspaceIdx) :", renameWorkspace)
-
       axios.post(SERVER.URL + SERVER.ROUTES.renameWorkspace, renameWorkspace, { headers: { email: state.userInfo.email }})
       .then(res => {
-        // console.log("res.data.result : ", res.data.result)
         if(res.data.result == "success") {
           commit("UPDATE_WORKSPACE", renameWorkspace)
         }
@@ -555,10 +533,8 @@ export default new Vuex.Store({
     },
     // 워크스페이스 멤버 불러오기
     showGroupMembers({ state, commit }, showGroupMembers) {
-      // console.log(showGroupMembers)
       axios.post(SERVER.URL + SERVER.ROUTES.getBandMember, showGroupMembers, { headers: { email: state.userInfo.email }})
       .then(res => {
-        // console.log("res.data.result : ", res.data.result)
         commit("SHOW_GROUP_MEMBERS", res.data.map.bandMemberList)
         state.isInviteModal = !(state.isInviteModal)
         })
@@ -575,8 +551,6 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.findAccountList, map, { headers: { email: state.userInfo.email }})
       .then(res => {
         
-        // console.log("findAccountList : " + state.newMemberInfo.no); 
-        // console.log("res.data.map.primitiveAccountList[0].no : ", res.data.map.primitiveAccountList[0].no);
         if (res.data.result === "success") {
           state.newMemberInfo.no = res.data.map.primitiveAccountList[0].no; // 초대받을 사람의 account_no를 보관.
           
@@ -586,14 +560,10 @@ export default new Vuex.Store({
             email: email,
             masterNo: state.selectedBandInfo.master,
           }
-          // console.log("[inviteBandMember] email()", inviteBandMember)
-          console.log("이거 왜 들어와 ㅋㅋㅋㅋㅋ");
           dispatch("inviteBandMember", inviteBandMember)
         } else {
-          console.log("바껴야 정상입니다.")
           state.noSuchMemberAlert = true;
           state.canInvite = false;
-          console.log("바껴야 정상입니다.")
 
         }
       })
@@ -601,39 +571,29 @@ export default new Vuex.Store({
 
     // 워크스페이스에 멤버 초대하기
     inviteBandMember({ state, commit }, inviteBandMember) {
-      // console.log("[inviteBandMember] inviteBandMember()", inviteBandMember);
 
       axios.post(SERVER.URL + SERVER.ROUTES.inviteBandMember, inviteBandMember, { headers: { email: state.userInfo.email} })
       .then(res => {
         if(res.data.result == "success"){
-          console.log("이거 왜 들어와 ㅋㅋㅋㅋㅋ22222222222");
-
-          console.log("res.data.result : ", res.data.map.bandMember)
           commit("GET_NEW_MEMBER_INFO", res.data.map.bandMember)
         }else{
-          console.log("바껴야 정상입니다.222222222")
           state.alreadyMemberAlert = true;
           state.canInvite = false;
-          console.log("바껴야 정상입니다.22222222")
         }
       })
     },
 
     // 워크스페이스 초대 수락
     acceptInvite({state}, info) {
-      // console.log("[acceptInvite] info : ", info)
       axios.post(SERVER.URL + SERVER.ROUTES.acceptInvite, info, { headers: { email: state.userInfo.email } })
       .then(res => {
-        // console.log("초대 수락 확인")
       }) 
     },
 
     // 워크스페이스 초대 거절
     declineInvite({state}, info) {
-      // console.log("[declineInvite] info : ", info)
       axios.post(SERVER.URL + SERVER.ROUTES.declineInvite, info, { headers: { email: state.userInfo.email } })
       .then(res => {
-        // console.log("초대 거부 확인")
       })
     },
 
@@ -661,9 +621,7 @@ export default new Vuex.Store({
         }
         axios.post(SERVER.URL + SERVER.ROUTES.noteList, info)
           .then(res => {
-            // console.log(res.data)
             if (res.data.result==='success') {
-              // console.log(res.data.map.noteDetailDTOList)
               commit('INIT_NOTE_LIST', res.data.map.noteDetailDTOList)
             } else if (res.data.result==='empty') {
               commit('INIT_NOTE_LIST', [])
@@ -685,10 +643,8 @@ export default new Vuex.Store({
         }
         axios.post(SERVER.URL + SERVER.ROUTES.createNote, info)
         .then(res => {
-          // console.log(res.data.map)
           info.no = res.data.map.no
           info.content = ''
-          // console.log(info)
           commit('SET_NOTE', info)
           dispatch('getNoteList', state.selectedBandInfo)
         })
@@ -703,8 +659,6 @@ export default new Vuex.Store({
         bandNo: state.selectedBandInfo.no,
         noteNo: noteInfo._id,
       }
-      console.log("noteInfo", noteInfo)
-      console.log("info", info)
       axios.post(SERVER.URL + SERVER.ROUTES.deleteNote, info)
         .then(() => {
           commit('DELETE_NOTE', info.noteNo)
@@ -759,9 +713,6 @@ export default new Vuex.Store({
 
     // note 저장
     saveNote({ state, commit }, content) {
-      console.log("saveNote() 호출됨.")
-      console.log("content : " + content)
-      
       const info = {
         accountNo: state.userInfo.no,
         bandNo: state.selectedBandInfo.no,
@@ -771,10 +722,8 @@ export default new Vuex.Store({
         occupiedNo: state.noteList[state.noteList.findIndex(item => item._id===state.selectedNoteInfo._id)].occupiedNo, // 점유자의 account_no
         occupiedName: state.userInfo.name // 점유자의 account_name
       }
-      // console.log(info)
       axios.post(SERVER.URL + SERVER.ROUTES.saveNote, info)
         .then(() => {
-          // console.log(res)
           commit('SET_NOTE_CONTENT', info)
         })
         .catch(err => console.error(err.response.data))
@@ -793,7 +742,6 @@ export default new Vuex.Store({
           day = '0' + day;
 
       state.savedTime = "저장 일시 : " + [year, month, day].join('-') + " " + [hour, min, sec].join(':');
-      console.log(state.savedTime)
     }
   },
   modules: {}

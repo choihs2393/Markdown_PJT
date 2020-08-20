@@ -99,7 +99,6 @@ export default {
     ...mapActions(['login']),
     changeMode() {
       let win = remote.BrowserWindow.getFocusedWindow();
-      console.log('test');
         if (!!this.$store.state.isShareMode == false) {
         this.$store.commit("SET_IS_DRAWER_SHARE", false);
         this.$store.commit("SET_IS_DRAWER", true);

@@ -103,9 +103,6 @@ export default {
 
       clearTimeout(this.$store.state.inviteTempData);
       let timeOut = setTimeout(() => {
-        console.log(this.$store.state.noSuchMemberAlert);
-        console.log(this.$store.state.alreadyMemberAlert);
-        console.log(this.$store.state.canInvite);
         if(this.$store.state.canInvite){
             const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
             let socket = new SockJS(serverURL);
@@ -117,10 +114,6 @@ export default {
                 frame => {
                   // 소켓 연결 성공
                   this.connected = true;
-                  // console.log("[InviteModal] 소켓 연결 성공", frame);
-                  // console.log("[Send 내용]")
-      
-                  // console.log("workspaceNo : " + this.workspaceNo)
       
                   var map = {
                     fromNo: this.$store.state.userInfo.no,
@@ -131,10 +124,8 @@ export default {
                     groupName: this.$store.state.selectedBandInfo.name,
                     groupNo: this.workspaceNo
                   }
-                  console.log(map);
       
                   this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, JSON.stringify(map));
-                  // console.log("========== 알림 송신 완료 ==========")
                   // this.stompClient.send("/receive/" + this.$store.state.newMemberInfo.no, {
                     //   'fromEmail': this.$store.state.userInfo.email,
                   //   'fromName': this.$store.state.userInfo.name,
@@ -145,7 +136,6 @@ export default {
                 },
                 error => {
                   // 소켓 연결 실패
-                  // console.log("[InviteModal] 소켓 연결 실패", error);
                   this.connected = false;
                 }
               );

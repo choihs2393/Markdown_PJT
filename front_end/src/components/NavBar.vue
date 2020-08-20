@@ -175,7 +175,6 @@ if (!!this.$store.state.isShareMode == false) {
 
     changeMode() {
       let win = remote.BrowserWindow.getFocusedWindow();
-      //console.log('test');
         if (!!this.$store.state.isShareMode == false) {
         this.$store.commit("SET_IS_DRAWER_SHARE", false);
         this.$store.commit("SET_IS_DRAWER", true);
@@ -183,8 +182,6 @@ if (!!this.$store.state.isShareMode == false) {
 
         this.$store.state.noteList = [];
         this.$store.state.selectedNoteInfo = {};
-        console.log("zzzz");
-        console.log(this.$store.state.selectedNoteInfo);
         
         document.getElementById("serverFileName").innerText="";
         document.getElementById("writing").innerText="";
@@ -219,8 +216,6 @@ if (!!this.$store.state.isShareMode == false) {
     remote.BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
     .then(result => {
       fileData = result;
-        console.log('fileData', fileData)
-        console.log('this.absoluteFilePath', this.absoluteFilePath)
       if (fileData === ''){ 
       }else if (this.absoluteFilePath === ''){
           dialog.showMessageBox(optionsForJustSaveas)
@@ -238,7 +233,6 @@ if (!!this.$store.state.isShareMode == false) {
                 )
                 .then(result => {
                    if(!result.canceled){
-                    // console.log(result.filePath);
                     var fileName = result.filePath;
                     fs.writeFile(fileName, fileData, (err) => {    
                       })
@@ -273,8 +267,6 @@ if (!!this.$store.state.isShareMode == false) {
             .then(result => {
               if(!result.canceled){
               
-              console.log(result.filePath);
-
                 var fileName = result.filePath;
                 fs.writeFile(fileName, fileData, (err) => {
                 })
@@ -292,7 +284,6 @@ if (!!this.$store.state.isShareMode == false) {
         }
       });
           if (iscanceled == false){
-            console.log('!iscanceled')
             let fileDataObject = {'openedFileData': '', 'absoluteFilePath': ''};
             ipcRenderer.send("mainping", fileDataObject);
             win.webContents.send("serverInit", serverStartInput);
@@ -311,7 +302,6 @@ if (!!this.$store.state.isShareMode == false) {
       }
     },
     socketConnect() {
-      // console.log("socketConnect() 호출됨.")
 
       if (this.connectionCount == 0 && !this.connected) {
         this.connectionCount = 1;
@@ -364,8 +354,6 @@ if (!!this.$store.state.isShareMode == false) {
           accountNo: this.$store.state.userInfo.no,
           bandNo: groupNo
         };
-        // console.log("accountNo : " + this.$store.state.userInfo.no);
-        // console.log("bandNo : " + groupNo);
         this.$store.dispatch("acceptInvite", info);
 
         var idx = this.$store.state.userInfo.status.findIndex(element => element.no == groupNo);
