@@ -27,15 +27,16 @@ const template = [
         label: 'File',
         submenu: [
             isMac ? { role: 'close' } : { role: 'quit' },
-            {
-                label: 'New Window',
-                accelerator: 'CommandOrControl+N',
-                click() {
-                    openNewWindow();
-                }
-            },
+            // {
+            //     label: 'New Window',
+            //     accelerator: 'CommandOrControl+N',
+            //     click() {
+            //         openNewWindow();
+            //     }
+            // },
             {
                 label: 'Save As ...',
+                accelerator: 'CommandOrControl+Shift+S',
                 click() {
                     saveAsFile();
                 }
