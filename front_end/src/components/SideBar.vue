@@ -40,8 +40,15 @@
               <v-icon color="grey lighten-1">mdi-information</v-icon>
             </v-btn>
           </v-list-item-action> -->
+        <v-row>
+        <v-spacer></v-spacer>
+        <v-spacer></v-spacer>
+        <v-btn text color="grey darken-1" v-if="!!folder" tile @click="addNewFile()">
+          <v-icon left>mdi-plus</v-icon>
+          Add New File
+        </v-btn>
+      </v-row>
         </v-list-item>
-
         <v-divider ></v-divider>
 
         <v-subheader >FILES</v-subheader>
@@ -179,9 +186,17 @@ export default {
             files: [
 
             ],
+            folderFullPath: '',
         }
     },
     methods: {
+
+      addNewFile() {
+        if (this.folderFullPath != '') {
+          let win = remote.BrowserWindow.getFocusedWindow();
+          win.webContents.send("newFile");
+        }
+      },
         showOpenDialog() {
       // console.log("showOpenDialog() 호출됨.");
 
@@ -230,6 +245,7 @@ export default {
           }
         })
         let win = remote.BrowserWindow.getFocusedWindow();
+        this.folderFullPath = folderFullPath;
         win.webContents.send("pong", folderFullPath);
         win.webContents.send("contentReset", "msg");
 

@@ -278,7 +278,9 @@ function saveAsFile() {
         })
         let fileDataObject = {'openedFileData': fileData, 'absoluteFilePath': fileName};
         let win = BrowserWindow.getFocusedWindow();
-        win.webContents.send("addInSidebar", fileDataObject);
+        if(!canceled){
+            win.webContents.send("addInSidebar", fileDataObject);
+        }
     })
 }
 
