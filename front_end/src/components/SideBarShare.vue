@@ -82,7 +82,7 @@
           </v-list-item-content>
           <v-list-item-icon>
             <v-icon v-if="note.occupiedNo != 0 && note.occupiedNo != userInfo.no" right>lock</v-icon>
-            <v-icon v-if="note.occupiedNo != 0 && note.occupiedNo == userInfo.no" right color="red">lock</v-icon>
+            <v-icon v-if="note.occupiedNo != 0 && note.occupiedNo == userInfo.no" right color="blue">lock</v-icon>
           </v-list-item-icon>
         </v-list-item>
       </v-list>
