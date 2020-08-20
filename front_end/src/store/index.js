@@ -309,6 +309,9 @@ export default new Vuex.Store({
       state.noSuchMemberAlert = false,
       state.alreadyMemberAlert = false;
     },
+    SET_IS_MYPAGE_MODAL(state, result) {
+      state.isMypageModal = result
+    }
   },
 
   // 범용적인 함수들. mutations에 정의한 함수를 actions에서 실행 가능.

@@ -90,7 +90,6 @@ import { required, email, max, min, regex, confirmed } from 'vee-validate/dist/r
 import { extend, ValidationObserver, setInteractionMode, ValidationProvider } from 'vee-validate'
 
 import DeleteAccountModal from './DeleteAccountModal.vue'
-// import { userInfo } from 'os';
 
 setInteractionMode('eager')
 
@@ -136,8 +135,8 @@ export default {
   data() {
     return {
       userInfo: {
-        email: this.$store.state.userInfo.email,
-        newName: this.$store.state.userInfo.name,
+        email: '',
+        newName: '',
         password: '',
         newPassword: '',
         newPasswordConfirm: '',
@@ -158,8 +157,8 @@ export default {
 
     close() {
       this.userInfo = {
-        email: this.$store.state.userInfo.email,
-        newName: this.$store.state.userInfo.name,
+        email: '',
+        newName: '',
         password: '',
         newPassword: '',
         newPasswordConfirm: '',

@@ -22,7 +22,12 @@ export default {
   },
 
   methods: {
-    ...mapActions(['deleteAccount']),
+    // ...mapActions(['deleteAccount']),
+
+    deleteAccount(userInfo) {
+      this.$store.dispatch('deleteAccount', userInfo)
+      this.$store.commit('SET_IS_MYPAGE_MODAL', false)
+    },
 
     close() {
       this.$store.state.isDeleteModal = false
