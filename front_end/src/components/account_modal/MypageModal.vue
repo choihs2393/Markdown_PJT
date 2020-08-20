@@ -132,7 +132,6 @@ export default {
     ValidationObserver,
     DeleteAccountModal,
   },
-
   data() {
     return {
       userInfo: {

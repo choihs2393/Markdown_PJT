@@ -21,16 +21,18 @@ let win;
 //block to 
 app.on ( 'browser-window-focus', function () {
   globalShortcut.register ( "CommandOrControl + R", () => {
-  console.log ( "CommandOrControl + R 누름 : 바로 가기 비활성화 됨");
   });
   globalShortcut.register ( "CommandOrControl + Shift + R", () => {
-  console.log ( "CommandOrControl + Shift + R 누름 : 바로 가기 비활성화 됨");
   });
+
+  globalShortcut.register ( "CommandOrControl + Shift + I", () => {
+    });
 });
   
 app.on ( 'browser-window-blur', function () {
   globalShortcut.unregister ( 'CommandOrControl + R');
   globalShortcut.unregister ( 'CommandOrControl + Shift + R');
+  globalShortcut.unregister ( 'CommandOrControl + Shift + I');
 });
 
   
