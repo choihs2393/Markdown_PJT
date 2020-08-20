@@ -10,8 +10,8 @@
           hide-details
           @click:append="inviteBandMember"
           @keydown.enter="inviteBandMember"
-          @click="this.$store.state.noSuchMemberAlert=false; this.$store.state.alreadyMemberAlert=false"
-          @keydown="this.$store.state.noSuchMemberAlert=false; this.$store.state.alreadyMemberAlert=false"
+          @click="$store.state.noSuchMemberAlert=false; $store.state.alreadyMemberAlert=false"
+          @keydown="$store.state.noSuchMemberAlert=false; $store.state.alreadyMemberAlert=false"
         ></v-text-field>
       </v-toolbar>
       <v-alert
@@ -101,7 +101,7 @@ export default {
   methods: {
     async inviteBandMember() {
       await this.$store.dispatch("findAccountList", this.search);
-      if(!noSuchMemberAlert && !alreadyMemberAlert){
+      if(!this.$store.state.noSuchMemberAlert && !this.$store.state.alreadyMemberAlert){
         
         let check = this.$store.state.canInvite;
         if(!check)
