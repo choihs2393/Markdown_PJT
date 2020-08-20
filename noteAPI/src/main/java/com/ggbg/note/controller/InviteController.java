@@ -61,7 +61,6 @@ public class InviteController {
 		/*
 		 * input
 		 */
-		map.put("bandNo", bandNo);
 		int bandId = Integer.parseInt(bandNo);
 		int noteId = Integer.parseInt(map.get("noteId"));
 		int accountNo = Integer.parseInt(map.get("accountNo"));
@@ -73,7 +72,7 @@ public class InviteController {
 		 */
 		Map<String, String> retMap = new HashMap<String, String>();
 		retMap = socketService.occupy(accountNo, bandId, noteId, subject, content, accountName);
-		
+		retMap.put("bandNo", bandNo);
 		// 그 결과, 업데이트된 row를 하나의 객체타입으로 리턴해준다.
 		// 그럼, 프론트에서는 해당 row를 fileList에서 찾아 갈아 끼워주면 될 것이다.
 		
@@ -87,7 +86,6 @@ public class InviteController {
 	@MessageMapping("/groupReceive/vacate/{bandNo}")
 	@SendTo("/send/groupSend/vacate/{bandNo}")
 	public Map<String, String> vacate(@DestinationVariable("bandNo") String bandNo, Map<String, String> map) {
-		map.put("bandNo", bandNo);
 		int noteId = Integer.parseInt(map.get("noteId"));
 		int accountNo = Integer.parseInt(map.get("accountNo"));
 		String subject = map.get("subject");
@@ -101,7 +99,7 @@ public class InviteController {
 		// 그럼, 프론트에서는 해당 row를 fileList에서 찾아 갈아 끼워주면 될 것이다.
 		Map<String, String> retMap = new HashMap<String, String>();
 		retMap = socketService.vacate(accountNo, bandId, noteId, subject, content);
-		
+		retMap.put("bandNo", bandNo);
 		return retMap;
 	}
 	
