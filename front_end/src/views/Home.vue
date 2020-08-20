@@ -374,28 +374,28 @@ export default {
       }, 200);
       this.$store.commit('setTempData',timeOut);
 /*-------------------------------------------------*/
-      let bandNo = this.$store.state.selectedBandInfo.no;
-      let noteNo = this.$store.state.selectedNoteInfo._id;
-      let occupyAccountNo = this.$store.state.selectedNoteInfo.occupiedNo;
-      let loginAccountNo = this.$store.state.userInfo.no;
-      // console.log("영복이의 로그추적"  + bandNo);
-      // console.log("영복이의 로그추적 " + noteNo);
-            console.log("영복이의 로그추적 " + noteNo);
-            console.log("영복이의 로그추적 " + bandNo);
-
-      console.log("영복이의 로그추적 " + occupyAccountNo);
-      console.log("영복이의 로그추적 " + loginAccountNo);
-      console.log("영복이의 로그추적 " + tmp);
-      console.log(typeof bandNo);
-      console.log(typeof noteNo);
-      console.log(typeof occupyAccountNo);
-      console.log(typeof loginAccountNo);
+      
       /*
       * this is a auto save + share part
       */
       if(this.$store.state.isShareMode){
-                  console.log("shareMode로 들어옴")
+        console.log("shareMode로 들어옴")
+        let bandNo = this.$store.state.selectedBandInfo.no;
+        let noteNo = this.$store.state.selectedNoteInfo._id;
+        let occupyAccountNo = this.$store.state.selectedNoteInfo.occupiedNo;
+        let loginAccountNo = this.$store.state.userInfo.no;
+      // console.log("영복이의 로그추적"  + bandNo);
+      // console.log("영복이의 로그추적 " + noteNo);
+        console.log("영복이의 로그추적 " + noteNo);
+        console.log("영복이의 로그추적 " + bandNo);
 
+        console.log("영복이의 로그추적 " + occupyAccountNo);
+        console.log("영복이의 로그추적 " + loginAccountNo);
+        console.log("영복이의 로그추적 " + tmp);
+        console.log(typeof bandNo);
+        console.log(typeof noteNo);
+        console.log(typeof occupyAccountNo);
+        console.log(typeof loginAccountNo);
         if(noteNo != '' && bandNo != '' && occupyAccountNo != '' && occupyAccountNo == loginAccountNo){
           console.log("들어옴")
           if(this.$store.state.storeSyncCheck === false){
@@ -426,6 +426,13 @@ export default {
     
 
     shareNote(inputContent){
+      let _noteId = this.$store.state.selectedNoteInfo._id;
+      let _accountNo = this.$store.state.userInfo.no;
+      let _subject = this.$store.state.selectedNoteInfo.subject;
+      let _content = inputContent;
+      let _occupiedName = this.$store.state.selectedNoteInfo.occupiedName;
+      let _bandNo = this.$store.state.selectedBandInfo.no;
+
       var d = new Date(),
       month = '' + (d.getMonth() + 1),
       day = '' + d.getDate(),
@@ -448,12 +455,12 @@ export default {
       this.stompClient.connect({ Authorization: this.$store.state.authorization },
         frame => {
           var map = {
-            accountNo: this.$store.state.userInfo.no,
-            subject: this.$store.state.selectedNoteInfo.subject,
-            content: inputContent,
-            occupiedName: this.$store.state.selectedNoteInfo.occupiedName
+            accountNo: _accountNo,
+            subject: _subject,
+            content: _content,
+            occupiedName: _occupiedName
           }
-          this.stompClient.send("/groupReceive/content/" + this.$store.state.selectedBandInfo.no + "/" + this.$store.state.selectedNoteInfo._id, JSON.stringify(map));
+          this.stompClient.send("/groupReceive/content/" + _bandNo + "/" + _noteId, JSON.stringify(map));
         }
       )
     },
@@ -463,7 +470,12 @@ export default {
     occupy(selectedNoteNo) {
       this.$store.state.selectedNoteInfo.occupiedNo = this.$store.state.userInfo.no;
       this.$store.state.selectedNoteInfo.occupiedName = this.$store.state.userInfo.name;
-
+      let _accountNo = this.$store.state.userInfo.no;
+      let _accountName = this.$store.state.userInfo.name;
+      let _noteId = this.$store.state.selectedNoteInfo._id;
+      let _subject = this.$store.state.selectedNoteInfo.subject;
+      let _content = this.$store.state.selectedNoteInfo.content;
+      let _bandNo = this.$store.state.selectedBandInfo.no;
       // 1. 소켓 뚫기
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
@@ -474,16 +486,16 @@ export default {
       this.stompClient.connect({ Authorization: this.$store.state.authorization },
         frame => {
           var map = {
-              noteId: this.$store.state.selectedNoteInfo._id,
-              accountNo: this.$store.state.userInfo.no,
-              accountName: this.$store.state.userInfo.name,
-              subject: this.$store.state.selectedNoteInfo.subject,
-              content: this.$store.state.selectedNoteInfo.content
+              noteId: _noteId,
+              accountNo: _accountNo,
+              accountName: _accountName,
+              subject: _subject,
+              content: _content
           }
 
           // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유하고 있다'고 점유를 풀때까지 무한정 send하기
           // setInterval(() => {
-            this.stompClient.send("/groupReceive/occupy/" + this.$store.state.selectedBandInfo.no, JSON.stringify(map));
+            this.stompClient.send("/groupReceive/occupy/" + _bandNo, JSON.stringify(map));
             this.stompClient.disconnect(); 
           // }, 5000);
         }
@@ -495,31 +507,39 @@ export default {
 
     // 해당 파일 점유 포기하기.
     vacate(selectedNoteNo) {
+      console.log("vacate 송신1 : " +this.$store.state.selectedNoteInfo._id);
+      let _accountNo = this.$store.state.userInfo.no;
+      let _id = this.$store.state.selectedNoteInfo._id;
+      let _subject = this.$store.state.selectedNoteInfo.subject;
+      let _content = this.$store.state.selectedNoteInfo.content;
+      let _bandNo = this.$store.state.selectedBandInfo.no;
       this.$store.state.selectedNoteInfo.occupiedNo = 0;
       this.$store.state.selectedNoteInfo.occupiedName = "";
 
       var idx = this.$store.state.noteList.findIndex(item => item._id ==this.$store.state.selectedNoteInfo._id)
       this.$store.state.noteList[idx].occupiedNo = 0;
       this.$store.state.noteList[idx].occupiedName = "";
+      console.log("vacate 송신2 : " +this.$store.state.selectedNoteInfo._id);
 
       // 1. 소켓 뚫기
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
+      console.log("vacate 송신3 : " +this.$store.state.selectedNoteInfo._id);
 
       // 2. 소켓 연결하기
       this.stompClient.connect({ Authorization: this.$store.state.authorization },
         frame => {
           var map = {
-              noteId: this.$store.state.selectedNoteInfo._id,
-              accountNo: this.$store.state.userInfo.no,
-              subject: this.$store.state.selectedNoteInfo.subject,
-              content: this.$store.state.selectedNoteInfo.content
+              noteId: _id,
+              accountNo: _accountNo,
+              subject: _subject,
+              content: _content
           }
-
+          console.log(map);
           // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유권을 놓겠다'고 send하기
-          this.stompClient.send("/groupReceive/vacate/" + this.$store.state.selectedBandInfo.no, JSON.stringify(map));
+          this.stompClient.send("/groupReceive/vacate/" + _bandNo, JSON.stringify(map));
         }
       )
 
