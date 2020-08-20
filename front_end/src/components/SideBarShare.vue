@@ -211,7 +211,8 @@ export default {
       const win = remote.BrowserWindow.getFocusedWindow();
       win.webContents.send("contentReset", "");
       this.$store.state.selectedNoteInfo = {};
-      document.getElementById("savedTime").innerHTML = "";
+      // document.getElementById("savedTime").innerHTML = "";
+      this.$store.state.savedTime = "";
     },
 
     changeWorkspace(bandInfo) {
@@ -220,7 +221,8 @@ export default {
       this.$store.state.selectedNoteInfo = {};
       let curBandNo = bandInfo.no;
       console.log(curBandNo);
-      document.getElementById("savedTime").innerHTML = "";
+      // document.getElementById("savedTime").innerHTML = "";
+      this.$store.state.savedTime = "";
 
       if(this.$store.state.shareGroupSocket.connected)
         this.$store.state.shareGroupSocket.disconnect();
