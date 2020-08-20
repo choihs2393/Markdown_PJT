@@ -152,7 +152,7 @@ import DeleteFileModal from "./mdfile_modal/DeleteFileModal.vue";
 
 import "material-design-icons-iconfont/dist/material-design-icons.css";
 import fs from "fs";
-import { remote } from "electron";
+import { remote, ipcRenderer } from "electron";
 
 import { mapState, mapActions, mapGetters } from 'vuex'
 
@@ -317,7 +317,9 @@ export default {
               this.$store.state.selectedNoteInfo.content = receiveMsg.content;
 
               if(this.$store.state.userInfo.no != receiveMsg.occupiedNo)                         {
-                win.webContents.send("test", receiveMsg.content);
+                let fileDataObject = {'openedFileData': receiveMsg.content, 'absoluteFilePath': ''};
+                win.webContents.send("ping", fileDataObject);
+                ipcRenderer.send("mainping", fileDataObject);
               }
                   const info = {
                     accountNo: receiveMsg.accountNo,

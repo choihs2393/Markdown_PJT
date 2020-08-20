@@ -374,7 +374,9 @@ export default new Vuex.Store({
           commit('INIT_NOTE_LIST', [])
 
           let win = remote.BrowserWindow.getFocusedWindow();
-          win.webContents.send("contentReset", "msg")
+          let fileDataObject = {'openedFileData': '', 'absoluteFilePath': ''};
+          win.webContents.send("ping", fileDataObject);
+          ipcRenderer.send("mainping", fileDataObject);
         })
         .catch(err => console.error(err.response.data))
     },
@@ -714,11 +716,15 @@ export default new Vuex.Store({
           commit('SELECTED_NOTE', res.data.map.content)
           const win = remote.BrowserWindow.getFocusedWindow();
           if (res.data.result==='success') {
-            win.webContents.send('getNote', res.data.map.content, info.accountNo)
+            let fileDataObject = {'openedFileData': res.data.map.content, 'absoluteFilePath': ''};
+            win.webContents.send("ping", fileDataObject)
+            ipcRenderer.send("mainping", fileDataObject);
             // win.webContents.send('getNote', res.data.map.content, state.noteList.find(item => item._id === info.noteNo).accountNo)
             state.storeTimer = '';
           } else if (res.data.result==='empty') {
-            win.webContents.send('getNote', '')
+            let fileDataObject = {'openedFileData': '', 'absoluteFilePath': ''};
+            win.webContents.send("ping", fileDataObject)
+            ipcRenderer.send("mainping", fileDataObject);
           }
         })
         .catch(err => console.error(err.response.data))

@@ -44,11 +44,7 @@ ipcMain.on("mainping", (event, message)=>{
   absoluteFilePath = message['absoluteFilePath'];
   }
 )
-let isShareMode;
-ipcMain.on("isShareMode", (event, message)=>{
-  isShareMode = message;
-  }
-)
+let isShareMode = false;
 
 
 // Scheme must be registered before the app is ready

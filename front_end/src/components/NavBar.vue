@@ -180,24 +180,25 @@ if (!!this.$store.state.isShareMode == false) {
         if (!!this.$store.state.isShareMode == false) {
         this.$store.commit("SET_IS_DRAWER_SHARE", false);
         this.$store.commit("SET_IS_DRAWER", true);
-        win.webContents.send("localInit");
+        let fileDataObject = {'openedFileData': '', 'absoluteFilePath': ''};
+        win.webContents.send("ping", fileDataObject);
+        ipcRenderer.send("mainping", fileDataObject);
 
         this.$store.state.noteList = [];
         this.$store.state.selectedNoteInfo = {};
         
-        document.getElementById("serverFileName").innerText="";
-        document.getElementById("writing").innerText="";
+        // document.getElementById("serverFileName").innerText="";
+        // document.getElementById("writing").innerText="";
       }
       
       else if (!!this.$store.state.isShareMode == true) {
         this.$store.commit("SET_IS_DRAWER_SHARE", true);
         this.$store.commit("SET_IS_DRAWER", false);
-        win.webContents.send("serverInit", serverStartInput);
 
         this.$store.state.noteList = [];
         this.$store.state.selectedNoteInfo = {};
 
-        document.getElementById("localFileName").innerText="";
+        // document.getElementById("localFileName").innerText="";
         //data.input = serverStartInput.data;
       // }
     // },
@@ -283,7 +284,9 @@ if (!!this.$store.state.isShareMode == false) {
           }
         });
         }
-        remote.BrowserWindow.getFocusedWindow().webContents.send("serverInit", serverStartInput);
+        let fileDataObject = {'openedFileData': serverStartInput, 'absoluteFilePath': ''};
+        remote.BrowserWindow.getFocusedWindow().webContents.send("ping", fileDataObject);
+        ipcRenderer.send("mainping", fileDataObject);
       });
       }
     },

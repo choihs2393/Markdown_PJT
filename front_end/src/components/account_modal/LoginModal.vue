@@ -54,7 +54,7 @@ import { mapState, mapActions } from 'vuex';
 
 import { ValidationObserver, ValidationProvider, setInteractionMode, extend } from 'vee-validate'
 import { required, email } from 'vee-validate/dist/rules';
-import { remote } from "electron";
+import { remote, ipcRenderer } from "electron";
 import serverStartInput from "../../markdown/serverStartInput.js";
 
 setInteractionMode('eager')
@@ -100,17 +100,20 @@ export default {
     changeMode() {
       let win = remote.BrowserWindow.getFocusedWindow();
       console.log('test');
+      let fileDataObject = {'openedFileData': '', 'absoluteFilePath': ''};
         if (!!this.$store.state.isShareMode == false) {
         this.$store.commit("SET_IS_DRAWER_SHARE", false);
         this.$store.commit("SET_IS_DRAWER", true);
-        win.webContents.send("serverInit", serverStartInput);
+        fileDataObject = {'openedFileData': serverStartInput, 'absoluteFilePath': ''};
         
       } else if (!!this.$store.state.isShareMode == true) {
         this.$store.commit("SET_IS_DRAWER_SHARE", true);
         this.$store.commit("SET_IS_DRAWER", false);
-        win.webContents.send("localInit");
+        fileDataObject = {'openedFileData': '', 'absoluteFilePath': ''};
         //data.input = serverStartInput.data;
       }
+        win.webContents.send("ping", fileDataObject);
+        ipcRenderer.send("mainping", fileDataObject);
     },
     close() {
       this.loginData = {

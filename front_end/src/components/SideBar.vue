@@ -94,10 +94,11 @@ export default {
     var isMac = navigator.platform.indexOf('Mac') > -1;
 
     ipcRenderer.on("ping", (event, message) => {
-      var absoluteFilePath = message['absoluteFilePath'];
-      console.log('absolute', absoluteFilePath);
-      var folderFullPath = path.dirname(absoluteFilePath);
-      var folderName = path.basename(path.dirname(absoluteFilePath));
+      this.absoluteFilePath = message['absoluteFilePath'];
+      console.log('absolute', this.absoluteFilePath);
+      if (this.absoluteFilePath != ''){
+      var folderFullPath = path.dirname(this.absoluteFilePath);
+      var folderName = path.basename(path.dirname(this.absoluteFilePath));
 
       // console.log("folderFullPath : " + folderFullPath);
       // console.log("folderName : " + folderName);
@@ -121,54 +122,8 @@ export default {
           }
         }
       })
+      }
     });
-    ipcRenderer.on("addInSidebar", (event, message) => {
-      var absoluteFilePath = message['absoluteFilePath'];
-      console.log('absolute', absoluteFilePath);
-      var folderFullPath = path.dirname(absoluteFilePath);
-      var folderName = path.basename(path.dirname(absoluteFilePath));
-
-      // console.log("folderFullPath : " + folderFullPath);
-      // console.log("folderName : " + folderName);
-      this.folders = [];
-      this.folders.push({icon: 'folder',  iconClass: 'grey lighten-1 white--text', title: folderName});
-
-      fs.readdir(folderFullPath, (err, fileList) => {
-        this.files = [];
-
-        // console.log('filelist', fileList);
-
-        for(var i = 0; i < fileList.length; i++) {
-          // console.log(folderFullPath + "\\" + fileList[i]);
-          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md'){
-            if(isWindow) {
-            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
-            }
-            if(isMac) {
-            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "/" + fileList[i]});
-            }
-          }
-        }
-      })
-    });
-    ipcRenderer.on("addFileInList", (event, folderFullPath) => {
-        fs.readdir(folderFullPath, (err, fileList) => {
-        this.files = [];
-        // console.log(fileList)
-        if(!!fileList){
-        for(var i = 0; i < fileList.length; i++) {
-          // console.log(folderFullPath + "\\" + fileList[i]);
-          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md')
-          if(isWindow) {
-            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
-          }
-          if(isMac) {
-            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "/" + fileList[i]});
-          }
-          }
-        }
-        })
-  })
    },
     data() {
         return {
@@ -179,6 +134,7 @@ export default {
             files: [
 
             ],
+            absoluteFilePath: '',
         }
     },
     methods: {
@@ -231,22 +187,22 @@ export default {
         })
         let win = remote.BrowserWindow.getFocusedWindow();
         win.webContents.send("pong", folderFullPath);
-        win.webContents.send("contentReset", "msg");
-
+        let fileDataObject = {'openedFileData': '', 'absoluteFilePath': ''};
+        win.webContents.send("ping", fileDataObject);
+        ipcRenderer.send("mainping", fileDataObject);
         
         // document.getElementById("serverFileName").innerHTML(file.title);
       });
     },
 
     openFile(absoluteFilePath, file) {
-      console.log(absoluteFilePath);
+      // console.log('여기는',absoluteFilePath);
       var folderFullPath = path.dirname(absoluteFilePath);
       var isWindow = navigator.platform.indexOf('Win') > -1;
       var isMac = navigator.platform.indexOf('Mac') > -1;
-      console.log(folderFullPath);
+      // console.log('여기',folderFullPath);
       fs.readdir(folderFullPath, (err, fileList) => {
         this.files = [];
-
          console.log('filelist', fileList);
 
         for(var i = 0; i < fileList.length; i++) {

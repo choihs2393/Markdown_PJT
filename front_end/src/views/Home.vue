@@ -2,9 +2,9 @@
   <v-main>
     <v-container class="md" fluid>
       <v-row justify-center>
-        <span id="localFileName" style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="!isShareMode && selectedNoteInfo != null">로컬파일이름</span>
+        <!-- <span id="localFileName" style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="!isShareMode && selectedNoteInfo != null">로컬파일이름</span> -->
         <span id="serverFileName" style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="isShareMode && isLoggedIn && selectedNoteInfo != null">{{selectedNoteInfo.subject}}</span>
-        <!-- <span style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="!isShareMode">{{ fileName }}</span> -->
+        <span id="localFileName" style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="!isShareMode">{{ fileName }}</span>
         <div style="flex-grow: 100; text-align: center; padding-top:7px">
           <span v-if="isShareMode" style="color: rgb(98, 98, 98)">{{savedTime}}</span>
           <span id="writing" v-if="selectedNoteInfo.occupiedName && isLoggedIn && selectedNoteInfo != {} && selectedNoteInfo.occupiedNo != 0 && selectedNoteInfo.occupiedNo != $store.state.userInfo.no">{{ selectedNoteInfo.occupiedName }}님 작성중...</span>
@@ -106,20 +106,18 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
   data.input = readmeTemplate.input;
   if (isTemplate){
     let fileDataObject = {}
+    let readmeFileName = '';
     if (isPathExist){
       if (isWindow){
-      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'\\README.md'};
+      // fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'\\README.md'};
+      readmeFileName = '\\README.md';
       }
       if (isMac){
-      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'/README.md'};
+      // fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+'/README.md'};
+      readmeFileName = '/README.md';
       }
-      fs.exists(fileDataObject['absoluteFilePath'], (exists) => { 
-        if (!exists){
-          fs.writeFile(fileDataObject['absoluteFilePath'], readmeTemplate.input, (err) => {
-            // console.log('파일경로', fileDataObject['absoluteFilePath'])
-          })
-        } else{
-          var readmeFileName = '';
+      fs.exists(folderFullPath+readmeFileName, (exists) => { 
+        if (exists) {
           if (isWindow){
             readmeFileName = '\\somangReadme'+Math.floor(Math.random() * 5000)+'.md';
           }
@@ -127,65 +125,22 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
             readmeFileName = '/somangReadme'+Math.floor(Math.random() * 5000)+'.md';
           }
           fs.writeFile(folderFullPath+readmeFileName, readmeTemplate.input, (err) => {
-            fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+readmeFileName};
-          })
+            })
         }
       }); 
+          fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+readmeFileName};
     }else {
       fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': ''};
     }
     let win = remote.BrowserWindow.getFocusedWindow();
     // win.webContents.send("ping", fileDataObject);
     ipcRenderer.send("mainping", fileDataObject);
-    ipcRenderer.send("template", isTemplate);
-    win.webContents.send("addFileInList", folderFullPath);
+    // ipcRenderer.send("template", isTemplate);
+    win.webContents.send("ping", fileDataObject);
     isTemplate = false;
     parse(data.input)
   }
 });
-
-ipcRenderer.on("ping", (event, message) => {
-  //  console.log(message);
-  data.input = message["openedFileData"];
-  parse(data.input);
-});
-
-ipcRenderer.on("serverInit", (event, message) => {
-  data.input = message;
-  parse(data.input)
-});
-ipcRenderer.on("localInit", (event) => {
-  data.input = '';
-  parse(data.input)
-});
-ipcRenderer.on("getNote", (event, message, accountNo) => {
-  // console.log(message.content);
-  data.input = message.content;
-  // if(accountNo != 0) {
-  //   this.isOccupied = true;
-  //   document.getElementById("editor_div").setAttribute("disabled", true);
-  // } else {
-  //   this.isOccupied = false;
-  //   document.getElementById("editor_div").setAttribute("disabled", false);
-  // }
-  parse(data.input)
-});
-
-ipcRenderer.on("contentReset", (event, message) => {
-  data.input = ""
-  parse(data.input)
-});
-
-ipcRenderer.on("test", (event, message) => {
-  console.log(message);
-  data.input = message;
-  parse(data.input);
-}),
-
-ipcRenderer.on("serverInitInput", (event, message) => {
-  data.input = message;
-  parse(data.input);
-}),
 
 // 드래그 후 드랍을 하면,
 document.addEventListener("drop", event => {
@@ -253,6 +208,7 @@ document.addEventListener("drop", event => {
       };
       let win = remote.BrowserWindow.getFocusedWindow();
       win.webContents.send("ping", fileDataObject);
+      ipcRenderer.send("mainping", fileDataObject);
     });
   }
 });
@@ -287,7 +243,11 @@ export default {
     })
 
     ipcRenderer.on("ping", (event, fileDataObject) => {
-      data.fileName = path.basename(fileDataObject['absoluteFilePath'])
+      if (fileDataObject['absoluteFilePath'] != ''){
+        data.fileName = path.basename(fileDataObject['absoluteFilePath']);
+      }
+      data.input = fileDataObject["openedFileData"];
+      parse(data.input);
     })
   },
       
