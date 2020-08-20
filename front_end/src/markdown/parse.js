@@ -49,7 +49,6 @@ const Regex = {
 const replaceMarkdown = function(str) {
 	return new Promise((resolve, reject) => {
 //		str.then(function(data) {
-//			console.log(data);
 			str = str.replace(Regex.emoji, Replacer.emoji)
 	.replace(Regex.codeblock, Replacer.codeblock)
 	.replace(Regex.img, Replacer.img)

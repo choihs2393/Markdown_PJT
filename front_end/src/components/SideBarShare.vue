@@ -200,12 +200,9 @@ export default {
     async createWorkspace(newBandName) {
       // event.preventDefault();
       if (!!newBandName) {
-                console.log("@@@@@@@@@@@@@@@this.$store.state.selectedBandInfo.no" + this.$store.state.selectedBandInfo.no);
 
         await this.$store.dispatch("createWorkspace", newBandName);
         this.bandInfo = this.$store.state.selectedBandInfo;
-        console.log("@@@@@@@@@@@@@@@this.$store.state.selectedBandInfo" + this.$store.state.selectedBandInfo.no);
-        console.log("@@@@@@@@@@@@@@@this.bandInfo.no" + this.bandInfo.no);
         this.$store.dispatch('getNoteList', this.bandInfo)
       }
       this.$refs.form_workspace.reset();
@@ -235,10 +232,7 @@ export default {
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
-              console.log("안들어왔음" + receivedMsg.bandNo)
-              // console.log("안들어왔음" + curBandNo)
               if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                console.log('들어왔음')
                 const idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
                 
                 // this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
@@ -278,8 +272,6 @@ export default {
             res => {
               const receivedMsg = JSON.parse(res.body);
               if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                console.log(this.$store.state.selectedNoteInfo._id)
-                console.log(receivedMsg.noteNo)
                 if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
                   var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
                   if(this.$store.state.selectedNoteInfo != null && this.$store.state.selectedNoteInfo) 
@@ -295,7 +287,6 @@ export default {
                         content: receivedMsg.content,
                         occupiedNo: receivedMsg.occupiedNo, // 점유자의 account_no
                         occupiedName: receivedMsg.occupiedName // 점유자의 account_name
-                    // console.log(info);
                   }
                     this.$store.commit('SET_NOTE_CONTENT', info);
 
@@ -311,7 +302,6 @@ export default {
     changeWorkspace(bandInfo) {
       const win = remote.BrowserWindow.getFocusedWindow();
       win.webContents.send("contentReset", "");
-      console.log("@@@@@@@@@@@@@@@this.$store.state.selectedBandInfo" + this.$store.state.selectedBandInfo);
 
       if(this.$store.state.shareGroupSocket.connected)
         this.$store.state.shareGroupSocket.disconnect();
@@ -322,7 +312,6 @@ export default {
       let curBandNo = this.$store.state.selectedBandInfo.no;
       // document.getElementById("savedTime").innerHTML = "";
       this.$store.state.savedTime = "";
-      console.log("@@@@@@@@@@@@@" + curBandNo);
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
@@ -340,10 +329,7 @@ export default {
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
-              console.log("안들어왔음" + receivedMsg.bandNo)
-              console.log("안들어왔음" + curBandNo)
               if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                console.log('들어왔음')
                 const idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
                 
                 this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
@@ -383,8 +369,6 @@ export default {
             res => {
               const receivedMsg = JSON.parse(res.body);
               if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                console.log(this.$store.state.selectedNoteInfo._id)
-                console.log(receivedMsg.noteNo)
                 if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
                   var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
                   if(this.$store.state.selectedNoteInfo != null && this.$store.state.selectedNoteInfo) 
@@ -400,7 +384,6 @@ export default {
                         content: receivedMsg.content,
                         occupiedNo: receivedMsg.occupiedNo, // 점유자의 account_no
                         occupiedName: receivedMsg.occupiedName // 점유자의 account_name
-                    // console.log(info);
                   }
                     this.$store.commit('SET_NOTE_CONTENT', info);
 
@@ -420,8 +403,6 @@ export default {
     },
     //   if(this.$store.state.shareNoteSocket.connected)
     //     this.$store.state.shareNoteSocket.disconnect();
-    //   // console.log(this.$store.state.selectedBandInfo.no);
-    //   // console.log(_id);
     //   const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
     //   let socket = new SockJS(serverURL);
     //   this.stompClient = Stomp.over(socket);
@@ -430,7 +411,6 @@ export default {
     //     { Authorization: this.$store.state.authorization },
     //     frame => {
     //       this.connected = true;
-    //       console.log(this.stompClient);
     //       this.$store.commit('setShareNoteSocket',this.stompClient);
     //       this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no + "/" + _id,
     //         res => {
@@ -450,7 +430,6 @@ export default {
     //                 content: receiveMsg.content,
     //                 occupiedNo: receiveMsg.occupiedNo, // 점유자의 account_no
     //                 occupiedName: receiveMsg.occupiedName // 점유자의 account_name
-    //             // console.log(info);
     //           }
     //             this.$store.commit('SET_NOTE_CONTENT', info);
     //         }
@@ -490,11 +469,9 @@ export default {
     },
 
     showInviteModal() {
-      // console.log("전체 워크스페이스", this.$store.state.userInfo.group)
       // var workspaceNo = this.$store.state.userInfo.group.find(element => element.name == this.$store.state.workspace).no;
       // this.workspaceNo = workspaceNo;
 
-      // console.log("여기workspaceNo : " + workspaceNo);
 
       const showGroupMembers = {
         bandNo: this.bandInfo.no,
@@ -514,7 +491,6 @@ export default {
 
     openDeleteFileModal() {
       this.$store.commit("SET_IS_DELETE_FILE_MODAL", true);
-      // console.log(data)
       // this.$store.dispatch('deleteFile', data)
     }
   }

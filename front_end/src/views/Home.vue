@@ -92,13 +92,10 @@ var isWindow = navigator.platform.indexOf('Win') > -1;
 var isMac = navigator.platform.indexOf('Mac') > -1;
 
 ipcRenderer.on("pong", (event, folderPath) => {
-  // console.log('folderPath', folderPath)
   folderFullPath = folderPath;
-  // console.log('absoluteFilePath', absoluteFilePath)
   if (folderFullPath != '') {
     isPathExist = true;
   }
-  // console.log('absoluteee', folderFullPath);
 });
 
 ipcRenderer.on("newFile", (event) => {
@@ -156,7 +153,6 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
 });
 
 ipcRenderer.on("ping", (event, message) => {
-  //  console.log(message);
   data.input = message["openedFileData"];
   parse(data.input);
 });
@@ -170,7 +166,6 @@ ipcRenderer.on("localInit", (event) => {
   parse(data.input)
 });
 ipcRenderer.on("getNote", (event, message, accountNo) => {
-  // console.log(message.content);
   data.input = message.content;
   // if(accountNo != 0) {
   //   this.isOccupied = true;
@@ -188,7 +183,6 @@ ipcRenderer.on("contentReset", (event, message) => {
 });
 
 ipcRenderer.on("test", (event, message) => {
-  console.log(message);
   data.input = message;
   parse(data.input);
 }),
@@ -204,9 +198,6 @@ document.addEventListener("drop", event => {
   remote.BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
     .then(result => {
       textingFileData = result;
-
-      // console.log(typeof fileData);
-      // console.log(fileData);
 
       // 작성중인 텍스트가 있다면, 저장할건지 먼저 물어본다.
       if (textingFileData.length > 0) {
@@ -243,15 +234,11 @@ document.addEventListener("drop", event => {
   // 저장한 후에 열기.
   for (const f of event.dataTransfer.files) {
     // Using the path attribute to get absolute file path
-    // console.log('File Path of dragged files: ', f.path);
 
     fs.readFile(f.path, "utf8", (err, data) => {
       if (err) throw err;
-      // console.log('f.path', f.path)
-      // console.log(data);
       // fileData = data;
       let openedFileData = data;
-      // console.log("openedFileData : " + openedFileData);
 
       let fileDataObject = {
         openedFileData: openedFileData,
@@ -271,10 +258,8 @@ export default {
       //return this.input = tmp;
     // })
     //  data.then((tmp) => {
-      //     console.log(tmp);
     //     this.input = tmp;
     //}).then((tmp) => {
-      //   console.log(this.input);
     // return this.$store.state.parseData;
     //return parse(this.input);
     // });
@@ -306,10 +291,8 @@ export default {
   computed: {
     compiledMarkdown: function() {
       // data.then((tmp) => {
-      // console.log(tmp);
       //  this.input = tmp;
       //}).then((tmp) => {
-      //   console.log(this.input);
       // this.$store.state.parseData = parse(tmp);
 
       //  this.$store.commit('setParseData', parse(this.input));
@@ -340,19 +323,16 @@ export default {
   },
 
   // data: async () => {
-  //   console.log(data);
   //   return await data;
   // }
   methods: {
     whenKeyPress() {
     //   data = ClipboardEvent.clipboardData;
-    //  // console.log('클립보드 정보를 내놔 ' +ClipboardEvent.clipboardData.getData("test"));
     //   var pasteEvent = new ClipboardEvent('paste');
     //   pasteEvent.clipboardData.items.add('My string', 'text/plain');
     //   document.dispatchEvent(pasteEvent);
     },
     whenKeyDown() {
-     // console.log(event.target.value.type);
     },
     ...mapActions(["saveNote"]),
 
@@ -368,7 +348,6 @@ export default {
       if(this.$store.state.syncCheck === false) { 
         this.$store.commit('setSyncCheck',true);
         var timer = setTimeout(() => {
-          console.log("들어왔음!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
           clearTimeout(getTempData);
           parse(tmp);
           getStore.commit('setSyncCheck',false);
@@ -396,24 +375,12 @@ export default {
         let occupyAccountNo = this.$store.state.selectedNoteInfo.occupiedNo;
         let loginAccountNo = this.$store.state.userInfo.no;
         let loginAccountName = this.$store.state.userInfo.name;
-        console.log(bandNo)
-                console.log(noteNo)
-
-        console.log(subject)
-
-        console.log(occupyAccountNo)
-
-        console.log(loginAccountNo)
-
-        console.log(loginAccountName)
 
         if(noteNo != '' && bandNo != '' && occupyAccountNo != '' && occupyAccountNo == loginAccountNo){
           // if(this.$store.state.storeSyncCheck === false){
           //   this.$store.commit('setStoreSyncCheck', true);
           //   let storeTimer = setTimeout(() => {
           //     clearTimeout(this.$store.state.storeTempData);
-          //     // console.log('로직 안 this22222', this);
-          //     console.log("영복이의 share 50000짜리 로그추적 " + tmp);
           //     this.shareNote(tmp, bandNo, noteNo, occupyAccountNo, subject, loginAccountName);
           //     this.$store.commit('setStoreSyncCheck', false);
           //   }, 1000 * 5);
@@ -421,11 +388,6 @@ export default {
           // }
           clearTimeout(this.$store.state.storeTempData);
           let timeOut_ = setTimeout(() => {
-              console.log("들어옴") 
-              // console.log('로직 안 this', this);
-              // console.log("영복이의 로그추적 " + tmp);
-              // console.log(this.$store.state.stroeTimer);
-              console.log("영복이의 Share 로그추적 " + tmp);
               // this.$store.commit('setStoreSyncCheck', false);
               // clearTimeout(this.$store.state.storeTimer);
               this.shareNote(tmp, bandNo, noteNo, occupyAccountNo, subject, loginAccountName);
@@ -458,8 +420,6 @@ export default {
           day = '0' + day;
 
       this.$store.state.savedTime = "저장 일시 : " + [year, month, day].join('-') + " " + [hour, min, sec].join(':');
-      console.log(this.$store.state.savedTime);
-      console.log(inputContent);
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
@@ -492,7 +452,6 @@ export default {
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
-      console.log(this.$store.state.selectedNoteInfo._id);
       // 2. 소켓 연결하기
       this.stompClient.connect({ Authorization: this.$store.state.authorization },
         frame => {
@@ -518,7 +477,6 @@ export default {
 
     // 해당 파일 점유 포기하기.
     vacate(selectedNoteNo) {
-      console.log("vacate 송신1 : " +this.$store.state.selectedNoteInfo._id);
       let _accountNo = this.$store.state.userInfo.no;
       let _id = this.$store.state.selectedNoteInfo._id;
       let _subject = this.$store.state.selectedNoteInfo.subject;
@@ -530,7 +488,6 @@ export default {
       var idx = this.$store.state.noteList.findIndex(item => item._id ==this.$store.state.selectedNoteInfo._id)
       this.$store.state.noteList[idx].occupiedNo = 0;
       this.$store.state.noteList[idx].occupiedName = "";
-      console.log("vacate 송신2 : " +this.$store.state.selectedNoteInfo._id);
 
       // 1. 소켓 뚫기
       // const serverURL = "http://localhost:8080/noteAPI/ws";
@@ -538,7 +495,6 @@ export default {
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
       this.$store.state.aaa = this.stompClient;
-      console.log("vacate 송신3 : " +this.$store.state.selectedNoteInfo._id);
 
       // 2. 소켓 연결하기
       this.stompClient.connect({ Authorization: this.$store.state.authorization },
@@ -549,7 +505,6 @@ export default {
               subject: _subject,
               content: _content
           }
-          console.log(map);
           // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유권을 놓겠다'고 send하기
           this.stompClient.send("/groupReceive/vacate/" + _bandNo, JSON.stringify(map));
         }

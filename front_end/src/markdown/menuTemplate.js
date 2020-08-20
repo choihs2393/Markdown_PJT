@@ -157,8 +157,6 @@ function openFile() {
     .then(result => {
         fileData = result;
 
-        // console.log(typeof fileData);
-        // console.log(fileData);
 
         // 작성중인 텍스트가 있다면, 저장할건지 먼저 물어본 뒤 파일을 열기.
         if(fileData.length > 0) {
@@ -185,7 +183,6 @@ function openFile() {
                         }
                     )
                     .then(result => {
-                        // console.log(result.filePath);
             
                         var fileName = result.filePath;
                         fs.writeFile(fileName, fileData, (err) => {
@@ -208,12 +205,9 @@ function openFile() {
             absoluteFilePath = absoluteFilePath.substr(1, absoluteFilePath.length - 2)
 
             fs.readFile(absoluteFilePath, 'utf8', (err, data) => {
-                // console.log(absoluteFilePath);
                 if (err) throw err;
-                // console.log(data);
                 // fileData = data;
                 openedFileData = data;
-                // console.log(openedFileData);
 
                 let fileDataObject = {'openedFileData': openedFileData, 'absoluteFilePath': absoluteFilePath};
                 let win = BrowserWindow.getFocusedWindow();
@@ -224,7 +218,6 @@ function openFile() {
 }
 
 function createHelpWindow() {
-    console.log(`file://${__dirname}/app/help.html`)
     // Create the browser window.
     let win = new BrowserWindow({
       width: 600,
@@ -257,7 +250,6 @@ function saveAsFile() {
     BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
     .then(result => {
         fileData = result;
-        // console.log(fileData);
     });
 
     var fileName = dialog.showSaveDialog(BrowserWindow.getFocusedWindow(),
@@ -336,7 +328,6 @@ function openNewReadme() {
                       }
                   )
                   .then(result => {
-                      // console.log(result.filePath);
           
                       var fileName = result.filePath;
                       fs.writeFile(fileName, fileData, (err) => {
@@ -373,7 +364,6 @@ function openNewReadme() {
             if(!result.canceled){
               
             
-            console.log(result.filePath);
   
               var fileName = result.filePath;
               fs.writeFile(fileName, fileData, (err) => {

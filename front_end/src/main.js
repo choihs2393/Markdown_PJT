@@ -29,7 +29,6 @@ Object.defineProperty(Date.prototype, 'YYYYMMDDHHMMSS', {
 axios.interceptors.request.use(
   function (config) {
     // 요청을 보내기 전에 수행할 일
-    // console.log('request interceptor!!');
     config.headers.Authorization = localStorage.getItem('authorization');
     
     return config;
@@ -42,22 +41,15 @@ axios.interceptors.request.use(
   
   axios.interceptors.response.use(
     function(response) {
-      // console.log('response interceptor success!!');
-
       const nowTime = Number(new Date().YYYYMMDDHHMMSS())
       const accessTokenExpiraionTime = Number(localStorage.getItem('access-token-expiraion-date'))
       const refreshTokenExpiraionTime = Number(localStorage.getItem('refresh-token-expiraion-date'))
-
-      // console.log('Access Token 남은시간', accessTokenExpiraionTime - nowTime)
-      // console.log('Refresh Token 남은시간', refreshTokenExpiraionTime - nowTime)
 
       if (!!localStorage.getItem('authorization')) {
         if (nowTime > accessTokenExpiraionTime - 1000 && nowTime < accessTokenExpiraionTime) {
           
           axios.post(SERVER.URL + SERVER.ROUTES.newATBA)
           .then(res => {
-            // console.log('res:', res)
-            console.log('Access Token 기간 만료되기 전 갱신!!')
             store.commit('SET_TOKEN', res.headers)
           })
           .catch(err => console.error(err.response.data))
@@ -67,8 +59,6 @@ axios.interceptors.request.use(
           
           axios.post(SERVER.URL + SERVER.ROUTES.newATBA)
           .then(res => {
-            // console.log('res:', res)
-            console.log('Refresh Token 기간 만료되기 전 갱신!!')
             store.commit('SET_TOKEN', res.headers)
           })
           .catch(err => console.error(err.response.data))
@@ -79,24 +69,17 @@ axios.interceptors.request.use(
     },
 
     function(err) {
-      // console.log('response interceptor error!!');
-
       const errorAPI = err.config
 
       // if (err.response.status===401 && errorAPI.retry===undefined) {
       if (err.response.status===406 && errorAPI.retry===undefined) {
-        // console.log('response interceptor 401 error!!');
-
         errorAPI.retry = true
 
         if (!!localStorage.getItem('authorization')) {
           return axios.post(SERVER.URL + SERVER.ROUTES.newATBR, null, { headers: { RefreshToken: localStorage.getItem('refresh-token') } })
             .then(res => {
               
-              console.log('Access Token 기간 만료 후 갱신!!')
-              // console.log(res.headers)
               store.commit('SET_TOKEN', res.headers)
-              // console.log('errorAPI', errorAPI)
               return axios(errorAPI)
             })
             .catch(err => {
@@ -104,7 +87,6 @@ axios.interceptors.request.use(
               store.dispatch('logout')
             })
         } else {
-          console.log('로그아웃 상태')
         }
       } else if (err.response.status===401 && !!localStorage.getItem('authorization')) {
         store.dispatch('logout')
