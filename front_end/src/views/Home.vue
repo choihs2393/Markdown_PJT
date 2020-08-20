@@ -517,7 +517,7 @@ export default {
     },
 
     // 해당 파일 점유 포기하기.
-    async vacate(selectedNoteNo) {
+    vacate(selectedNoteNo) {
       console.log("vacate 송신1 : " +this.$store.state.selectedNoteInfo._id);
       let _accountNo = this.$store.state.userInfo.no;
       let _id = this.$store.state.selectedNoteInfo._id;

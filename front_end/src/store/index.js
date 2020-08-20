@@ -50,6 +50,9 @@ export default new Vuex.Store({
     syncCheck: false,
     timer: '',
 
+    // invite 데이터 저장
+    inviteTempData: '',
+
     // 자동 저장되는 데이터 저장.
     storeTempData: '',
     storeSyncCheck: false,
@@ -117,6 +120,11 @@ export default new Vuex.Store({
   // commit 을 통해 실행함.
   // mutations은 첫 번째 인자로 state를 받아야함.
   mutations: {
+    //invite 처리를 위한 데이터
+    setInviteTempData(state, param){
+      state.inviteTempData = param;
+    },
+
     //소켓처리를 위한 데이터
     setShareNoteSocket(state, param){
       state.shareNoteSocket = param;
@@ -558,6 +566,9 @@ export default new Vuex.Store({
 
     // 가입된 회원인지 확인
     findAccountList({ state, dispatch }, email) {
+      state.alreadyMemberAlert = false;
+      state.noSuchMemberAlert = false;
+      state.canInvite = true;
       var map = {
         email: email
       }
@@ -568,6 +579,7 @@ export default new Vuex.Store({
         // console.log("res.data.map.primitiveAccountList[0].no : ", res.data.map.primitiveAccountList[0].no);
         if (res.data.result === "success") {
           state.newMemberInfo.no = res.data.map.primitiveAccountList[0].no; // 초대받을 사람의 account_no를 보관.
+          
 
           const inviteBandMember = {
             bandNo: state.selectedBandInfo.no,
@@ -578,8 +590,11 @@ export default new Vuex.Store({
           console.log("이거 왜 들어와 ㅋㅋㅋㅋㅋ");
           dispatch("inviteBandMember", inviteBandMember)
         } else {
-          state.noSuchMemberAlert = !(state.noSuchMemberAlert)
-          state.canInvite = true;
+          console.log("바껴야 정상입니다.")
+          state.noSuchMemberAlert = true;
+          state.canInvite = false;
+          console.log("바껴야 정상입니다.")
+
         }
       })
     },
@@ -588,7 +603,6 @@ export default new Vuex.Store({
     inviteBandMember({ state, commit }, inviteBandMember) {
       // console.log("[inviteBandMember] inviteBandMember()", inviteBandMember);
 
-      state.noSuchMemberAlert = false;
       axios.post(SERVER.URL + SERVER.ROUTES.inviteBandMember, inviteBandMember, { headers: { email: state.userInfo.email} })
       .then(res => {
         if(res.data.result == "success"){
@@ -597,8 +611,10 @@ export default new Vuex.Store({
           console.log("res.data.result : ", res.data.map.bandMember)
           commit("GET_NEW_MEMBER_INFO", res.data.map.bandMember)
         }else{
-          state.alreadyMemberAlert = !(state.alreadyMemberAlert)
-          state.canInvite = true;
+          console.log("바껴야 정상입니다.222222222")
+          state.alreadyMemberAlert = true;
+          state.canInvite = false;
+          console.log("바껴야 정상입니다.22222222")
         }
       })
     },
