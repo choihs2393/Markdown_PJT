@@ -218,16 +218,17 @@ export default {
     changeWorkspace(bandInfo) {
       const win = remote.BrowserWindow.getFocusedWindow();
       win.webContents.send("contentReset", "");
+      
+      if(this.$store.state.shareGroupSocket.connected)
+        this.$store.state.shareGroupSocket.disconnect();
+      this.$store.commit('SELECTED_WORKSPACE', bandInfo)
+      this.$store.dispatch('getNoteList', bandInfo)
+
       this.$store.state.selectedNoteInfo = {};
       let curBandNo = this.$store.state.selectedBandInfo.no;
       // document.getElementById("savedTime").innerHTML = "";
       this.$store.state.savedTime = "";
-
-      if(this.$store.state.shareGroupSocket.connected)
-        this.$store.state.shareGroupSocket.disconnect();
-      console.log("bandInfo: ", bandInfo)
-      this.$store.commit('SELECTED_WORKSPACE', bandInfo)
-      this.$store.dispatch('getNoteList', bandInfo)
+      console.log("@@@@@@@@@@@@@" + curBandNo);
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
@@ -294,7 +295,6 @@ export default {
                   var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
                   if(this.$store.state.selectedNoteInfo != null && this.$store.state.selectedNoteInfo) 
                   this.$store.state.selectedNoteInfo.content = receivedMsg.content;
-                  
                   if(this.$store.state.userInfo.no != receivedMsg.occupiedNo){
                     win.webContents.send("test", receivedMsg.content);
                   }

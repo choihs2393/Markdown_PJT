@@ -10,7 +10,6 @@
           hide-details
           @click:append="inviteBandMember"
           @keydown.enter="inviteBandMember"
-          @click="$store.state.noSuchMemberAlert=false; $store.state.alreadyMemberAlert=false"
           @keydown="$store.state.noSuchMemberAlert=false; $store.state.alreadyMemberAlert=false"
         ></v-text-field>
       </v-toolbar>
