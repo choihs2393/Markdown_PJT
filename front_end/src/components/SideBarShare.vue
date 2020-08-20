@@ -242,7 +242,10 @@ export default {
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
+              console.log("안들어왔음" + receivedMsg.bandNo)
+              console.log("안들어왔음" + curBandNo)
               if(receivedMsg.bandNo == curBandNo){
+                console.log('들어왔음')
                 const idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
                 
                 this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
