@@ -74,7 +74,7 @@
         <v-list-item
           v-for="note in noteList"
           :key="note._id"
-          @click="getNote(note); changeNote(note, note._id)"
+          @click="getNote(note)"
           @mousedown.right="$refs.fileMenu.open($event, note), setRightNoteInfo(note)"
         >
           <v-list-item-content>
@@ -214,7 +214,7 @@ export default {
       console.log("bandInfo: ", bandInfo)
       this.$store.commit('SELECTED_WORKSPACE', bandInfo)
       this.$store.dispatch('getNoteList', bandInfo)
-
+      const win = remote.BrowserWindow.getFocusedWindow();
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
@@ -288,7 +288,7 @@ export default {
           this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receiveMsg = JSON.parse(res.body);
-
+              
               var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
               this.$store.state.selectedNoteInfo.content = receiveMsg.content;
 

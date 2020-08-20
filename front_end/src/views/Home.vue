@@ -380,15 +380,24 @@ export default {
       let loginAccountNo = this.$store.state.userInfo.no;
       // console.log("영복이의 로그추적"  + bandNo);
       // console.log("영복이의 로그추적 " + noteNo);
-      // console.log("영복이의 로그추적 " + occupyAccountNo);
-      // console.log("영복이의 로그추적 " + loginAccountNo);
-      // console.log("영복이의 로그추적 " + tmp);
+            console.log("영복이의 로그추적 " + noteNo);
+            console.log("영복이의 로그추적 " + bandNo);
 
+      console.log("영복이의 로그추적 " + occupyAccountNo);
+      console.log("영복이의 로그추적 " + loginAccountNo);
+      console.log("영복이의 로그추적 " + tmp);
+      console.log(typeof bandNo);
+      console.log(typeof noteNo);
+      console.log(typeof occupyAccountNo);
+      console.log(typeof loginAccountNo);
       /*
       * this is a auto save + share part
       */
       if(this.$store.state.isShareMode){
-        if(noteNo !== '' && bandNo !== '' && occupyAccountNo !== '' && occupyAccountNo === loginAccountNo){
+                  console.log("shareMode로 들어옴")
+
+        if(noteNo != '' && bandNo != '' && occupyAccountNo != '' && occupyAccountNo == loginAccountNo){
+          console.log("들어옴")
           if(this.$store.state.storeSyncCheck === false){
             this.$store.commit('setStoreSyncCheck', true);
             let storeTimer = setTimeout(() => {
@@ -405,7 +414,7 @@ export default {
               // console.log('로직 안 this', this);
               // console.log("영복이의 로그추적 " + tmp);
               // console.log(this.$store.state.stroeTimer);
-              //console.log("영복이의 Share 로그추적 " + tmp);
+              console.log("영복이의 Share 로그추적 " + tmp);
               this.shareNote(tmp);
               this.$store.commit('setStoreSyncCheck', false);
               clearTimeout(this.$store.state.storeTimer);
@@ -449,7 +458,7 @@ export default {
       )
     },
 
-
+    
     // 해당 파일 점유하기.
     occupy(selectedNoteNo) {
       this.$store.state.selectedNoteInfo.occupiedNo = this.$store.state.userInfo.no;
@@ -474,7 +483,8 @@ export default {
 
           // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유하고 있다'고 점유를 풀때까지 무한정 send하기
           // setInterval(() => {
-            this.stompClient.send("/groupReceive/occupy/" + this.$store.state.selectedBandInfo.no, JSON.stringify(map)); 
+            this.stompClient.send("/groupReceive/occupy/" + this.$store.state.selectedBandInfo.no, JSON.stringify(map));
+            this.stompClient.disconnect(); 
           // }, 5000);
         }
       )
