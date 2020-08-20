@@ -8,7 +8,7 @@
           </v-toolbar>
           <v-card-text>
             <v-form class="ma-4">
-              <ValidationProvider
+              <!-- <ValidationProvider
                 mode="eager" v-slot="{ errors }" name="Email"
                 rules="required|email">
                 <v-text-field
@@ -18,7 +18,7 @@
                   required
                   type="email">
                 </v-text-field>
-              </ValidationProvider>
+              </ValidationProvider> -->
 
               <ValidationProvider mode="eager" v-slot="{ errors }" name="Name" rules="required|max:10">
                 <v-text-field
@@ -86,7 +86,7 @@
 <script>
 import { mapActions } from 'vuex'
 
-import { required, email, max, min, regex, confirmed } from 'vee-validate/dist/rules';
+import { required, max, min, regex, confirmed } from 'vee-validate/dist/rules';
 import { extend, ValidationObserver, setInteractionMode, ValidationProvider } from 'vee-validate'
 
 import DeleteAccountModal from './DeleteAccountModal.vue'
@@ -98,10 +98,10 @@ extend('required', {
   message: '{_field_} 값은 반드시 입력해야 합니다.',
 })
 
-extend('email', {
-  ...email,
-  message: '{_field_} 형식이 아닙니다.',
-})
+// extend('email', {
+//   ...email,
+//   message: '{_field_} 형식이 아닙니다.',
+// })
 
 extend('regex', {
   ...regex,
@@ -134,7 +134,7 @@ export default {
   data() {
     return {
       userInfo: {
-        email: '',
+        email: this.$store.state.userInfo.email,
         newName: '',
         password: '',
         newPassword: '',
@@ -156,7 +156,7 @@ export default {
 
     close() {
       this.userInfo = {
-        email: '',
+        email: this.$store.state.userInfo.email,
         newName: '',
         password: '',
         newPassword: '',
