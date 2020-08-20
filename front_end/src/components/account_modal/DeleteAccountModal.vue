@@ -26,7 +26,6 @@ export default {
 
     deleteAccount(userInfo) {
       this.$store.dispatch('deleteAccount', userInfo)
-      this.$store.commit('SET_IS_MYPAGE_MODAL', false)
     },
 
     close() {

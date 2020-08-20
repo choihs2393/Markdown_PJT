@@ -165,7 +165,6 @@ if (!!this.$store.state.isShareMode == false) {
     } else if (!!this.$store.state.isShareMode == true) {
       this.$store.commit("SET_IS_DRAWER_SHARE", true);
       this.$store.commit("SET_IS_DRAWER", false);
-      // this.changeModeLocaltoServer();
     }    
 
 
@@ -194,7 +193,6 @@ if (!!this.$store.state.isShareMode == false) {
       else if (!!this.$store.state.isShareMode == true) {
         this.$store.commit("SET_IS_DRAWER_SHARE", true);
         this.$store.commit("SET_IS_DRAWER", false);
-        win.webContents.send("serverInit", serverStartInput);
 
         this.$store.state.noteList = [];
         this.$store.state.selectedNoteInfo = {};
@@ -217,12 +215,14 @@ if (!!this.$store.state.isShareMode == false) {
       defaultId: 1
   };
     var fileData = '';
+    let iscanceled = false;
     remote.BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
     .then(result => {
       fileData = result;
-        // console.log('fileData', fileData)
-      if (fileData === '' || fileData === serverStartInput){ 
-      }else if (!this.absoluteFilePath){
+        console.log('fileData', fileData)
+        console.log('this.absoluteFilePath', this.absoluteFilePath)
+      if (fileData === ''){ 
+      }else if (this.absoluteFilePath === ''){
           dialog.showMessageBox(optionsForJustSaveas)
           .then(result => {
           if(result.response == 1) {
@@ -237,10 +237,14 @@ if (!!this.$store.state.isShareMode == false) {
                     }
                 )
                 .then(result => {
+                   if(!result.canceled){
                     // console.log(result.filePath);
                     var fileName = result.filePath;
                     fs.writeFile(fileName, fileData, (err) => {    
-                    })
+                      })
+                   }else{
+                    iscanceled = true;
+                   }
                 });   
            }
         }) 
@@ -268,14 +272,15 @@ if (!!this.$store.state.isShareMode == false) {
             )
             .then(result => {
               if(!result.canceled){
-                
               
               console.log(result.filePath);
 
                 var fileName = result.filePath;
                 fs.writeFile(fileName, fileData, (err) => {
                 })
-              }
+              }else{
+                    iscanceled = true;
+                   }
             });
           }
           // 2 : Save
@@ -285,8 +290,13 @@ if (!!this.$store.state.isShareMode == false) {
           }
         });
         }
-        remote.BrowserWindow.getFocusedWindow().webContents.send("serverInit", serverStartInput);
       });
+          if (iscanceled == false){
+            console.log('!iscanceled')
+            let fileDataObject = {'openedFileData': '', 'absoluteFilePath': ''};
+            ipcRenderer.send("mainping", fileDataObject);
+            win.webContents.send("serverInit", serverStartInput);
+          }
       }
     },
 

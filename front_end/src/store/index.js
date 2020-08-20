@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 import axios from 'axios'
 import SERVER from '@/api/spring'
 import { ipcRenderer, remote } from 'electron';
+import serverStartInput from "../markdown/serverStartInput.js";
 
 Vue.use(Vuex);
 
@@ -339,6 +340,10 @@ export default new Vuex.Store({
 
           state.noteList = [];
           state.selectedNoteInfo = {};
+          let win = remote.BrowserWindow.getFocusedWindow();
+          win.webContents.send("serverInit", serverStartInput);
+          let fileDataObject = {'openedFileData': '', 'absoluteFilePath': ''};
+          ipcRenderer.send("mainping", fileDataObject);
         })
         .catch(err => {
           console.error(err.response.data)
@@ -453,6 +458,7 @@ export default new Vuex.Store({
           console.log(res)
           if (res.data['result'] === 'success') {
             commit('SET_MODIFY_RESULT', false)
+            commit('SET_IS_MYPAGE_MODAL', false)
             dispatch('logout')
           }
 

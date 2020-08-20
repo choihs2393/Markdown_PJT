@@ -35,12 +35,12 @@ app.on ( 'browser-window-blur', function () {
 });
 
   
-let openFileData;
+let openFileData='';
 ipcMain.on("mainping", (event, message)=>{
     openFileData = message['openedFileData'];
   }
 )
-let absoluteFilePath;
+let absoluteFilePath='';
 ipcMain.on("mainping", (event, message)=>{
   absoluteFilePath = message['absoluteFilePath'];
   }
@@ -109,7 +109,7 @@ function createWindow() {
     BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
     .then(result => {
       fileData = result;
-      if (!absoluteFilePath){
+      if (absoluteFilePath === ''){
         if (fileData === sampleData.input){
           BrowserWindow.getFocusedWindow().destroy();
         } else{
