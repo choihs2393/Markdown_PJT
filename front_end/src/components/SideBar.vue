@@ -115,37 +115,9 @@ export default {
           }
         }
       })
-    });
-    ipcRenderer.on("addInSidebar", (event, message) => {
-      var absoluteFilePath = message['absoluteFilePath'];
-      console.log('absolute', absoluteFilePath);
-      var folderFullPath = path.dirname(absoluteFilePath);
-      var folderName = path.basename(path.dirname(absoluteFilePath));
-
-      // console.log("folderFullPath : " + folderFullPath);
-      // console.log("folderName : " + folderName);
-      this.folders = [];
-      this.folders.push({icon: 'folder',  iconClass: 'grey lighten-1 white--text', title: folderName});
-
-      fs.readdir(folderFullPath, (err, fileList) => {
-        this.files = [];
-
-        // console.log('filelist', fileList);
-
-        for(var i = 0; i < fileList.length; i++) {
-          // console.log(folderFullPath + "\\" + fileList[i]);
-          if(fileList[i].substring(fileList[i].length-3, fileList[i].length) === '.md'){
-            if(isWindow) {
-            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "\\" + fileList[i]});
-            }
-            if(isMac) {
-            this.files.push({ icon: 'assignment', iconClass: 'blue white--text', title: fileList[i], fileFullPath: folderFullPath + "/" + fileList[i]});
-            }
-          }
-        }
-      })
       ipcRenderer.send("mainping", message);
     });
+   
     ipcRenderer.on("addFileInList", (event, folderFullPath) => {
         fs.readdir(folderFullPath, (err, fileList) => {
         this.files = [];
