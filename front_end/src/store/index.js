@@ -672,11 +672,12 @@ export default new Vuex.Store({
         bandNo: state.selectedBandInfo.no,
         noteNo: noteInfo._id,
       }
-      // console.log(noteInfo)
+      console.log("noteInfo", noteInfo)
+      console.log("info", info)
       axios.post(SERVER.URL + SERVER.ROUTES.deleteNote, info)
         .then(() => {
           commit('DELETE_NOTE', info.noteNo)
-          commit('SELECTED_WORKSPACE', {})
+          // commit('SELECTED_WORKSPACE', {})
           dispatch('getNoteList', state.selectedBandInfo)
         })
         .catch(err => console.error(err.response.data))
@@ -717,6 +718,7 @@ export default new Vuex.Store({
             win.webContents.send('getNote', res.data.map.content, info.accountNo)
             // win.webContents.send('getNote', res.data.map.content, state.noteList.find(item => item._id === info.noteNo).accountNo)
             state.storeTimer = '';
+            document.getElementById("serverFileName").style.display = "inline";
           } else if (res.data.result==='empty') {
             win.webContents.send('getNote', '')
           }
