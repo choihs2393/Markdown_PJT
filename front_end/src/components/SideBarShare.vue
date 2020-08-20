@@ -62,7 +62,7 @@
       </v-row>
       <v-row>
         <v-spacer></v-spacer>
-        <v-btn text color="grey darken-1" v-if="!!bandInfo" right tile @click="showInviteModal()">
+        <v-btn text color="grey darken-1" v-if="!!bandInfo" right tile @click="showInviteModal(); $store.state.noSuchMemberAlert=false; $store.state.alreadyMemberAlert=false">
           <v-icon left>mdi-plus</v-icon>
           invite
         </v-btn>
@@ -284,32 +284,8 @@ export default {
               this.$store.dispatch('getNoteList', this.bandInfo)
             } 
           )
-          
-        }
-      );
 
-      console.log("this.stompClient", this.stompClient)
-      // this.stompClient.disconnect();
-    },
-
-    changeNote(note, _id){
-      if(this.$store.state.savedTime != '')
-        this.$store.state.savedTime = '';
-      if(this.$store.state.shareNoteSocket.connected)
-        this.$store.state.shareNoteSocket.disconnect();
-      // console.log(this.$store.state.selectedBandInfo.no);
-      // console.log(_id);
-      const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
-      let socket = new SockJS(serverURL);
-      this.stompClient = Stomp.over(socket);
-      const win = remote.BrowserWindow.getFocusedWindow();
-      this.stompClient.connect(
-        { Authorization: this.$store.state.authorization },
-        frame => {
-          this.connected = true;
-          console.log(this.stompClient);
-          this.$store.commit('setShareNoteSocket',this.stompClient);
-          this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no + "/" + _id,
+          this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receiveMsg = JSON.parse(res.body);
 
@@ -332,9 +308,57 @@ export default {
                 this.$store.commit('SET_NOTE_CONTENT', info);
             }
           )
+          
         }
       );
+
+      console.log("this.stompClient", this.stompClient)
+      // this.stompClient.disconnect();
     },
+
+    // changeNote(note, _id){
+    //   if(this.$store.state.savedTime != '')
+    //     this.$store.state.savedTime = '';
+    //   if(this.$store.state.shareNoteSocket.connected)
+    //     this.$store.state.shareNoteSocket.disconnect();
+    //   // console.log(this.$store.state.selectedBandInfo.no);
+    //   // console.log(_id);
+    //   const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
+    //   let socket = new SockJS(serverURL);
+    //   this.stompClient = Stomp.over(socket);
+    //   const win = remote.BrowserWindow.getFocusedWindow();
+    //   this.stompClient.connect(
+    //     { Authorization: this.$store.state.authorization },
+    //     frame => {
+    //       this.connected = true;
+    //       console.log(this.stompClient);
+    //       this.$store.commit('setShareNoteSocket',this.stompClient);
+    //       this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no + "/" + _id,
+    //         res => {
+    //           const receiveMsg = JSON.parse(res.body);
+
+    //           var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
+    //           this.$store.state.selectedNoteInfo.content = receiveMsg.content;
+
+    //           if(this.$store.state.userInfo.no != receiveMsg.occupiedNo)                         {
+    //             win.webContents.send("test", receiveMsg.content);
+    //           }
+    //               const info = {
+    //                 accountNo: receiveMsg.accountNo,
+    //                 bandNo: receiveMsg.bandNo,
+    //                 noteNo: receiveMsg.noteNo,
+    //                 subject: receiveMsg.subject,
+    //                 content: receiveMsg.content,
+    //                 occupiedNo: receiveMsg.occupiedNo, // 점유자의 account_no
+    //                 occupiedName: receiveMsg.occupiedName // 점유자의 account_name
+    //             // console.log(info);
+    //           }
+    //             this.$store.commit('SET_NOTE_CONTENT', info);
+    //         }
+    //       )
+    //     }
+    //   );
+    // },
 
 
     deleteWorkspace() {
