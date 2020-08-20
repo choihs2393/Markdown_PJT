@@ -103,7 +103,6 @@ export default {
         if (!!this.$store.state.isShareMode == false) {
         this.$store.commit("SET_IS_DRAWER_SHARE", false);
         this.$store.commit("SET_IS_DRAWER", true);
-        win.webContents.send("serverInit", serverStartInput);
         
       } else if (!!this.$store.state.isShareMode == true) {
         this.$store.commit("SET_IS_DRAWER_SHARE", true);

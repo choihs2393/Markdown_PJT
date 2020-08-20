@@ -240,12 +240,12 @@ function createHelpWindow() {
   });
   }
 
-let openFileData;
+let openFileData = '';
 ipcMain.on("mainping", (event, message)=>{
     openFileData = message['openedFileData'];
     }
 )
-let absoluteFilePath;
+let absoluteFilePath = '';
 ipcMain.on("mainping", (event, message)=>{
     absoluteFilePath = message['absoluteFilePath'];
     }
@@ -276,7 +276,7 @@ function saveAsFile() {
         let fileDataObject = {'openedFileData': fileData, 'absoluteFilePath': fileName};
         if(!result.canceled){
             let win = BrowserWindow.getFocusedWindow();
-            win.webContents.send("addInSidebar", fileDataObject);
+            win.webContents.send("ping", fileDataObject);
         }
     })
 }
@@ -286,7 +286,7 @@ function saveFile(){
     BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
     .then(result => {
         fileData = result;
-        if (!absoluteFilePath){
+        if (absoluteFilePath === ''){
             saveAsFile();
         } else {
             fs.writeFile(absoluteFilePath, fileData, (err) => { })
@@ -319,7 +319,7 @@ function openNewReadme() {
       BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
       .then(result => {
         fileData = result;
-        if (!absoluteFilePath){
+        if (absoluteFilePath === ''){
           if (fileData === sampleData.input){
           } else{
             dialog.showMessageBox(optionsForJustSaveas)
