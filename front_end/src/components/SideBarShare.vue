@@ -211,12 +211,14 @@ export default {
       const win = remote.BrowserWindow.getFocusedWindow();
       win.webContents.send("contentReset", "");
       this.$store.state.selectedNoteInfo = {};
+      document.getElementById("savedTime").innerHTML = "";
     },
 
     changeWorkspace(bandInfo) {
       const win = remote.BrowserWindow.getFocusedWindow();
       win.webContents.send("contentReset", "");
       this.$store.state.selectedNoteInfo = {};
+      document.getElementById("savedTime").innerHTML = "";
 
       if(this.$store.state.shareGroupSocket.connected)
         this.$store.state.shareGroupSocket.disconnect();
