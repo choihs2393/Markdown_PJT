@@ -209,7 +209,6 @@ export default {
     },
 
     changeWorkspace(bandInfo) {
-      console.log('들어왔는감?')
       if(this.$store.state.shareGroupSocket.connected)
         this.$store.state.shareGroupSocket.disconnect();
       console.log("bandInfo: ", bandInfo)

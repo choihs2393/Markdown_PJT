@@ -639,6 +639,8 @@ export default new Vuex.Store({
             }
           })
           .catch(err => console.error(err.response.data))
+      } else {
+        commit('INIT_NOTE_LIST', [])
       }
     },
 
@@ -674,6 +676,7 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.deleteNote, info)
         .then(() => {
           commit('DELETE_NOTE', info.noteNo)
+          commit('SELECTED_WORKSPACE', {})
           dispatch('getNoteList', state.selectedBandInfo)
         })
         .catch(err => console.error(err.response.data))

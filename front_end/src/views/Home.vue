@@ -58,6 +58,7 @@ import parse from "../markdown/parse";
 import sampleData from "../markdown/sampleData.js";
 import readmeTemplate from "../markdown/readmeTemplate.js";
 
+import store from '../store'
 import { mapActions, mapGetters } from "vuex";
 
 import { remote, ipcRenderer, shell } from "electron";
@@ -144,7 +145,7 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
 });
 
 ipcRenderer.on("ping", (event, message) => {
-   console.log(message);
+  //  console.log(message);
   data.input = message["openedFileData"];
   parse(data.input);
 });
@@ -226,8 +227,8 @@ document.addEventListener("drop", event => {
             .then(result => {
               var filePath = result.filePath;
               fs.writeFile(filePath, textingFileData, (err) => {
-
-              })
+                
+                })
             });
         }
       } // 작성중인 텍스트가 있다는 조건문
@@ -261,13 +262,13 @@ export default {
   components: {},
   created() {
     //data.then(function(tmp) {
-    //return this.input = tmp;
+      //return this.input = tmp;
     // })
     //  data.then((tmp) => {
-    //     console.log(tmp);
+      //     console.log(tmp);
     //     this.input = tmp;
     //}).then((tmp) => {
-    //   console.log(this.input);
+      //   console.log(this.input);
     // return this.$store.state.parseData;
     //return parse(this.input);
     // });
