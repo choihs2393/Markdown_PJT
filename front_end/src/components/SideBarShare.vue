@@ -283,23 +283,23 @@ export default {
 
           this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no,
             res => {
-              const receiveMsg = JSON.parse(res.body);
+              const receivedMsg = JSON.parse(res.body);
               if(receivedMsg.bandNo == curBandNo){
-                var idx = this.$store.state.noteList.findIndex(element => element._id == receiveMsg.noteNo);
+                var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
                 if(this.$store.state.selectedNoteInfo != null && this.$store.state.selectedNoteInfo) 
-                this.$store.state.selectedNoteInfo.content = receiveMsg.content;
+                this.$store.state.selectedNoteInfo.content = receivedMsg.content;
                 
-                if(this.$store.state.userInfo.no != receiveMsg.occupiedNo){
-                  win.webContents.send("test", receiveMsg.content);
+                if(this.$store.state.userInfo.no != receivedMsg.occupiedNo){
+                  win.webContents.send("test", receivedMsg.content);
                 }
                     const info = {
-                      accountNo: receiveMsg.accountNo,
-                      bandNo: receiveMsg.bandNo,
-                      noteNo: receiveMsg.noteNo,
-                      subject: receiveMsg.subject,
-                      content: receiveMsg.content,
-                      occupiedNo: receiveMsg.occupiedNo, // 점유자의 account_no
-                      occupiedName: receiveMsg.occupiedName // 점유자의 account_name
+                      accountNo: receivedMsg.accountNo,
+                      bandNo: receivedMsg.bandNo,
+                      noteNo: receivedMsg.noteNo,
+                      subject: receivedMsg.subject,
+                      content: receivedMsg.content,
+                      occupiedNo: receivedMsg.occupiedNo, // 점유자의 account_no
+                      occupiedName: receivedMsg.occupiedName // 점유자의 account_name
                   // console.log(info);
                 }
                   this.$store.commit('SET_NOTE_CONTENT', info);
