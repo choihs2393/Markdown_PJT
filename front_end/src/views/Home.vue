@@ -526,7 +526,7 @@ export default {
       let _bandNo = this.$store.state.selectedBandInfo.no;
       this.$store.state.selectedNoteInfo.occupiedNo = 0;
       this.$store.state.selectedNoteInfo.occupiedName = "";
-
+      this.$store.state.savedTime = '';
       var idx = this.$store.state.noteList.findIndex(item => item._id ==this.$store.state.selectedNoteInfo._id)
       this.$store.state.noteList[idx].occupiedNo = 0;
       this.$store.state.noteList[idx].occupiedName = "";
