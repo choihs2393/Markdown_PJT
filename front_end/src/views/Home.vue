@@ -362,7 +362,8 @@ export default {
       if(this.$store.state.syncCheck === false) { 
         this.$store.commit('setSyncCheck',true);
         var timer = setTimeout(() => {
-          // clearTimeout(getTempData);
+          console.log("들어왔음!@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+          clearTimeout(getTempData);
           parse(tmp);
           getStore.commit('setSyncCheck',false);
           
@@ -383,59 +384,59 @@ export default {
       * this is a auto save + share part
       */
       if(this.$store.state.isShareMode){
-        console.log("shareMode로 들어옴")
         let bandNo = this.$store.state.selectedBandInfo.no;
         let noteNo = this.$store.state.selectedNoteInfo._id;
+        let subject = this.$store.state.selectedNoteInfo.subject;
         let occupyAccountNo = this.$store.state.selectedNoteInfo.occupiedNo;
         let loginAccountNo = this.$store.state.userInfo.no;
-      // console.log("영복이의 로그추적"  + bandNo);
-      // console.log("영복이의 로그추적 " + noteNo);
-        console.log("영복이의 로그추적 " + noteNo);
-        console.log("영복이의 로그추적 " + bandNo);
+        let loginAccountName = this.$store.state.userInfo.name;
+        console.log(bandNo)
+                console.log(noteNo)
 
-        console.log("영복이의 로그추적 " + occupyAccountNo);
-        console.log("영복이의 로그추적 " + loginAccountNo);
-        console.log("영복이의 로그추적 " + tmp);
-        console.log(typeof bandNo);
-        console.log(typeof noteNo);
-        console.log(typeof occupyAccountNo);
-        console.log(typeof loginAccountNo);
+        console.log(subject)
+
+        console.log(occupyAccountNo)
+
+        console.log(loginAccountNo)
+
+        console.log(loginAccountName)
+
         if(noteNo != '' && bandNo != '' && occupyAccountNo != '' && occupyAccountNo == loginAccountNo){
-          console.log("들어옴")
-          if(this.$store.state.storeSyncCheck === false){
-            this.$store.commit('setStoreSyncCheck', true);
-            let storeTimer = setTimeout(() => {
-              // clearTimeout(this.$store.state.storeTempData);
-              // console.log('로직 안 this22222', this);
-              // console.log("영복이의 로그추적 " + tmp);
-              this.shareNote(tmp);
-              this.$store.commit('setStoreSyncCheck', false);
-            }, 1000 * 5);
-            this.$store.commit('setStoreTimer',storeTimer)
-          }
+          // if(this.$store.state.storeSyncCheck === false){
+          //   this.$store.commit('setStoreSyncCheck', true);
+          //   let storeTimer = setTimeout(() => {
+          //     clearTimeout(this.$store.state.storeTempData);
+          //     // console.log('로직 안 this22222', this);
+          //     console.log("영복이의 share 50000짜리 로그추적 " + tmp);
+          //     this.shareNote(tmp, bandNo, noteNo, occupyAccountNo, subject, loginAccountName);
+          //     this.$store.commit('setStoreSyncCheck', false);
+          //   }, 1000 * 5);
+          //   this.$store.commit('setStoreTimer',storeTimer)
+          // }
           clearTimeout(this.$store.state.storeTempData);
           let timeOut_ = setTimeout(() => {
+              console.log("들어옴") 
               // console.log('로직 안 this', this);
               // console.log("영복이의 로그추적 " + tmp);
               // console.log(this.$store.state.stroeTimer);
               console.log("영복이의 Share 로그추적 " + tmp);
-              this.shareNote(tmp);
-              this.$store.commit('setStoreSyncCheck', false);
-              clearTimeout(this.$store.state.storeTimer);
-          }, 1000 * 2);
+              // this.$store.commit('setStoreSyncCheck', false);
+              // clearTimeout(this.$store.state.storeTimer);
+              this.shareNote(tmp, bandNo, noteNo, occupyAccountNo, subject, loginAccountName);
+          }, 1000 * 5);
           this.$store.commit('setStoreTempData', timeOut_);
         }
       }
     },
     
 
-    shareNote(inputContent){
-      let _noteId = this.$store.state.selectedNoteInfo._id;
-      let _accountNo = this.$store.state.userInfo.no;
-      let _subject = this.$store.state.selectedNoteInfo.subject;
+    shareNote(inputContent, bandNo, noteNo, loginAccountNo, subject, loginAccountName){
+      let _noteId = noteNo;
+      let _accountNo = loginAccountNo;
+      let _subject = subject;
       let _content = inputContent;
-      let _occupiedName = this.$store.state.selectedNoteInfo.occupiedName;
-      let _bandNo = this.$store.state.selectedBandInfo.no;
+      let _occupiedName = loginAccountName;
+      let _bandNo = bandNo;
 
       var d = new Date(),
       month = '' + (d.getMonth() + 1),
@@ -451,7 +452,7 @@ export default {
           day = '0' + day;
 
       this.$store.state.savedTime = "저장 일시 : " + [year, month, day].join('-') + " " + [hour, min, sec].join(':');
-
+      console.log(this.$store.state.savedTime);
       console.log(inputContent);
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);

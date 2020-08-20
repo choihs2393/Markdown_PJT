@@ -288,24 +288,29 @@ export default {
             res => {
               const receivedMsg = JSON.parse(res.body);
               if(receivedMsg.bandNo == curBandNo){
-                var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
-                if(this.$store.state.selectedNoteInfo != null && this.$store.state.selectedNoteInfo) 
-                this.$store.state.selectedNoteInfo.content = receivedMsg.content;
-                
-                if(this.$store.state.userInfo.no != receivedMsg.occupiedNo){
-                  win.webContents.send("test", receivedMsg.content);
+                console.log(this.$store.state.selectedNoteInfo._id)
+                console.log(receivedMsg.noteNo)
+                if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
+                  var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
+                  if(this.$store.state.selectedNoteInfo != null && this.$store.state.selectedNoteInfo) 
+                  this.$store.state.selectedNoteInfo.content = receivedMsg.content;
+                  
+                  if(this.$store.state.userInfo.no != receivedMsg.occupiedNo){
+                    win.webContents.send("test", receivedMsg.content);
+                  }
+                      const info = {
+                        accountNo: receivedMsg.accountNo,
+                        bandNo: receivedMsg.bandNo,
+                        noteNo: receivedMsg.noteNo,
+                        subject: receivedMsg.subject,
+                        content: receivedMsg.content,
+                        occupiedNo: receivedMsg.occupiedNo, // 점유자의 account_no
+                        occupiedName: receivedMsg.occupiedName // 점유자의 account_name
+                    // console.log(info);
+                  }
+                    this.$store.commit('SET_NOTE_CONTENT', info);
+
                 }
-                    const info = {
-                      accountNo: receivedMsg.accountNo,
-                      bandNo: receivedMsg.bandNo,
-                      noteNo: receivedMsg.noteNo,
-                      subject: receivedMsg.subject,
-                      content: receivedMsg.content,
-                      occupiedNo: receivedMsg.occupiedNo, // 점유자의 account_no
-                      occupiedName: receivedMsg.occupiedName // 점유자의 account_name
-                  // console.log(info);
-                }
-                  this.$store.commit('SET_NOTE_CONTENT', info);
               }
             }
           )
