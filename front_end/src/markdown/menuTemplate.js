@@ -96,8 +96,7 @@ const template = [
             { role: 'zoomout' },
             { type: 'separator' },
             { role: 'togglefullscreen' },
-            { type: 'separator' },
-            { role: 'toggleDevTools'}
+            { type: 'separator' }
         ]
     },
     // { role: 'windowMenu' }

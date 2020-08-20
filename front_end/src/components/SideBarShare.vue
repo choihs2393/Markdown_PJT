@@ -200,12 +200,8 @@ export default {
     async createWorkspace(newBandName) {
       // event.preventDefault();
       if (!!newBandName) {
-                console.log("@@@@@@@@@@@@@@@this.$store.state.selectedBandInfo.no" + this.$store.state.selectedBandInfo.no);
-
         await this.$store.dispatch("createWorkspace", newBandName);
         this.bandInfo = this.$store.state.selectedBandInfo;
-        console.log("@@@@@@@@@@@@@@@this.$store.state.selectedBandInfo" + this.$store.state.selectedBandInfo.no);
-        console.log("@@@@@@@@@@@@@@@this.bandInfo.no" + this.bandInfo.no);
         this.$store.dispatch('getNoteList', this.bandInfo)
       }
       this.$refs.form_workspace.reset();
@@ -214,7 +210,7 @@ export default {
       document.getElementById("serverFileName").style.display = "none";
       const win = remote.BrowserWindow.getFocusedWindow();
       win.webContents.send("contentReset", "");
-      // this.$store.state.selectedNoteInfo = {};
+      this.$store.state.selectedNoteInfo = {};
       // document.getElementById("savedTime").innerHTML = "";
       this.$store.state.savedTime = "";
 
@@ -235,14 +231,12 @@ export default {
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
-              console.log("안들어왔음" + receivedMsg.bandNo)
               // console.log("안들어왔음" + curBandNo)
               if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                console.log('들어왔음')
                 const idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
                 
-                // this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
-                // this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
+                this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
+                this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
                 if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
                   this.$store.state.selectedNoteInfo.occupiedNo = receivedMsg.occupiedNo;
                   this.$store.state.selectedNoteInfo.occupiedName = receivedMsg.occupiedName;
@@ -262,8 +256,8 @@ export default {
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
               if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
                 var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
-                // this.$store.state.noteList[idx].occupiedNo = 0;
-                // this.$store.state.noteList[idx].occupiedName = '';
+                this.$store.state.noteList[idx].occupiedNo = 0;
+                this.$store.state.noteList[idx].occupiedName = '';
                 if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
                   this.$store.state.selectedNoteInfo.occupiedNo = 0;
                   this.$store.state.selectedNoteInfo.occupiedName = '';
@@ -311,18 +305,16 @@ export default {
     changeWorkspace(bandInfo) {
       const win = remote.BrowserWindow.getFocusedWindow();
       win.webContents.send("contentReset", "");
-      console.log("@@@@@@@@@@@@@@@this.$store.state.selectedBandInfo" + this.$store.state.selectedBandInfo);
 
       if(this.$store.state.shareGroupSocket.connected)
         this.$store.state.shareGroupSocket.disconnect();
       this.$store.commit('SELECTED_WORKSPACE', bandInfo)
       this.$store.dispatch('getNoteList', bandInfo)
 
-      // this.$store.state.selectedNoteInfo = {};
+      this.$store.state.selectedNoteInfo = {};
       let curBandNo = this.$store.state.selectedBandInfo.no;
       // document.getElementById("savedTime").innerHTML = "";
       this.$store.state.savedTime = "";
-      console.log("@@@@@@@@@@@@@" + curBandNo);
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
@@ -340,10 +332,7 @@ export default {
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
-              console.log("안들어왔음" + receivedMsg.bandNo)
-              console.log("안들어왔음" + curBandNo)
               if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                console.log('들어왔음')
                 const idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
                 
                 this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
@@ -383,8 +372,6 @@ export default {
             res => {
               const receivedMsg = JSON.parse(res.body);
               if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                console.log(this.$store.state.selectedNoteInfo._id)
-                console.log(receivedMsg.noteNo)
                 if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
                   var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
                   if(this.$store.state.selectedNoteInfo != null && this.$store.state.selectedNoteInfo) 
