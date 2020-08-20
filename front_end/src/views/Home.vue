@@ -2,7 +2,7 @@
   <v-main>
     <v-container class="md" fluid>
       <v-row justify-center>
-        <span id="localFileName" style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="!isShareMode && selectedNoteInfo != null">로컬파일이름</span>
+        <span id="localFileName" style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="!isShareMode"></span>
         <span id="serverFileName" style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="isShareMode && isLoggedIn && selectedNoteInfo != null">{{selectedNoteInfo.subject}}</span>
         <!-- <span style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="!isShareMode">{{ fileName }}</span> -->
         <div style="flex-grow: 100; text-align: center; padding-top:7px">
@@ -275,7 +275,7 @@ export default {
   },
   updated() {
     //this.$store.commit('setParseData', parse(this.input));
-    
+
   },
   mounted() {
     this.$store.commit("setParseData", parse(this.input));
@@ -287,8 +287,12 @@ export default {
     })
 
     ipcRenderer.on("ping", (event, fileDataObject) => {
-      data.fileName = path.basename(fileDataObject['absoluteFilePath'])
+        data.fileName = path.basename(fileDataObject['absoluteFilePath'])
     })
+
+    ipcRenderer.on("contentReset", (event, message) => {
+      data.fileName = ""
+    });
   },
       
   
