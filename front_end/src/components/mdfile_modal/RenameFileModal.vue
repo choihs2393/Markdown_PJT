@@ -4,14 +4,15 @@
     <v-card>
       <v-card-title class="headline">Rename Markdown</v-card-title>
       <v-card-text>
-        <v-form>
+        <v-form @submit.prevent>
           <v-text-field
             v-model="newSubject"
             label="Title"
             name="title"
             prepend-icon="far fa-file-alt"
             required
-            type="text">
+            type="text"
+            @keyup.enter="renameNote(newSubject), close()">
           </v-text-field>
         </v-form>
       </v-card-text>

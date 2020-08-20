@@ -15,7 +15,7 @@
       <v-subheader class="mr-3">My Workspace</v-subheader>
       <v-btn class="ma-4" tile large color="teal" icon @click="getNoteList($store.state.selectedBandInfo)">
         <v-icon>refresh</v-icon>
-      </v-btn>  
+      </v-btn>
       
       <!-- 워크스페이스 추가 다이얼로그 -->
       <!-- Add a workspace를 눌렀을 때 보이는 다이얼로그 -->
@@ -206,15 +206,23 @@ export default {
       }
       this.$refs.form_workspace.reset();
       this.workspaceDialog = false;
+
+      document.getElementById("serverFileName").style.display = "none";
+      const win = remote.BrowserWindow.getFocusedWindow();
+      win.webContents.send("contentReset", "");
+      this.$store.state.selectedNoteInfo = {};
     },
 
     changeWorkspace(bandInfo) {
+      const win = remote.BrowserWindow.getFocusedWindow();
+      win.webContents.send("contentReset", "");
+      this.$store.state.selectedNoteInfo = {};
+
       if(this.$store.state.shareGroupSocket.connected)
         this.$store.state.shareGroupSocket.disconnect();
       console.log("bandInfo: ", bandInfo)
       this.$store.commit('SELECTED_WORKSPACE', bandInfo)
       this.$store.dispatch('getNoteList', bandInfo)
-      const win = remote.BrowserWindow.getFocusedWindow();
       // const serverURL = "http://localhost:8080/noteAPI/ws";
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
@@ -311,9 +319,7 @@ export default {
           
         }
       );
-
-      console.log("this.stompClient", this.stompClient)
-      // this.stompClient.disconnect();
+      document.getElementById("serverFileName").style.display = "none";
     },
 
     // changeNote(note, _id){
