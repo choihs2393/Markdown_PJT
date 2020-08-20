@@ -101,6 +101,28 @@ ipcRenderer.on("pong", (event, folderPath) => {
   // console.log('absoluteee', folderFullPath);
 });
 
+ipcRenderer.on("newFile", (event) => {
+  data.input = '';
+  let fileDataObject = {}
+  let newFileName = '';
+    if (isPathExist){
+          if (isWindow){
+            newFileName = '\\somangNewFile'+Math.floor(Math.random() * 5000)+'.md';
+          }
+          if (isMac){
+            newFileName = '/somangNewFile'+Math.floor(Math.random() * 5000)+'.md';
+          }
+          fs.writeFile(folderFullPath+newFileName, readmeTemplate.input, (err) => {
+            fileDataObject = {'openedFileData': '', 'absoluteFilePath': folderFullPath+newFileName};
+          })
+        }
+    let win = remote.BrowserWindow.getFocusedWindow();
+    ipcRenderer.send("mainping", fileDataObject);
+    win.webContents.send("addFileInList", folderFullPath);
+    parse(data.input)
+    document.getElementById("localFileName").innerHTML = newFileName.substring(1, newFileName.length);
+});
+
 ipcRenderer.on("template", (event, isThereTemplate) => {
   isTemplate = isThereTemplate;
   data.input = readmeTemplate.input;
@@ -131,6 +153,7 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
           })
         }
       }); 
+      document.getElementById("localFileName").innerHTML = readmeFileName.substring(1, readmeFileName.length);
     }else {
       fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': ''};
     }
