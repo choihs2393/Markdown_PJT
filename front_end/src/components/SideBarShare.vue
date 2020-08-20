@@ -219,8 +219,7 @@ export default {
       const win = remote.BrowserWindow.getFocusedWindow();
       win.webContents.send("contentReset", "");
       this.$store.state.selectedNoteInfo = {};
-      let curBandNo = bandInfo.no;
-      console.log(curBandNo);
+      let curBandNo = this.$store.state.selectedBandInfo.no;
       // document.getElementById("savedTime").innerHTML = "";
       this.$store.state.savedTime = "";
 
@@ -239,7 +238,6 @@ export default {
         frame => {
           this.connected = true;
           this.$store.commit('setShareGroupSocket',this.stompClient);
-
           // 워크스페이스에서의 현재 파일 점유 유무를 받고 있음.
           this.stompClient.subscribe("/send/groupSend/occupy/" + this.$store.state.selectedBandInfo.no,
             res => {
@@ -249,12 +247,12 @@ export default {
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
               console.log("안들어왔음" + receivedMsg.bandNo)
               console.log("안들어왔음" + curBandNo)
-              if(receivedMsg.bandNo == curBandNo){
+              if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
                 console.log('들어왔음')
                 const idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
                 
-                this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
-                this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
+                // this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
+                // this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
                 if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
                   this.$store.state.selectedNoteInfo.occupiedNo = receivedMsg.occupiedNo;
                   this.$store.state.selectedNoteInfo.occupiedName = receivedMsg.occupiedName;
@@ -272,10 +270,10 @@ export default {
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
-              if(receivedMsg.bandNo == curBandNo){
+              if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
                 var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
-                this.$store.state.noteList[idx].occupiedNo = 0;
-                this.$store.state.noteList[idx].occupiedName = '';
+                // this.$store.state.noteList[idx].occupiedNo = 0;
+                // this.$store.state.noteList[idx].occupiedName = '';
                 if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
                   this.$store.state.selectedNoteInfo.occupiedNo = 0;
                   this.$store.state.selectedNoteInfo.occupiedName = '';
@@ -289,7 +287,7 @@ export default {
           this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
-              if(receivedMsg.bandNo == curBandNo){
+              if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
                 console.log(this.$store.state.selectedNoteInfo._id)
                 console.log(receivedMsg.noteNo)
                 if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
