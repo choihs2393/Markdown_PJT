@@ -45,7 +45,7 @@
         <v-spacer></v-spacer>
         <v-btn text color="grey darken-1" v-if="!!folder" tile @click="addNewFile()">
           <v-icon left>mdi-plus</v-icon>
-          Add New File
+          Add File
         </v-btn>
       </v-row>
         </v-list-item>
