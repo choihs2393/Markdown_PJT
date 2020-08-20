@@ -152,6 +152,14 @@ export default {
       if (!this.$store.state.isModifyChecked) {
         this.$store.state.isMypageModal = false
       }
+      this.userInfo = {
+        email: this.$store.state.userInfo.email,
+        newName: '',
+        password: '',
+        newPassword: '',
+        newPasswordConfirm: '',
+        no: this.$store.state.userInfo.no
+      }
     },
 
     close() {

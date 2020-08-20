@@ -453,6 +453,7 @@ export default new Vuex.Store({
           console.log(res)
           if (res.data['result'] === 'success') {
             commit('SET_MODIFY_RESULT', false)
+            commit('SET_IS_MYPAGE_MODAL', false)
             dispatch('logout')
           }
 
