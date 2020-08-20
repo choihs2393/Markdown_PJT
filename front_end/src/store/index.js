@@ -55,6 +55,9 @@ export default new Vuex.Store({
     storeTimer: '',
     
     // 소켓 데이터 저장
+
+
+
     shareNoteSocket: '',
     shareGroupSocket: '',
 
@@ -566,6 +569,7 @@ export default new Vuex.Store({
             masterNo: state.selectedBandInfo.master,
           }
           // console.log("[inviteBandMember] email()", inviteBandMember)
+          console.log("이거 왜 들어와 ㅋㅋㅋㅋㅋ");
           dispatch("inviteBandMember", inviteBandMember)
         } else {
           state.noSuchMemberAlert = !(state.noSuchMemberAlert)
@@ -582,6 +586,8 @@ export default new Vuex.Store({
       axios.post(SERVER.URL + SERVER.ROUTES.inviteBandMember, inviteBandMember, { headers: { email: state.userInfo.email} })
       .then(res => {
         if(res.data.result == "success"){
+          console.log("이거 왜 들어와 ㅋㅋㅋㅋㅋ22222222222");
+
           console.log("res.data.result : ", res.data.map.bandMember)
           commit("GET_NEW_MEMBER_INFO", res.data.map.bandMember)
         }else{

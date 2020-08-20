@@ -522,7 +522,7 @@ export default {
     },
 
     // 해당 파일 점유 포기하기.
-    vacate(selectedNoteNo) {
+    async vacate(selectedNoteNo) {
       console.log("vacate 송신1 : " +this.$store.state.selectedNoteInfo._id);
       let _accountNo = this.$store.state.userInfo.no;
       let _id = this.$store.state.selectedNoteInfo._id;
@@ -542,6 +542,7 @@ export default {
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
+      this.$store.state.aaa = this.stompClient;
       console.log("vacate 송신3 : " +this.$store.state.selectedNoteInfo._id);
 
       // 2. 소켓 연결하기
@@ -558,7 +559,6 @@ export default {
           this.stompClient.send("/groupReceive/vacate/" + _bandNo, JSON.stringify(map));
         }
       )
-
       // 4. send 했으면, 소켓 disconnect를 진행해준다.
       // this.stompClient.disconnect();
     }
