@@ -61,6 +61,7 @@
         ></v-select>
       </v-row>
       <v-row>
+        <CreateFileModal v-if="bandInfo" />
         <v-spacer></v-spacer>
         <v-btn text color="grey darken-1" v-if="!!bandInfo" right tile @click="showInviteModal(); $store.state.noSuchMemberAlert=false; $store.state.alreadyMemberAlert=false">
           <v-icon left>mdi-plus</v-icon>
@@ -87,7 +88,6 @@
         </v-list-item>
       </v-list>
       <v-row justify="end">
-        <CreateFileModal v-if="bandInfo" />
       </v-row>
     </v-container>
 

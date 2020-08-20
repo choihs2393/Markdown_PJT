@@ -3,7 +3,7 @@
     <v-btn class="mr-2" color="grey darken-1" text @click="isCreateFileModal=!isCreateFileModal">
       <v-icon>mdi-plus</v-icon>
       <v-spacer></v-spacer>
-      <span>Create File</span>
+      <span>File</span>
     </v-btn>
 
     <v-row justify="center">
