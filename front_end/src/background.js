@@ -24,16 +24,14 @@ app.on ( 'browser-window-focus', function () {
   });
   globalShortcut.register ( "CommandOrControl + Shift + R", () => {
   });
-
   globalShortcut.register ( "CommandOrControl + Shift + I", () => {
-    });
+  });
 });
   
 app.on ( 'browser-window-blur', function () {
   globalShortcut.unregister ( 'CommandOrControl + R');
   globalShortcut.unregister ( 'CommandOrControl + Shift + R');
   globalShortcut.unregister ( 'CommandOrControl + Shift + I');
-  globalShortcut.unregister ( 'CommandOrControl + OptionOrAlt + I');
 });
 
   
