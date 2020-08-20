@@ -233,6 +233,7 @@ export default {
         win.webContents.send("pong", folderFullPath);
         win.webContents.send("contentReset", "msg");
 
+        document.getElementById("localFileName").innerHTML = "";
         
         // document.getElementById("serverFileName").innerHTML(file.title);
       });
