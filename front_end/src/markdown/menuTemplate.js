@@ -277,8 +277,8 @@ function saveAsFile() {
         fs.writeFile(fileName, fileData, (err) => {
         })
         let fileDataObject = {'openedFileData': fileData, 'absoluteFilePath': fileName};
-        let win = BrowserWindow.getFocusedWindow();
-        if(!canceled){
+        if(!result.canceled){
+            let win = BrowserWindow.getFocusedWindow();
             win.webContents.send("addInSidebar", fileDataObject);
         }
     })

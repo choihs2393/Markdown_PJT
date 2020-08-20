@@ -144,6 +144,7 @@ export default {
           }
         }
       })
+      ipcRenderer.send("mainping", message);
     });
     ipcRenderer.on("addFileInList", (event, folderFullPath) => {
         fs.readdir(folderFullPath, (err, fileList) => {
