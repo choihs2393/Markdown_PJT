@@ -193,11 +193,6 @@ ipcRenderer.on("test", (event, message) => {
   parse(data.input);
 }),
 
-ipcRenderer.on("serverInitInput", (event, message) => {
-  data.input = message;
-  parse(data.input);
-}),
-
 // 드래그 후 드랍을 하면,
 document.addEventListener("drop", event => {
   var openedFileData = "";
