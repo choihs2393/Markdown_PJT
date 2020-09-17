@@ -1,10 +1,18 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, Menu, dialog, ipcMain, globalShortcut  } from "electron";
+import {
+  app,
+  protocol,
+  BrowserWindow,
+  Menu,
+  dialog,
+  ipcMain,
+  globalShortcut
+} from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
-import menuTemplate from './markdown/menuTemplate.js';
-import sampleData from './markdown/sampleData.js';
+import menuTemplate from "./markdown/menuTemplate.js";
+import sampleData from "./markdown/sampleData.js";
 import fs from "fs";
 
 const isDevelopment = process.env.NODE_ENV !== "production";
@@ -17,40 +25,31 @@ let win;
 
 // let win: Electron.BrowserWindow | null;
 
-
-//block to 
-app.on ( 'browser-window-focus', function () {
-  globalShortcut.register ( "CommandOrControl + R", () => {
-  });
-  globalShortcut.register ( "CommandOrControl + Shift + R", () => {
-  });
-  globalShortcut.register ( "CommandOrControl + Shift + I", () => {
-  });
-});
-  
-app.on ( 'browser-window-blur', function () {
-  globalShortcut.unregister ( 'CommandOrControl + R');
-  globalShortcut.unregister ( 'CommandOrControl + Shift + R');
-  globalShortcut.unregister ( 'CommandOrControl + Shift + I');
+//block to
+app.on("browser-window-focus", function() {
+  globalShortcut.register("CommandOrControl + R", () => {});
+  globalShortcut.register("CommandOrControl + Shift + R", () => {});
+  globalShortcut.register("CommandOrControl + Shift + I", () => {});
 });
 
-  
-let openFileData='';
-ipcMain.on("mainping", (event, message)=>{
-    openFileData = message['openedFileData'];
-  }
-)
-let absoluteFilePath='';
-ipcMain.on("mainping", (event, message)=>{
-  absoluteFilePath = message['absoluteFilePath'];
-  }
-)
+app.on("browser-window-blur", function() {
+  globalShortcut.unregister("CommandOrControl + R");
+  globalShortcut.unregister("CommandOrControl + Shift + R");
+  globalShortcut.unregister("CommandOrControl + Shift + I");
+});
+
+let openFileData = "";
+ipcMain.on("mainping", (event, message) => {
+  openFileData = message["openedFileData"];
+});
+let absoluteFilePath = "";
+ipcMain.on("mainping", (event, message) => {
+  absoluteFilePath = message["absoluteFilePath"];
+});
 let isShareMode;
-ipcMain.on("isShareMode", (event, message)=>{
+ipcMain.on("isShareMode", (event, message) => {
   isShareMode = message;
-  }
-)
-
+});
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -65,12 +64,11 @@ function createWindow() {
     webPreferences: {
       // Use pluginOptions.nodeIntegration, leave this alone
       // See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
-      nodeIntegration: (process.env.ELECTRON_NODE_INTEGRATION)
+      nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION
       //true
-      
-        // .ELECTRON_NODE_INTEGRATION as unknown) as boolean
-    },
-    
+
+      // .ELECTRON_NODE_INTEGRATION as unknown) as boolean
+    }
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -84,111 +82,100 @@ function createWindow() {
     win.loadURL("app://./index.html");
   }
 
-  win.on("close", (event) => {
-    if(!isShareMode){
-    event.preventDefault();
-    
-    const options = {
-      type: "question",
-      title: "Question",
-      message: "Are you sure you want to quit without saving?",
-      detail: "Click the save button if you want to save this text to your md file",
-      buttons: ["cancel", "Do Not Save", "Save As...", "Save"],
-      defaultId: 1
-    };
-    const optionsForJustSaveas = {
-      type: "question",
-      title: "Question",
-      message: "Are you sure you want to quit without saving?",
-      detail: "Click the save button if you want to save this text to your md file",
-      buttons: ["cancel", "Do Not Save", "Save As..."],
-      defaultId: 1
-  };
-    var fileData = '';
-    BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
-    .then(result => {
-      fileData = result;
-      if (absoluteFilePath === ''){
-        if (fileData === sampleData.input){
-          BrowserWindow.getFocusedWindow().destroy();
-        } else{
-          dialog.showMessageBox(optionsForJustSaveas)
-          .then(result => {
-          if(result.response == 2) {
-            // 2 : SaveAs
-                dialog.showSaveDialog(
-                    {
-                        title: "파일 저장하기",
-                        filters: [
-                            { name: 'Markdown', extensions: ['md'] },
-                        ],
-                        message: "TEST"
-                    }
-                )
-                .then(result => {
-                    var fileName = result.filePath;
-                    fs.writeFile(fileName, fileData, (err) => {
-    
-                    })
-                    if (!result.canceled){
-                      BrowserWindow.getFocusedWindow().destroy();
-                    }
+  win.on("close", event => {
+    if (!isShareMode) {
+      event.preventDefault();
 
-
-                });   
-        } else if(result.response == 1) {
-          BrowserWindow.getFocusedWindow().destroy();
-        }
-        })
-        }
-      }
-      else if (fileData.trimEnd() === openFileData.trimEnd() || fileData === ''){
-        BrowserWindow.getFocusedWindow().destroy();
-      }else{
-        
-    dialog.showMessageBox(options)
-    .then(result => {
-
-      // 1 : SaveAs
-      if(result.response == 2) {
-
-
-        dialog.showSaveDialog(
-            {
-                title: "파일 저장하기",
-                filters: [
-                    { name: 'Markdown', extensions: ['md'] },
-                ],
-                message: "TEST"
-            }
+      const options = {
+        type: "question",
+        title: "Question",
+        message: "Are you sure you want to quit without saving?",
+        detail:
+          "Click the save button if you want to save this text to your md file",
+        buttons: ["cancel", "Do Not Save", "Save As...", "Save"],
+        defaultId: 1
+      };
+      const optionsForJustSaveas = {
+        type: "question",
+        title: "Question",
+        message: "Are you sure you want to quit without saving?",
+        detail:
+          "Click the save button if you want to save this text to your md file",
+        buttons: ["cancel", "Do Not Save", "Save As..."],
+        defaultId: 1
+      };
+      var fileData = "";
+      BrowserWindow.getFocusedWindow()
+        .webContents.executeJavaScript(
+          `document.getElementById("editor_textarea").value`
         )
         .then(result => {
-          if(!result.canceled){
-            var fileName = result.filePath;
-            fs.writeFile(fileName, fileData, (err) => {
-
-            })
-            
+          fileData = result;
+          if (absoluteFilePath === "") {
+            if (fileData === sampleData.input) {
+              BrowserWindow.getFocusedWindow().destroy();
+            } else {
+              dialog.showMessageBox(optionsForJustSaveas).then(result => {
+                if (result.response == 2) {
+                  // 2 : SaveAs
+                  dialog
+                    .showSaveDialog({
+                      title: "파일 저장하기",
+                      filters: [{ name: "Markdown", extensions: ["md"] }],
+                      message: "TEST"
+                    })
+                    .then(result => {
+                      var fileName = result.filePath;
+                      fs.writeFile(fileName, fileData, err => {});
+                      if (!result.canceled) {
+                        BrowserWindow.getFocusedWindow().destroy();
+                      }
+                    });
+                } else if (result.response == 1) {
+                  BrowserWindow.getFocusedWindow().destroy();
+                }
+              });
+            }
+          } else if (
+            fileData.trimEnd() === openFileData.trimEnd() ||
+            fileData === ""
+          ) {
             BrowserWindow.getFocusedWindow().destroy();
+          } else {
+            dialog.showMessageBox(options).then(result => {
+              // 1 : SaveAs
+              if (result.response == 2) {
+                dialog
+                  .showSaveDialog({
+                    title: "파일 저장하기",
+                    filters: [{ name: "Markdown", extensions: ["md"] }],
+                    message: "TEST"
+                  })
+                  .then(result => {
+                    if (!result.canceled) {
+                      var fileName = result.filePath;
+                      fs.writeFile(fileName, fileData, err => {});
+
+                      BrowserWindow.getFocusedWindow().destroy();
+                    }
+                  });
+              }
+
+              // 1 : Do not save
+              else if (result.response == 1) {
+                BrowserWindow.getFocusedWindow().destroy();
+              }
+
+              // 3 : Save
+              else if (result.response == 3) {
+                fs.writeFile(absoluteFilePath, fileData, err => {});
+                BrowserWindow.getFocusedWindow().destroy();
+              }
+            });
           }
         });
-      }
-
-      // 1 : Do not save
-      else if(result.response == 1) {
-        BrowserWindow.getFocusedWindow().destroy();
-      }
-
-      // 3 : Save
-      else if(result.response == 3){
-        fs.writeFile(absoluteFilePath, fileData, (err) => {
-        })
-        BrowserWindow.getFocusedWindow().destroy();
-      }
-    });
-  }
-});
-  }});
+    }
+  });
 
   win.on("closed", () => {
     win = null;
@@ -198,8 +185,8 @@ function createWindow() {
 
   win.setTitle("SMENOTE");
   win.setIcon("src/assets/sme.png");
-  win.on('page-title-updated', function(e) {
-    e.preventDefault()
+  win.on("page-title-updated", function(e) {
+    e.preventDefault();
   });
 }
 
@@ -253,4 +240,4 @@ if (isDevelopment) {
   }
 }
 
-export {createWindow};
+export { createWindow };

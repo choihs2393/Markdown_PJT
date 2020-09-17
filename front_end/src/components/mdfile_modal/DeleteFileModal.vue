@@ -1,6 +1,10 @@
 <template>
   <!-- rename file dialog -->
-  <v-dialog v-model="$store.state.isDeleteFileModal" persistent max-width="400px">
+  <v-dialog
+    v-model="$store.state.isDeleteFileModal"
+    persistent
+    max-width="400px"
+  >
     <v-card>
       <v-card-title>
         <span>Delete File</span>
@@ -9,29 +13,31 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" text @click="close()">Close</v-btn>
-        <v-btn color="error" text @click="deleteNote($store.state.rightSelectedNoteInfo), close()">Delete</v-btn>
+        <v-btn
+          color="error"
+          text
+          @click="deleteNote($store.state.rightSelectedNoteInfo), close()"
+          >Delete</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 
 export default {
-  name: 'DeleteFileModal',
+  name: "DeleteFileModal",
 
   methods: {
-    ...mapActions(['deleteNote']),
+    ...mapActions(["deleteNote"]),
 
     close() {
-      this.$store.commit('SET_IS_DELETE_FILE_MODAL', false)
-    },
+      this.$store.commit("SET_IS_DELETE_FILE_MODAL", false);
+    }
   }
-
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

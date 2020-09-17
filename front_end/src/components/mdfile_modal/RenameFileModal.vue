@@ -12,44 +12,47 @@
             prepend-icon="far fa-file-alt"
             required
             type="text"
-            @keyup.enter="renameNote(newSubject), close()">
+            @keyup.enter="renameNote(newSubject), close()"
+          >
           </v-text-field>
         </v-form>
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="green darken-1" text @click="close()">Close</v-btn>
-        <v-btn color="green darken-1" text @click="renameNote(newSubject), close()">Rename</v-btn>
+        <v-btn
+          color="green darken-1"
+          text
+          @click="renameNote(newSubject), close()"
+          >Rename</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 
 export default {
-  name: 'RenameFileModal',
+  name: "RenameFileModal",
 
   data() {
     return {
-      newSubject: ''
-    }
+      newSubject: ""
+    };
   },
 
   methods: {
-    ...mapActions(['renameNote']),
+    ...mapActions(["renameNote"]),
 
     close() {
       // this.newSubject = this.$store.state.rightSelectedNoteInfo.subject
-      this.newSubject = ''
-      this.$store.commit('SET_IS_RENAME_FILE_MODAL', false)
-    },
+      this.newSubject = "";
+      this.$store.commit("SET_IS_RENAME_FILE_MODAL", false);
+    }
   }
-
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

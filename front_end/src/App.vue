@@ -1,6 +1,5 @@
 <template>
   <v-app id="app">
-
     <NavBar />
     <SideBar v-if="!$store.state.isShareMode" />
     <SideBarShare v-if="$store.state.isShareMode" />
@@ -9,10 +8,10 @@
 </template>
 
 <script>
-import NavBar from "./components/NavBar.vue"
-import SideBar from "./components/SideBar.vue"
-import SideBarShare from "./components/SideBarShare.vue"
-import Home from "./views/Home.vue"
+import NavBar from "./components/NavBar.vue";
+import SideBar from "./components/SideBar.vue";
+import SideBarShare from "./components/SideBarShare.vue";
+import Home from "./views/Home.vue";
 
 export default {
   name: "App",
@@ -21,19 +20,19 @@ export default {
     NavBar,
     SideBar,
     SideBarShare,
-    Home,
+    Home
   },
 
   mounted() {
-    if (localStorage.getItem('authorization')) {
-      this.$store.dispatch('initUserInfo')
-      this.$store.commit('SET_IS_SHARE', true)
-      this.$store.commit('SET_IS_DRAWER_SHARE', true)
+    if (localStorage.getItem("authorization")) {
+      this.$store.dispatch("initUserInfo");
+      this.$store.commit("SET_IS_SHARE", true);
+      this.$store.commit("SET_IS_DRAWER_SHARE", true);
     } else {
-      this.$store.commit('SET_IS_SHARE', false)
-      this.$store.commit('SET_IS_DRAWER', true)
+      this.$store.commit("SET_IS_SHARE", false);
+      this.$store.commit("SET_IS_DRAWER", true);
     }
-  },
+  }
 
   // updated(){
   //   var div = document.getElementById("compiledMarkdown");
@@ -46,27 +45,27 @@ export default {
 </script>
 
 <style>
-  html, body {
-    margin: 0;
-    height: 100%;
-    font-family: 'Helvetica Neue', Arial, sans-serif;
-    color: #333;
-    overflow-y: hidden;
-  }
+html,
+body {
+  margin: 0;
+  height: 100%;
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  color: #333;
+  overflow-y: hidden;
+}
 
-  .v-application code {
-    all: unset;
-    
-    background: #474949!important;
-    color: #d1d9e1!important;
-  }
+.v-application code {
+  all: unset;
 
-  pre code {
-    display: block!important;
-  overflow-x: auto!important;
-  padding: 0.5em!important;
+  background: #474949 !important;
+  color: #d1d9e1 !important;
+}
+
+pre code {
+  display: block !important;
+  overflow-x: auto !important;
+  padding: 0.5em !important;
   background: #474949;
   color: #d1d9e1;
-  }
-
+}
 </style>

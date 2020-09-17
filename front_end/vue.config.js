@@ -3,11 +3,11 @@ module.exports = {
     electronBuilder: {
       nodeIntegration: true,
       builderOptions: {
-        icon:'src/assets/smenoteIcon.ico'      
+        icon: "src/assets/smenoteIcon.ico"
       }
     }
   },
   chainWebpack: config => {
-    config.module.rules.delete('eslint');
-}
-}
+    config.module.rules.delete("eslint");
+  }
+};

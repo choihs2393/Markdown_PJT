@@ -20,7 +20,12 @@
                 </v-text-field>
               </ValidationProvider> -->
 
-              <ValidationProvider mode="eager" v-slot="{ errors }" name="Name" rules="required|max:10">
+              <ValidationProvider
+                mode="eager"
+                v-slot="{ errors }"
+                name="Name"
+                rules="required|max:10"
+              >
                 <v-text-field
                   v-model="userInfo.newName"
                   :counter="10"
@@ -31,7 +36,11 @@
               </ValidationProvider>
 
               <ValidationProvider
-                mode="eager" v-slot="{ errors }" name="Password" rules="required">
+                mode="eager"
+                v-slot="{ errors }"
+                name="Password"
+                rules="required"
+              >
                 <v-text-field
                   v-model="userInfo.password"
                   :error-messages="errors"
@@ -42,8 +51,16 @@
               </ValidationProvider>
 
               <ValidationProvider
-                mode="eager" v-slot="{ errors }" name="NewPassword" vid="confirmation"
-                :rules="{ required: true, min: 8, regex: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]/ }">
+                mode="eager"
+                v-slot="{ errors }"
+                name="NewPassword"
+                vid="confirmation"
+                :rules="{
+                  required: true,
+                  min: 8,
+                  regex: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]/
+                }"
+              >
                 <v-text-field
                   v-model="userInfo.newPassword"
                   :error-messages="errors"
@@ -53,7 +70,12 @@
                 ></v-text-field>
               </ValidationProvider>
 
-              <ValidationProvider mode="eager" v-slot="{ errors }" name="NewPasswordConfirm" rules="required|confirmed:confirmation">
+              <ValidationProvider
+                mode="eager"
+                v-slot="{ errors }"
+                name="NewPasswordConfirm"
+                rules="required|confirmed:confirmation"
+              >
                 <v-text-field
                   v-model="userInfo.newPasswordConfirm"
                   :error-messages="errors"
@@ -62,123 +84,138 @@
                   type="password"
                 ></v-text-field>
               </ValidationProvider>
-              <v-alert dense outlined type="error" v-if="$store.state.isModifyChecked">비밀번호를 다시 확인해주세요.</v-alert>
+              <v-alert
+                dense
+                outlined
+                type="error"
+                v-if="$store.state.isModifyChecked"
+                >비밀번호를 다시 확인해주세요.</v-alert
+              >
             </v-form>
           </v-card-text>
           <v-card-actions>
-            <v-btn class="mb-4 ml-4" color="error" @click="$store.state.isDeleteModal=!$store.state.isDeleteModal">Delete Account</v-btn>
+            <v-btn
+              class="mb-4 ml-4"
+              color="error"
+              @click="$store.state.isDeleteModal = !$store.state.isDeleteModal"
+              >Delete Account</v-btn
+            >
             <v-spacer></v-spacer>
             <v-btn
-            class="mb-4 mr-1"
-            color="primary"
-            @click="updateUserInfo(userInfo), submit()"
-            >Update</v-btn>
+              class="mb-4 mr-1"
+              color="primary"
+              @click="updateUserInfo(userInfo), submit()"
+              >Update</v-btn
+            >
             <v-btn class="mb-4 mr-4" @click="close()">close</v-btn>
           </v-card-actions>
         </v-card>
       </ValidationObserver>
     </v-dialog>
-    
+
     <DeleteAccountModal :userInfo="userInfo" />
   </div>
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 
-import { required, max, min, regex, confirmed } from 'vee-validate/dist/rules';
-import { extend, ValidationObserver, setInteractionMode, ValidationProvider } from 'vee-validate'
+import { required, max, min, regex, confirmed } from "vee-validate/dist/rules";
+import {
+  extend,
+  ValidationObserver,
+  setInteractionMode,
+  ValidationProvider
+} from "vee-validate";
 
-import DeleteAccountModal from './DeleteAccountModal.vue'
+import DeleteAccountModal from "./DeleteAccountModal.vue";
 
-setInteractionMode('eager')
+setInteractionMode("eager");
 
-extend('required', {
+extend("required", {
   ...required,
-  message: '{_field_} 값은 반드시 입력해야 합니다.',
-})
+  message: "{_field_} 값은 반드시 입력해야 합니다."
+});
 
 // extend('email', {
 //   ...email,
 //   message: '{_field_} 형식이 아닙니다.',
 // })
 
-extend('regex', {
+extend("regex", {
   ...regex,
-  message: '비밀번호는 영문, 숫자, 특수기호를 모두 포함하여야 합니다.',
-})
+  message: "비밀번호는 영문, 숫자, 특수기호를 모두 포함하여야 합니다."
+});
 
-extend('max', {
+extend("max", {
   ...max,
-  message: '{_field_} 값은 {length}자리 이하로 입력해주세요.',
-})
+  message: "{_field_} 값은 {length}자리 이하로 입력해주세요."
+});
 
-extend('min', {
+extend("min", {
   ...min,
-  message: '{_field_} 값은 최소 {length}자리 이상이어야 합니다.',
-})
+  message: "{_field_} 값은 최소 {length}자리 이상이어야 합니다."
+});
 
-extend('confirmed', {
+extend("confirmed", {
   ...confirmed,
-  message: '비밀번호가 같지 않습니다.',
-})
+  message: "비밀번호가 같지 않습니다."
+});
 
 export default {
-  name: 'MypageModal',
+  name: "MypageModal",
 
   components: {
     ValidationProvider,
     ValidationObserver,
-    DeleteAccountModal,
+    DeleteAccountModal
   },
   data() {
     return {
       userInfo: {
         email: this.$store.state.userInfo.email,
-        newName: '',
-        password: '',
-        newPassword: '',
-        newPasswordConfirm: '',
+        newName: "",
+        password: "",
+        newPassword: "",
+        newPasswordConfirm: "",
         no: this.$store.state.userInfo.no
-      },
-    }
+      }
+    };
   },
 
   methods: {
-    ...mapActions(['updateUserInfo']),
+    ...mapActions(["updateUserInfo"]),
 
     submit() {
-      this.$refs.observer.validate()
+      this.$refs.observer.validate();
       if (!this.$store.state.isModifyChecked) {
-        this.$store.state.isMypageModal = false
+        this.$store.state.isMypageModal = false;
       }
       this.userInfo = {
         email: this.$store.state.userInfo.email,
-        newName: '',
-        password: '',
-        newPassword: '',
-        newPasswordConfirm: '',
+        newName: "",
+        password: "",
+        newPassword: "",
+        newPasswordConfirm: "",
         no: this.$store.state.userInfo.no
-      }
+      };
     },
 
     close() {
-      this.userInfo = {
+      (this.userInfo = {
         email: this.$store.state.userInfo.email,
-        newName: '',
-        password: '',
-        newPassword: '',
-        newPasswordConfirm: '',
+        newName: "",
+        password: "",
+        newPassword: "",
+        newPasswordConfirm: "",
         no: this.$store.state.userInfo.no
-      },
-      this.$refs.observer.reset()
-      this.$store.commit('SET_MODIFY_RESULT', false)
-      this.$store.state.isMypageModal = false
-    },
+      }),
+        this.$refs.observer.reset();
+      this.$store.commit("SET_MODIFY_RESULT", false);
+      this.$store.state.isMypageModal = false;
+    }
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

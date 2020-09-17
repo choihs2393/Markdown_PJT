@@ -1,10 +1,14 @@
 <template>
   <v-dialog v-model="$store.state.isDeleteModal" persistent max-width="400">
     <v-card>
-      <v-card-title class="headline">정말 계정을 탈퇴하시겠습니까?</v-card-title>
+      <v-card-title class="headline"
+        >정말 계정을 탈퇴하시겠습니까?</v-card-title
+      >
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="deleteAccount(userInfo), close()">Yes</v-btn>
+        <v-btn color="primary" @click="deleteAccount(userInfo), close()"
+          >Yes</v-btn
+        >
         <v-btn @click="close()">No</v-btn>
       </v-card-actions>
     </v-card>
@@ -12,29 +16,27 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 
 export default {
-  name: 'DeleteAccountModal',
+  name: "DeleteAccountModal",
 
   props: {
-    userInfo: Object,
+    userInfo: Object
   },
 
   methods: {
     // ...mapActions(['deleteAccount']),
 
     deleteAccount(userInfo) {
-      this.$store.dispatch('deleteAccount', userInfo)
+      this.$store.dispatch("deleteAccount", userInfo);
     },
 
     close() {
-      this.$store.state.isDeleteModal = false
+      this.$store.state.isDeleteModal = false;
     }
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

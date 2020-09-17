@@ -9,24 +9,30 @@
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="primary" @click="logout(), $store.state.isLogoutModal = !$store.state.isLogoutModal">Logout</v-btn>
+        <v-btn
+          color="primary"
+          @click="
+            logout(), ($store.state.isLogoutModal = !$store.state.isLogoutModal)
+          "
+          >Logout</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions } from "vuex";
 
 export default {
   name: "LogoutModal",
   data() {
     return {
       isLogoutModal: false
-    }
+    };
   },
   methods: {
-    ...mapActions(['logout'])
+    ...mapActions(["logout"])
   }
 };
 </script>

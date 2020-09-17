@@ -1,6 +1,11 @@
 <template>
   <div>
-    <v-btn class="mr-2" color="grey darken-1" text @click="isCreateFileModal=!isCreateFileModal">
+    <v-btn
+      class="mr-2"
+      color="grey darken-1"
+      text
+      @click="isCreateFileModal = !isCreateFileModal"
+    >
       <v-icon>mdi-plus</v-icon>
       <v-spacer></v-spacer>
       <span>File</span>
@@ -27,7 +32,12 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color="green darken-1" text @click="close()">Close</v-btn>
-            <v-btn color="green darken-1" text @click="createNote(subject), close()">Create</v-btn>
+            <v-btn
+              color="green darken-1"
+              text
+              @click="createNote(subject), close()"
+              >Create</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -36,30 +46,27 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 
 export default {
-  name: 'CreateFileModal',
+  name: "CreateFileModal",
 
   data() {
     return {
       isCreateFileModal: false,
-      subject: '',
-    }
+      subject: ""
+    };
   },
 
   methods: {
-    ...mapActions(['createNote']),
+    ...mapActions(["createNote"]),
 
     close() {
-      this.isCreateFileModal = false
-      this.subject = ''
+      this.isCreateFileModal = false;
+      this.subject = "";
     }
   }
-
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

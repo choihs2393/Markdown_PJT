@@ -2,29 +2,100 @@
   <v-main>
     <v-container class="md" fluid>
       <v-row justify-center>
-        <span id="localFileName" style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="!isShareMode"></span>
-        <span id="serverFileName" style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="isShareMode && isLoggedIn && selectedNoteInfo != null">{{selectedNoteInfo.subject}}</span>
+        <span
+          id="localFileName"
+          style="padding-left: 20px; font-size: x-large; font-weight: bold"
+          v-if="!isShareMode"
+        ></span>
+        <span
+          id="serverFileName"
+          style="padding-left: 20px; font-size: x-large; font-weight: bold"
+          v-if="isShareMode && isLoggedIn && selectedNoteInfo != null"
+          >{{ selectedNoteInfo.subject }}</span
+        >
         <!-- <span style="padding-left: 20px; font-size: x-large; font-weight: bold" v-if="!isShareMode">{{ fileName }}</span> -->
         <div style="flex-grow: 100; text-align: center; padding-top:7px">
-          <span id="savedTime" v-if="isShareMode" style="color: rgb(98, 98, 98)">{{savedTime}}</span>
-          <span id="writing" v-if="selectedNoteInfo.occupiedName && isLoggedIn && selectedNoteInfo != {} && selectedNoteInfo.occupiedNo != 0 && selectedNoteInfo.occupiedNo != $store.state.userInfo.no">{{ selectedNoteInfo.occupiedName }}님 작성중...</span>
-          
+          <span
+            id="savedTime"
+            v-if="isShareMode"
+            style="color: rgb(98, 98, 98)"
+            >{{ savedTime }}</span
+          >
+          <span
+            id="writing"
+            v-if="
+              selectedNoteInfo.occupiedName &&
+                isLoggedIn &&
+                selectedNoteInfo != {} &&
+                selectedNoteInfo.occupiedNo != 0 &&
+                selectedNoteInfo.occupiedNo != $store.state.userInfo.no
+            "
+            >{{ selectedNoteInfo.occupiedName }}님 작성중...</span
+          >
         </div>
         <!-- <v-spacer></v-spacer> -->
-        <div>      
-
-          <v-btn small right color="primary" dark v-if="isShareMode &&isLoggedIn && selectedBandInfo != null && selectedNoteInfo != null && selectedNoteInfo.occupiedNo == 0" @click="occupy($store.state.selectedNoteInfo._id)">점유하기</v-btn>
-          &nbsp;<v-btn small right color="primary" dark v-if="isShareMode &&isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="saveNote(input)">저장하기</v-btn>
-          &nbsp;<v-btn small right color="primary" dark v-if="isShareMode && isLoggedIn && selectedNoteInfo.occupiedNo == $store.state.userInfo.no" @click="vacate($store.state.selectedNoteInfo._id)">점유권 놓기</v-btn>
-          &nbsp;<v-btn small right class="mr-2" dark @click="isTextarea=!isTextarea">{{ showTextarea }}</v-btn>
+        <div>
+          <v-btn
+            small
+            right
+            color="primary"
+            dark
+            v-if="
+              isShareMode &&
+                isLoggedIn &&
+                selectedBandInfo != null &&
+                selectedNoteInfo != null &&
+                selectedNoteInfo.occupiedNo == 0
+            "
+            @click="occupy($store.state.selectedNoteInfo._id)"
+            >점유하기</v-btn
+          >
+          &nbsp;<v-btn
+            small
+            right
+            color="primary"
+            dark
+            v-if="
+              isShareMode &&
+                isLoggedIn &&
+                selectedNoteInfo.occupiedNo == $store.state.userInfo.no
+            "
+            @click="saveNote(input)"
+            >저장하기</v-btn
+          >
+          &nbsp;<v-btn
+            small
+            right
+            color="primary"
+            dark
+            v-if="
+              isShareMode &&
+                isLoggedIn &&
+                selectedNoteInfo.occupiedNo == $store.state.userInfo.no
+            "
+            @click="vacate($store.state.selectedNoteInfo._id)"
+            >점유권 놓기</v-btn
+          >
+          &nbsp;<v-btn
+            small
+            right
+            class="mr-2"
+            dark
+            @click="isTextarea = !isTextarea"
+            >{{ showTextarea }}</v-btn
+          >
         </div>
       </v-row>
       <v-row>
         <v-col id="editor_div" v-if="isTextarea">
           <v-textarea
-            :readonly="isShareMode && isLoggedIn && selectedNoteInfo.occupiedNo != $store.state.userInfo.no"
+            :readonly="
+              isShareMode &&
+                isLoggedIn &&
+                selectedNoteInfo.occupiedNo != $store.state.userInfo.no
+            "
             solo
-            flat 
+            flat
             auto-grow
             row-height="100%"
             full-width
@@ -45,7 +116,11 @@
           />
         </v-col>
         <v-col id="markdown_div">
-          <div id="compiledMarkdown" class="compiledMarkdown" v-html="compiledMarkdown"></div>
+          <div
+            id="compiledMarkdown"
+            class="compiledMarkdown"
+            v-html="compiledMarkdown"
+          ></div>
         </v-col>
       </v-row>
     </v-container>
@@ -58,22 +133,22 @@ import parse from "../markdown/parse";
 import sampleData from "../markdown/sampleData.js";
 import readmeTemplate from "../markdown/readmeTemplate.js";
 
-import store from '../store'
+import store from "../store";
 import { mapActions, mapGetters } from "vuex";
 
 import { remote, ipcRenderer, shell } from "electron";
 import fs from "fs";
 import path from "path";
-import { is } from 'vee-validate/dist/rules';
+import { is } from "vee-validate/dist/rules";
 
 // 소켓 관련 모듈
 import SockJS from "sockjs-client";
 import Stomp from "webstomp-client";
-import { setInterval } from 'timers';
+import { setInterval } from "timers";
 import serverStartInput from "../markdown/serverStartInput.js";
 
-document.body.addEventListener('click', event => {
-  if (event.target.tagName.toLowerCase() === 'a') {
+document.body.addEventListener("click", event => {
+  if (event.target.tagName.toLowerCase() === "a") {
     event.preventDefault();
     shell.openExternal(event.target.href);
   }
@@ -82,64 +157,81 @@ document.body.addEventListener('click', event => {
 var data = sampleData;
 
 // var data = new Promise(function(resolve, reject) {
-  //   resolve(sampleData);
+//   resolve(sampleData);
 // });
 
 let isPathExist = false;
 let isTemplate = false;
-let folderFullPath = ''
-var isWindow = navigator.platform.indexOf('Win') > -1;
-var isMac = navigator.platform.indexOf('Mac') > -1;
+let folderFullPath = "";
+var isWindow = navigator.platform.indexOf("Win") > -1;
+var isMac = navigator.platform.indexOf("Mac") > -1;
 
 ipcRenderer.on("pong", (event, folderPath) => {
   folderFullPath = folderPath;
-  if (folderFullPath != '') {
+  if (folderFullPath != "") {
     isPathExist = true;
   }
 });
 
-ipcRenderer.on("newFile", (event) => {
-  data.input = '';
-  let fileDataObject = {}
-  let newFileName = '';
-    if (isPathExist){
-          if (isWindow){
-            newFileName = '\\somangNewFile'+Math.floor(Math.random() * 5000)+'.md';
-          }
-          if (isMac){
-            newFileName = '/somangNewFile'+Math.floor(Math.random() * 5000)+'.md';
-          }
-          fs.writeFile(folderFullPath+newFileName, '', (err) => {
-            })
-          fileDataObject = {'openedFileData': '', 'absoluteFilePath': folderFullPath+newFileName};
-          let win = remote.BrowserWindow.getFocusedWindow();
-          win.webContents.send("ping", fileDataObject);
-          win.webContents.send("addFileInList", folderFullPath);
-          ipcRenderer.send("mainping", fileDataObject);
-        }
-    parse(data.input)
-    document.getElementById("localFileName").innerHTML = newFileName.substring(1, newFileName.length);
+ipcRenderer.on("newFile", event => {
+  data.input = "";
+  let fileDataObject = {};
+  let newFileName = "";
+  if (isPathExist) {
+    if (isWindow) {
+      newFileName =
+        "\\somangNewFile" + Math.floor(Math.random() * 5000) + ".md";
+    }
+    if (isMac) {
+      newFileName = "/somangNewFile" + Math.floor(Math.random() * 5000) + ".md";
+    }
+    fs.writeFile(folderFullPath + newFileName, "", err => {});
+    fileDataObject = {
+      openedFileData: "",
+      absoluteFilePath: folderFullPath + newFileName
+    };
+    let win = remote.BrowserWindow.getFocusedWindow();
+    win.webContents.send("ping", fileDataObject);
+    win.webContents.send("addFileInList", folderFullPath);
+    ipcRenderer.send("mainping", fileDataObject);
+  }
+  parse(data.input);
+  document.getElementById("localFileName").innerHTML = newFileName.substring(
+    1,
+    newFileName.length
+  );
 });
 
 ipcRenderer.on("template", (event, isThereTemplate) => {
   isTemplate = isThereTemplate;
   data.input = readmeTemplate.input;
-  if (isTemplate){
-    let fileDataObject = {}
-    let readmeFileName = '';
-    if (isPathExist){
-          if (isWindow){
-            readmeFileName = '\\somangReadme'+Math.floor(Math.random() * 5000)+'.md';
-          }
-          if (isMac){
-            readmeFileName = '/somangReadme'+Math.floor(Math.random() * 5000)+'.md';
-          }
-          fs.writeFile(folderFullPath+readmeFileName, readmeTemplate.input, (err) => {
-            })
-      document.getElementById("localFileName").innerHTML = readmeFileName.substring(1, readmeFileName.length);
-      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': folderFullPath+readmeFileName};
-    }else {
-      fileDataObject = {'openedFileData': data.input, 'absoluteFilePath': ''};
+  if (isTemplate) {
+    let fileDataObject = {};
+    let readmeFileName = "";
+    if (isPathExist) {
+      if (isWindow) {
+        readmeFileName = "\\README.md";
+        // readmeFileName =
+        //   "\\somangReadme" + Math.floor(Math.random() * 5000) + ".md";
+      }
+      if (isMac) {
+        readmeFileName =
+          "/somangReadme" + Math.floor(Math.random() * 5000) + ".md";
+      }
+      fs.writeFile(
+        folderFullPath + readmeFileName,
+        readmeTemplate.input,
+        err => {}
+      );
+      document.getElementById(
+        "localFileName"
+      ).innerHTML = readmeFileName.substring(1, readmeFileName.length);
+      fileDataObject = {
+        openedFileData: data.input,
+        absoluteFilePath: folderFullPath + readmeFileName
+      };
+    } else {
+      fileDataObject = { openedFileData: data.input, absoluteFilePath: "" };
     }
     let win = remote.BrowserWindow.getFocusedWindow();
     // win.webContents.send("ping", fileDataObject);
@@ -148,7 +240,7 @@ ipcRenderer.on("template", (event, isThereTemplate) => {
     ipcRenderer.send("template", isTemplate);
     win.webContents.send("addFileInList", folderFullPath);
     isTemplate = false;
-    parse(data.input)
+    parse(data.input);
   }
 });
 
@@ -159,11 +251,11 @@ ipcRenderer.on("ping", (event, message) => {
 
 ipcRenderer.on("serverInit", (event, message) => {
   data.input = message;
-  parse(data.input)
+  parse(data.input);
 });
-ipcRenderer.on("localInit", (event) => {
-  data.input = '';
-  parse(data.input)
+ipcRenderer.on("localInit", event => {
+  data.input = "";
+  parse(data.input);
 });
 ipcRenderer.on("getNote", (event, message, accountNo) => {
   data.input = message.content;
@@ -174,88 +266,86 @@ ipcRenderer.on("getNote", (event, message, accountNo) => {
   //   this.isOccupied = false;
   //   document.getElementById("editor_div").setAttribute("disabled", false);
   // }
-  parse(data.input)
+  parse(data.input);
 });
 
 ipcRenderer.on("contentReset", (event, message) => {
-  data.input = ""
-  parse(data.input)
+  data.input = "";
+  parse(data.input);
 });
 
 ipcRenderer.on("test", (event, message) => {
   data.input = message;
   parse(data.input);
 }),
+  // 드래그 후 드랍을 하면,
+  document.addEventListener("drop", event => {
+    var openedFileData = "";
+    var textingFileData = "";
 
-// 드래그 후 드랍을 하면,
-document.addEventListener("drop", event => {
-  var openedFileData = "";
-  var textingFileData = "";
+    event.preventDefault();
+    event.stopPropagation();
 
-  event.preventDefault();
-  event.stopPropagation();
+    remote.BrowserWindow.getFocusedWindow()
+      .webContents.executeJavaScript(
+        `document.getElementById("editor_textarea").value`
+      )
+      .then(result => {
+        textingFileData = result;
 
-  remote.BrowserWindow.getFocusedWindow().webContents.executeJavaScript(`document.getElementById("editor_textarea").value`)
-    .then(result => {
-      textingFileData = result;
+        // 작성중인 텍스트가 있다면, 저장할건지 먼저 물어본다.
+        if (textingFileData.length > 0) {
+          const options = {
+            type: "question",
+            title: "Question",
+            message: "Are you sure you want to quit without saving?",
+            detail:
+              "Click the save button if you want to save this text to your md file",
+            buttons: ["Cancel", "Save"],
+            defaultId: 1
+          };
 
-      // 작성중인 텍스트가 있다면, 저장할건지 먼저 물어본다.
-      if (textingFileData.length > 0) {
-        const options = {
-          type: "question",
-          title: "Question",
-          message: "Are you sure you want to quit without saving?",
-          detail: "Click the save button if you want to save this text to your md file",
-          buttons: ["Cancel", "Save"],
-          defaultId: 1
+          // 동기식으로 처리해야 할듯?
+          if (remote.dialog.showMessageBoxSync(options) == 1) {
+            remote.dialog
+              .showSaveDialog({
+                title: "파일 저장하기!!!",
+                filters: [{ name: "Markdown", extensions: ["md"] }],
+                message: "TEST"
+              })
+              .then(result => {
+                var filePath = result.filePath;
+                fs.writeFile(filePath, textingFileData, err => {});
+              });
+          }
+        } // 작성중인 텍스트가 있다는 조건문
+      });
+
+    // 저장한 후에 열기.
+    for (const f of event.dataTransfer.files) {
+      // Using the path attribute to get absolute file path
+
+      fs.readFile(f.path, "utf8", (err, data) => {
+        if (err) throw err;
+        // fileData = data;
+        let openedFileData = data;
+
+        let fileDataObject = {
+          openedFileData: openedFileData,
+          absoluteFilePath: f.path
         };
-
-        // 동기식으로 처리해야 할듯?
-        if (remote.dialog.showMessageBoxSync(options) == 1) {
-          remote.dialog.showSaveDialog(
-            {
-              title: "파일 저장하기!!!",
-              filters: [
-                { name: "Markdown", extensions: ["md"] }
-              ],
-              message: "TEST"
-            }
-          )
-            .then(result => {
-              var filePath = result.filePath;
-              fs.writeFile(filePath, textingFileData, (err) => {
-                
-                })
-            });
-        }
-      } // 작성중인 텍스트가 있다는 조건문
-    });
-
-  // 저장한 후에 열기.
-  for (const f of event.dataTransfer.files) {
-    // Using the path attribute to get absolute file path
-
-    fs.readFile(f.path, "utf8", (err, data) => {
-      if (err) throw err;
-      // fileData = data;
-      let openedFileData = data;
-
-      let fileDataObject = {
-        openedFileData: openedFileData,
-        absoluteFilePath: f.path
-      };
-      let win = remote.BrowserWindow.getFocusedWindow();
-      win.webContents.send("ping", fileDataObject);
-    });
-  }
-});
+        let win = remote.BrowserWindow.getFocusedWindow();
+        win.webContents.send("ping", fileDataObject);
+      });
+    }
+  });
 
 export default {
   name: "Home",
   components: {},
   created() {
     //data.then(function(tmp) {
-      //return this.input = tmp;
+    //return this.input = tmp;
     // })
     //  data.then((tmp) => {
     //     this.input = tmp;
@@ -266,27 +356,28 @@ export default {
   },
   updated() {
     //this.$store.commit('setParseData', parse(this.input));
-
   },
   mounted() {
     this.$store.commit("setParseData", parse(this.input));
 
     ipcRenderer.on("template", (event, isThereTemplate) => {
-      if(this.$store.state.isShareMode && isThereTemplate && !!this.$store.state.selectedBandInfo) {
-        this.$store.dispatch('createNote', 'README')
+      if (
+        this.$store.state.isShareMode &&
+        isThereTemplate &&
+        !!this.$store.state.selectedBandInfo
+      ) {
+        this.$store.dispatch("createNote", "README");
       }
-    })
+    });
 
     ipcRenderer.on("ping", (event, fileDataObject) => {
-        data.fileName = path.basename(fileDataObject['absoluteFilePath'])
-    })
+      data.fileName = path.basename(fileDataObject["absoluteFilePath"]);
+    });
 
     ipcRenderer.on("contentReset", (event, message) => {
-      data.fileName = ""
+      data.fileName = "";
     });
   },
-      
-  
 
   computed: {
     compiledMarkdown: function() {
@@ -300,12 +391,19 @@ export default {
       //return parse(this.input);
       // });
     },
-    ...mapGetters(["isLoggedIn", "isOccupied", "selectedNoteInfo", "isShareMode", "selectedBandInfo", "savedTime"]),
+    ...mapGetters([
+      "isLoggedIn",
+      "isOccupied",
+      "selectedNoteInfo",
+      "isShareMode",
+      "selectedBandInfo",
+      "savedTime"
+    ]),
     showTextarea() {
       if (data.isTextarea) {
-        return '입력창 숨기기'
+        return "입력창 숨기기";
       } else {
-        return '입력창 열기'
+        return "입력창 열기";
       }
     }
     // isOccupied() {
@@ -313,7 +411,6 @@ export default {
     // }
 
     //  ...mapGetters(['inputData']),
-
   },
   // data: {
   //   input: data
@@ -327,13 +424,12 @@ export default {
   // }
   methods: {
     whenKeyPress() {
-    //   data = ClipboardEvent.clipboardData;
-    //   var pasteEvent = new ClipboardEvent('paste');
-    //   pasteEvent.clipboardData.items.add('My string', 'text/plain');
-    //   document.dispatchEvent(pasteEvent);
+      //   data = ClipboardEvent.clipboardData;
+      //   var pasteEvent = new ClipboardEvent('paste');
+      //   pasteEvent.clipboardData.items.add('My string', 'text/plain');
+      //   document.dispatchEvent(pasteEvent);
     },
-    whenKeyDown() {
-    },
+    whenKeyDown() {},
     ...mapActions(["saveNote"]),
 
     whenKeyUp() {
@@ -342,33 +438,32 @@ export default {
       var getStore = this.$store;
 
       //server mode 인지 아닌지 판단하기 위한 variable
-      //local mode 라면 timeout 200 
-      //server mode 라면 tiemout * 
+      //local mode 라면 timeout 200
+      //server mode 라면 tiemout *
 
-      if(this.$store.state.syncCheck === false) { 
-        this.$store.commit('setSyncCheck',true);
+      if (this.$store.state.syncCheck === false) {
+        this.$store.commit("setSyncCheck", true);
         var timer = setTimeout(() => {
           clearTimeout(getTempData);
           parse(tmp);
-          getStore.commit('setSyncCheck',false);
-          
+          getStore.commit("setSyncCheck", false);
         }, 800);
-        this.$store.commit('setTimer',timer)
+        this.$store.commit("setTimer", timer);
       }
       clearTimeout(this.$store.state.tempData);
       //parse(event.target.value);
       var timeOut = setTimeout(() => {
         parse(tmp);
-        this.$store.commit('setSyncCheck', false);
+        this.$store.commit("setSyncCheck", false);
         clearTimeout(this.$store.state.timer);
       }, 200);
-      this.$store.commit('setTempData',timeOut);
-/*-------------------------------------------------*/
-      
+      this.$store.commit("setTempData", timeOut);
+      /*-------------------------------------------------*/
+
       /*
-      * this is a auto save + share part
-      */
-      if(this.$store.state.isShareMode){
+       * this is a auto save + share part
+       */
+      if (this.$store.state.isShareMode) {
         let bandNo = this.$store.state.selectedBandInfo.no;
         let noteNo = this.$store.state.selectedNoteInfo._id;
         let subject = this.$store.state.selectedNoteInfo.subject;
@@ -376,7 +471,12 @@ export default {
         let loginAccountNo = this.$store.state.userInfo.no;
         let loginAccountName = this.$store.state.userInfo.name;
 
-        if(noteNo != '' && bandNo != '' && occupyAccountNo != '' && occupyAccountNo == loginAccountNo){
+        if (
+          noteNo != "" &&
+          bandNo != "" &&
+          occupyAccountNo != "" &&
+          occupyAccountNo == loginAccountNo
+        ) {
           // if(this.$store.state.storeSyncCheck === false){
           //   this.$store.commit('setStoreSyncCheck', true);
           //   let storeTimer = setTimeout(() => {
@@ -388,17 +488,30 @@ export default {
           // }
           clearTimeout(this.$store.state.storeTempData);
           let timeOut_ = setTimeout(() => {
-              // this.$store.commit('setStoreSyncCheck', false);
-              // clearTimeout(this.$store.state.storeTimer);
-              this.shareNote(tmp, bandNo, noteNo, occupyAccountNo, subject, loginAccountName);
+            // this.$store.commit('setStoreSyncCheck', false);
+            // clearTimeout(this.$store.state.storeTimer);
+            this.shareNote(
+              tmp,
+              bandNo,
+              noteNo,
+              occupyAccountNo,
+              subject,
+              loginAccountName
+            );
           }, 1000 * 5);
-          this.$store.commit('setStoreTempData', timeOut_);
+          this.$store.commit("setStoreTempData", timeOut_);
         }
       }
     },
-    
 
-    shareNote(inputContent, bandNo, noteNo, loginAccountNo, subject, loginAccountName){
+    shareNote(
+      inputContent,
+      bandNo,
+      noteNo,
+      loginAccountNo,
+      subject,
+      loginAccountName
+    ) {
       let _noteId = noteNo;
       let _accountNo = loginAccountNo;
       let _subject = subject;
@@ -407,36 +520,41 @@ export default {
       let _bandNo = bandNo;
 
       var d = new Date(),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear(),
-      hour = ("0" + d.getHours()).slice(-2),
-      min = ("0" + d.getMinutes()).slice(-2),
-      sec = ("0" + d.getSeconds()).slice(-2);
+        month = "" + (d.getMonth() + 1),
+        day = "" + d.getDate(),
+        year = d.getFullYear(),
+        hour = ("0" + d.getHours()).slice(-2),
+        min = ("0" + d.getMinutes()).slice(-2),
+        sec = ("0" + d.getSeconds()).slice(-2);
 
-      if (month.length < 2) 
-          month = '0' + month;
-      if (day.length < 2) 
-          day = '0' + day;
+      if (month.length < 2) month = "0" + month;
+      if (day.length < 2) day = "0" + day;
 
-      this.$store.state.savedTime = "저장 일시 : " + [year, month, day].join('-') + " " + [hour, min, sec].join(':');
+      this.$store.state.savedTime =
+        "저장 일시 : " +
+        [year, month, day].join("-") +
+        " " +
+        [hour, min, sec].join(":");
       const serverURL = "http://i3b104.p.ssafy.io:80/noteAPI/ws";
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
-      this.stompClient.connect({ Authorization: this.$store.state.authorization },
+      this.stompClient.connect(
+        { Authorization: this.$store.state.authorization },
         frame => {
           var map = {
             accountNo: _accountNo,
             subject: _subject,
             content: _content,
             occupiedName: _occupiedName
-          }
-          this.stompClient.send("/groupReceive/content/" + _bandNo + "/" + _noteId, JSON.stringify(map));
+          };
+          this.stompClient.send(
+            "/groupReceive/content/" + _bandNo + "/" + _noteId,
+            JSON.stringify(map)
+          );
         }
-      )
+      );
     },
 
-    
     // 해당 파일 점유하기.
     occupy(selectedNoteNo) {
       this.$store.state.selectedNoteInfo.occupiedNo = this.$store.state.userInfo.no;
@@ -453,23 +571,27 @@ export default {
       let socket = new SockJS(serverURL);
       this.stompClient = Stomp.over(socket);
       // 2. 소켓 연결하기
-      this.stompClient.connect({ Authorization: this.$store.state.authorization },
+      this.stompClient.connect(
+        { Authorization: this.$store.state.authorization },
         frame => {
           var map = {
-              noteId: _noteId,
-              accountNo: _accountNo,
-              accountName: _accountName,
-              subject: _subject,
-              content: _content
-          }
+            noteId: _noteId,
+            accountNo: _accountNo,
+            accountName: _accountName,
+            subject: _subject,
+            content: _content
+          };
 
           // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유하고 있다'고 점유를 풀때까지 무한정 send하기
           // setInterval(() => {
-            this.stompClient.send("/groupReceive/occupy/" + _bandNo, JSON.stringify(map));
-            this.stompClient.disconnect(); 
+          this.stompClient.send(
+            "/groupReceive/occupy/" + _bandNo,
+            JSON.stringify(map)
+          );
+          this.stompClient.disconnect();
           // }, 5000);
         }
-      )
+      );
 
       // 4. send 했으면, 소켓 disconnect를 진행해준다.
       // this.stompClient.disconnect();
@@ -484,8 +606,10 @@ export default {
       let _bandNo = this.$store.state.selectedBandInfo.no;
       this.$store.state.selectedNoteInfo.occupiedNo = 0;
       this.$store.state.selectedNoteInfo.occupiedName = "";
-      this.$store.state.savedTime = '';
-      var idx = this.$store.state.noteList.findIndex(item => item._id ==this.$store.state.selectedNoteInfo._id)
+      this.$store.state.savedTime = "";
+      var idx = this.$store.state.noteList.findIndex(
+        item => item._id == this.$store.state.selectedNoteInfo._id
+      );
       this.$store.state.noteList[idx].occupiedNo = 0;
       this.$store.state.noteList[idx].occupiedName = "";
 
@@ -497,18 +621,22 @@ export default {
       this.$store.state.aaa = this.stompClient;
 
       // 2. 소켓 연결하기
-      this.stompClient.connect({ Authorization: this.$store.state.authorization },
+      this.stompClient.connect(
+        { Authorization: this.$store.state.authorization },
         frame => {
           var map = {
-              noteId: _id,
-              accountNo: _accountNo,
-              subject: _subject,
-              content: _content
-          }
+            noteId: _id,
+            accountNo: _accountNo,
+            subject: _subject,
+            content: _content
+          };
           // 3. 소켓을 통해 다른 그룹원들에게 '내가 점유권을 놓겠다'고 send하기
-          this.stompClient.send("/groupReceive/vacate/" + _bandNo, JSON.stringify(map));
+          this.stompClient.send(
+            "/groupReceive/vacate/" + _bandNo,
+            JSON.stringify(map)
+          );
         }
-      )
+      );
       // 4. send 했으면, 소켓 disconnect를 진행해준다.
       // this.stompClient.disconnect();
     }
@@ -564,7 +692,7 @@ code {
   /* padding: 0 20px; */
 }
 
-#compileMarkdown{
+#compileMarkdown {
   border: none;
   resize: none;
   outline: none;

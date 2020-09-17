@@ -11,7 +11,11 @@
           <v-card-text>
             <v-form>
               <ValidationProvider
-                mode="eager" v-slot="{ errors }" name="Email" rules="required|email">
+                mode="eager"
+                v-slot="{ errors }"
+                name="Email"
+                rules="required|email"
+              >
                 <v-text-field
                   v-model="loginData.email"
                   :error-messages="errors"
@@ -22,7 +26,11 @@
                 ></v-text-field>
               </ValidationProvider>
               <ValidationProvider
-                mode="eager" v-slot="{ errors }" name="Password" rules="required">
+                mode="eager"
+                v-slot="{ errors }"
+                name="Password"
+                rules="required"
+              >
                 <v-text-field
                   v-model="loginData.password"
                   :error-messages="errors"
@@ -40,7 +48,9 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" @click="login(loginData), submit()">Login</v-btn>
+            <v-btn color="primary" @click="login(loginData), submit()"
+              >Login</v-btn
+            >
             <v-btn @click="close()">Close</v-btn>
           </v-card-actions>
         </v-card>
@@ -50,37 +60,40 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions } from "vuex";
 
-import { ValidationObserver, ValidationProvider, setInteractionMode, extend } from 'vee-validate'
-import { required, email } from 'vee-validate/dist/rules';
+import {
+  ValidationObserver,
+  ValidationProvider,
+  setInteractionMode,
+  extend
+} from "vee-validate";
+import { required, email } from "vee-validate/dist/rules";
 import { remote } from "electron";
 import serverStartInput from "../../markdown/serverStartInput.js";
 
-setInteractionMode('eager')
+setInteractionMode("eager");
 
-extend('required', {
+extend("required", {
   ...required,
-  message: '{_field_} 값은 반드시 입력해야 합니다.',
-})
+  message: "{_field_} 값은 반드시 입력해야 합니다."
+});
 
-extend('email', {
+extend("email", {
   ...email,
-  message: '{_field_} 형식이 아닙니다.',
-})
+  message: "{_field_} 형식이 아닙니다."
+});
 
 export default {
   name: "LoginModal",
 
   components: {
     ValidationProvider,
-    ValidationObserver,
+    ValidationObserver
   },
 
   computed: {
-    ...mapState([
-      'isPasswordChecked',
-    ]),
+    ...mapState(["isPasswordChecked"])
   },
 
   data() {
@@ -89,20 +102,19 @@ export default {
       // isPasswordAlert: false,
 
       loginData: {
-        email: '',
-        password: '',
-      },
-    }
+        email: "",
+        password: ""
+      }
+    };
   },
 
   methods: {
-    ...mapActions(['login']),
+    ...mapActions(["login"]),
     changeMode() {
       let win = remote.BrowserWindow.getFocusedWindow();
-        if (!!this.$store.state.isShareMode == false) {
+      if (!!this.$store.state.isShareMode == false) {
         this.$store.commit("SET_IS_DRAWER_SHARE", false);
         this.$store.commit("SET_IS_DRAWER", true);
-        
       } else if (!!this.$store.state.isShareMode == true) {
         this.$store.commit("SET_IS_DRAWER_SHARE", true);
         this.$store.commit("SET_IS_DRAWER", false);
@@ -112,21 +124,19 @@ export default {
     },
     close() {
       this.loginData = {
-        email: '',
-        password: '',
-      }
-      this.$refs.observer.reset()
-      this.isLoginModal = false
-      this.$store.state.isPasswordChecked = false
+        email: "",
+        password: ""
+      };
+      this.$refs.observer.reset();
+      this.isLoginModal = false;
+      this.$store.state.isPasswordChecked = false;
     },
 
     submit() {
-      this.$refs.observer.validate()
-    },
+      this.$refs.observer.validate();
+    }
   }
-}
+};
 </script>
 
-<style>
-
-</style>
+<style></style>

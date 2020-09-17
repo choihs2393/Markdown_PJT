@@ -13,15 +13,24 @@
 
     <v-container>
       <v-subheader class="mr-3">My Workspace</v-subheader>
-      <v-btn class="ma-4" tile large color="teal" icon @click="getNoteList($store.state.selectedBandInfo)">
+      <v-btn
+        class="ma-4"
+        tile
+        large
+        color="teal"
+        icon
+        @click="getNoteList($store.state.selectedBandInfo)"
+      >
         <v-icon>refresh</v-icon>
       </v-btn>
-      
+
       <!-- 워크스페이스 추가 다이얼로그 -->
       <!-- Add a workspace를 눌렀을 때 보이는 다이얼로그 -->
       <v-dialog v-model="workspaceDialog" max-width="600px">
         <template v-slot:activator="{ on, attrs }">
-          <v-btn color="rgb(255, 179, 102)" dark v-bind="attrs" v-on="on" block>Add workspace</v-btn>
+          <v-btn color="rgb(255, 179, 102)" dark v-bind="attrs" v-on="on" block
+            >Add workspace</v-btn
+          >
         </template>
         <v-card>
           <v-card-title>
@@ -34,7 +43,8 @@
                   <v-text-field
                     v-model="newBandName"
                     label="workspace *"
-                    @keyup.enter="createWorkspace(newBandName)">
+                    @keyup.enter="createWorkspace(newBandName)"
+                  >
                   </v-text-field>
                 </v-col>
               </v-row>
@@ -42,8 +52,15 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="cancelCreateWorkspace()">Cancel</v-btn>
-            <v-btn color="blue darken-1" text @click="createWorkspace(newBandName)">Create</v-btn>
+            <v-btn color="blue darken-1" text @click="cancelCreateWorkspace()"
+              >Cancel</v-btn
+            >
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="createWorkspace(newBandName)"
+              >Create</v-btn
+            >
           </v-card-actions>
         </v-card>
       </v-dialog>
@@ -63,7 +80,18 @@
       <v-row>
         <CreateFileModal v-if="bandInfo" />
         <v-spacer></v-spacer>
-        <v-btn text color="grey darken-1" v-if="!!bandInfo" right tile @click="showInviteModal(); $store.state.noSuchMemberAlert=false; $store.state.alreadyMemberAlert=false">
+        <v-btn
+          text
+          color="grey darken-1"
+          v-if="!!bandInfo"
+          right
+          tile
+          @click="
+            showInviteModal();
+            $store.state.noSuchMemberAlert = false;
+            $store.state.alreadyMemberAlert = false;
+          "
+        >
           <v-icon left>mdi-plus</v-icon>
           invite
         </v-btn>
@@ -75,20 +103,33 @@
         <v-list-item
           v-for="note in noteList"
           :key="note._id"
-          @click="getNote(note); changeNote()"
-          @mousedown.right="$refs.fileMenu.open($event, note), setRightNoteInfo(note)"
+          @click="
+            getNote(note);
+            changeNote();
+          "
+          @mousedown.right="
+            $refs.fileMenu.open($event, note), setRightNoteInfo(note)
+          "
         >
           <v-list-item-content>
             <v-list-item-title>{{ note.subject }}</v-list-item-title>
           </v-list-item-content>
           <v-list-item-icon>
-            <v-icon v-if="note.occupiedNo != 0 && note.occupiedNo != userInfo.no" right>lock</v-icon>
-            <v-icon v-if="note.occupiedNo != 0 && note.occupiedNo == userInfo.no" right color="blue">lock</v-icon>
+            <v-icon
+              v-if="note.occupiedNo != 0 && note.occupiedNo != userInfo.no"
+              right
+              >lock</v-icon
+            >
+            <v-icon
+              v-if="note.occupiedNo != 0 && note.occupiedNo == userInfo.no"
+              right
+              color="blue"
+              >lock</v-icon
+            >
           </v-list-item-icon>
         </v-list-item>
       </v-list>
-      <v-row justify="end">
-      </v-row>
+      <v-row justify="end"> </v-row>
     </v-container>
 
     <ContextMenu ref="bandMenu">
@@ -127,15 +168,26 @@
           <v-form ref="form_workspace_rename">
             <v-row>
               <v-col cols="12" sm="20" md="20">
-                <v-text-field label="rename *" required v-model="bandInfo.name"></v-text-field>
+                <v-text-field
+                  label="rename *"
+                  required
+                  v-model="bandInfo.name"
+                ></v-text-field>
               </v-col>
             </v-row>
           </v-form>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="workspaceRenameDialog=false">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="renameWorkspace">Rename</v-btn>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="workspaceRenameDialog = false"
+            >Cancel</v-btn
+          >
+          <v-btn color="blue darken-1" text @click="renameWorkspace"
+            >Rename</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -154,7 +206,7 @@ import "material-design-icons-iconfont/dist/material-design-icons.css";
 import fs from "fs";
 import { remote } from "electron";
 
-import { mapState, mapActions, mapGetters } from 'vuex'
+import { mapState, mapActions, mapGetters } from "vuex";
 
 // 소켓 관련 모듈
 import SockJS from "sockjs-client";
@@ -173,23 +225,23 @@ export default {
   },
 
   computed: {
-    ...mapState(['userInfo']),
-    ...mapGetters(['noteList']),
+    ...mapState(["userInfo"]),
+    ...mapGetters(["noteList"])
   },
 
   data() {
     return {
-      bandInfo: '',
+      bandInfo: "",
       workspaceDialog: false,
       workspaceRenameDialog: false,
-      newBandName: "",
+      newBandName: ""
       // memberEmail: "",
       // memberDialog: false,
     };
   },
 
   methods: {
-    ...mapActions(["getNote","initUserInfo", "getNoteList"]),
+    ...mapActions(["getNote", "initUserInfo", "getNoteList"]),
 
     cancelCreateWorkspace() {
       this.$refs.form_workspace.reset();
@@ -199,10 +251,10 @@ export default {
     // 워크스페이스 새로 추가하는 함수.
     async createWorkspace(newBandName) {
       // event.preventDefault();
-      if (!!newBandName) {
+      if (newBandName) {
         await this.$store.dispatch("createWorkspace", newBandName);
         this.bandInfo = this.$store.state.selectedBandInfo;
-        this.$store.dispatch('getNoteList', this.bandInfo)
+        this.$store.dispatch("getNoteList", this.bandInfo);
       }
       this.$refs.form_workspace.reset();
       this.workspaceDialog = false;
@@ -223,77 +275,98 @@ export default {
         { Authorization: this.$store.state.authorization },
         frame => {
           this.connected = true;
-          this.$store.commit('setShareGroupSocket',this.stompClient);
+          this.$store.commit("setShareGroupSocket", this.stompClient);
           // 워크스페이스에서의 현재 파일 점유 유무를 받고 있음.
-          this.stompClient.subscribe("/send/groupSend/occupy/" + this.$store.state.selectedBandInfo.no,
+          this.stompClient.subscribe(
+            "/send/groupSend/occupy/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
-              if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                const idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
-                
-                this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
-                this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
-                if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
-                  this.$store.state.selectedNoteInfo.occupiedNo = receivedMsg.occupiedNo;
-                  this.$store.state.selectedNoteInfo.occupiedName = receivedMsg.occupiedName;
-                }
-  
-                this.$store.dispatch('getNoteList', this.bandInfo)
-              }
-            } 
-          )
+              if (receivedMsg.bandNo == this.$store.state.selectedBandInfo.no) {
+                const idx = this.$store.state.noteList.findIndex(
+                  element => element._id == receivedMsg.noteNo
+                );
 
-          this.stompClient.subscribe("/send/groupSend/vacate/" + this.$store.state.selectedBandInfo.no,
+                this.$store.state.noteList[idx].occupiedNo =
+                  receivedMsg.occupiedNo;
+                this.$store.state.noteList[idx].occupiedName =
+                  receivedMsg.occupiedName;
+                if (
+                  this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo
+                ) {
+                  this.$store.state.selectedNoteInfo.occupiedNo =
+                    receivedMsg.occupiedNo;
+                  this.$store.state.selectedNoteInfo.occupiedName =
+                    receivedMsg.occupiedName;
+                }
+
+                this.$store.dispatch("getNoteList", this.bandInfo);
+              }
+            }
+          );
+
+          this.stompClient.subscribe(
+            "/send/groupSend/vacate/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
-    
+
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
-              if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
+              if (receivedMsg.bandNo == this.$store.state.selectedBandInfo.no) {
+                var idx = this.$store.state.noteList.findIndex(
+                  element => element._id == receivedMsg.noteNo
+                );
                 this.$store.state.noteList[idx].occupiedNo = 0;
-                this.$store.state.noteList[idx].occupiedName = '';
-                if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
+                this.$store.state.noteList[idx].occupiedName = "";
+                if (
+                  this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo
+                ) {
                   this.$store.state.selectedNoteInfo.occupiedNo = 0;
-                  this.$store.state.selectedNoteInfo.occupiedName = '';
+                  this.$store.state.selectedNoteInfo.occupiedName = "";
                 }
               }
 
-              this.$store.dispatch('getNoteList', this.bandInfo)
-            } 
-          )
+              this.$store.dispatch("getNoteList", this.bandInfo);
+            }
+          );
 
-          this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no,
+          this.stompClient.subscribe(
+            "/send/groupSend/content/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
-              if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
-                  var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
-                  if(this.$store.state.selectedNoteInfo != null && this.$store.state.selectedNoteInfo) 
-                  this.$store.state.selectedNoteInfo.content = receivedMsg.content;
-                  if(this.$store.state.userInfo.no != receivedMsg.occupiedNo){
+              if (receivedMsg.bandNo == this.$store.state.selectedBandInfo.no) {
+                if (
+                  this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo
+                ) {
+                  var idx = this.$store.state.noteList.findIndex(
+                    element => element._id == receivedMsg.noteNo
+                  );
+                  if (
+                    this.$store.state.selectedNoteInfo != null &&
+                    this.$store.state.selectedNoteInfo
+                  )
+                    this.$store.state.selectedNoteInfo.content =
+                      receivedMsg.content;
+                  if (this.$store.state.userInfo.no != receivedMsg.occupiedNo) {
                     win.webContents.send("test", receivedMsg.content);
                   }
-                      const info = {
-                        accountNo: receivedMsg.accountNo,
-                        bandNo: receivedMsg.bandNo,
-                        noteNo: receivedMsg.noteNo,
-                        subject: receivedMsg.subject,
-                        content: receivedMsg.content,
-                        occupiedNo: receivedMsg.occupiedNo, // 점유자의 account_no
-                        occupiedName: receivedMsg.occupiedName // 점유자의 account_name
-                  }
-                    this.$store.commit('SET_NOTE_CONTENT', info);
-
+                  const info = {
+                    accountNo: receivedMsg.accountNo,
+                    bandNo: receivedMsg.bandNo,
+                    noteNo: receivedMsg.noteNo,
+                    subject: receivedMsg.subject,
+                    content: receivedMsg.content,
+                    occupiedNo: receivedMsg.occupiedNo, // 점유자의 account_no
+                    occupiedName: receivedMsg.occupiedName // 점유자의 account_name
+                  };
+                  this.$store.commit("SET_NOTE_CONTENT", info);
                 }
               }
             }
-          )
-          
+          );
         }
       );
     },
@@ -302,10 +375,10 @@ export default {
       const win = remote.BrowserWindow.getFocusedWindow();
       win.webContents.send("contentReset", "");
 
-      if(this.$store.state.shareGroupSocket.connected)
+      if (this.$store.state.shareGroupSocket.connected)
         this.$store.state.shareGroupSocket.disconnect();
-      this.$store.commit('SELECTED_WORKSPACE', bandInfo)
-      this.$store.dispatch('getNoteList', bandInfo)
+      this.$store.commit("SELECTED_WORKSPACE", bandInfo);
+      this.$store.dispatch("getNoteList", bandInfo);
 
       this.$store.state.selectedNoteInfo = {};
       let curBandNo = this.$store.state.selectedBandInfo.no;
@@ -320,85 +393,105 @@ export default {
         { Authorization: this.$store.state.authorization },
         frame => {
           this.connected = true;
-          this.$store.commit('setShareGroupSocket',this.stompClient);
+          this.$store.commit("setShareGroupSocket", this.stompClient);
           // 워크스페이스에서의 현재 파일 점유 유무를 받고 있음.
-          this.stompClient.subscribe("/send/groupSend/occupy/" + this.$store.state.selectedBandInfo.no,
+          this.stompClient.subscribe(
+            "/send/groupSend/occupy/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
-              if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                const idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
-                
-                this.$store.state.noteList[idx].occupiedNo = receivedMsg.occupiedNo;
-                this.$store.state.noteList[idx].occupiedName = receivedMsg.occupiedName;
-                if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
-                  this.$store.state.selectedNoteInfo.occupiedNo = receivedMsg.occupiedNo;
-                  this.$store.state.selectedNoteInfo.occupiedName = receivedMsg.occupiedName;
-                }
-  
-                this.$store.dispatch('getNoteList', this.bandInfo)
-              }
-            } 
-          )
+              if (receivedMsg.bandNo == this.$store.state.selectedBandInfo.no) {
+                const idx = this.$store.state.noteList.findIndex(
+                  element => element._id == receivedMsg.noteNo
+                );
 
-          this.stompClient.subscribe("/send/groupSend/vacate/" + this.$store.state.selectedBandInfo.no,
+                this.$store.state.noteList[idx].occupiedNo =
+                  receivedMsg.occupiedNo;
+                this.$store.state.noteList[idx].occupiedName =
+                  receivedMsg.occupiedName;
+                if (
+                  this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo
+                ) {
+                  this.$store.state.selectedNoteInfo.occupiedNo =
+                    receivedMsg.occupiedNo;
+                  this.$store.state.selectedNoteInfo.occupiedName =
+                    receivedMsg.occupiedName;
+                }
+
+                this.$store.dispatch("getNoteList", this.bandInfo);
+              }
+            }
+          );
+
+          this.stompClient.subscribe(
+            "/send/groupSend/vacate/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
-    
+
               // fileList를 돌며, res.body.file_id를 통해 row를 찾아, 해당 row의 account_no와 account_name을 바꿔준다.
               //      >> 누가 점유했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 점유자의 accountNo, accountName으로 덮어씌울거고,
               //      >> 누가 점유를 포기했다는 메세지를 받으면 -> fileList에서 해당 file을 찾아, accountNo와 accountName을 각각 0, ""으로 덮어씌울 것임.
-              if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
+              if (receivedMsg.bandNo == this.$store.state.selectedBandInfo.no) {
+                var idx = this.$store.state.noteList.findIndex(
+                  element => element._id == receivedMsg.noteNo
+                );
                 this.$store.state.noteList[idx].occupiedNo = 0;
-                this.$store.state.noteList[idx].occupiedName = '';
-                if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
+                this.$store.state.noteList[idx].occupiedName = "";
+                if (
+                  this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo
+                ) {
                   this.$store.state.selectedNoteInfo.occupiedNo = 0;
-                  this.$store.state.selectedNoteInfo.occupiedName = '';
+                  this.$store.state.selectedNoteInfo.occupiedName = "";
                 }
               }
 
-              this.$store.dispatch('getNoteList', this.bandInfo)
-            } 
-          )
+              this.$store.dispatch("getNoteList", this.bandInfo);
+            }
+          );
 
-          this.stompClient.subscribe("/send/groupSend/content/" + this.$store.state.selectedBandInfo.no,
+          this.stompClient.subscribe(
+            "/send/groupSend/content/" + this.$store.state.selectedBandInfo.no,
             res => {
               const receivedMsg = JSON.parse(res.body);
-              if(receivedMsg.bandNo == this.$store.state.selectedBandInfo.no){
-                if(this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo){
-                  var idx = this.$store.state.noteList.findIndex(element => element._id == receivedMsg.noteNo);
-                  if(this.$store.state.selectedNoteInfo != null && this.$store.state.selectedNoteInfo) 
-                  this.$store.state.selectedNoteInfo.content = receivedMsg.content;
-                  if(this.$store.state.userInfo.no != receivedMsg.occupiedNo){
+              if (receivedMsg.bandNo == this.$store.state.selectedBandInfo.no) {
+                if (
+                  this.$store.state.selectedNoteInfo._id == receivedMsg.noteNo
+                ) {
+                  var idx = this.$store.state.noteList.findIndex(
+                    element => element._id == receivedMsg.noteNo
+                  );
+                  if (
+                    this.$store.state.selectedNoteInfo != null &&
+                    this.$store.state.selectedNoteInfo
+                  )
+                    this.$store.state.selectedNoteInfo.content =
+                      receivedMsg.content;
+                  if (this.$store.state.userInfo.no != receivedMsg.occupiedNo) {
                     win.webContents.send("test", receivedMsg.content);
                   }
-                      const info = {
-                        accountNo: receivedMsg.accountNo,
-                        bandNo: receivedMsg.bandNo,
-                        noteNo: receivedMsg.noteNo,
-                        subject: receivedMsg.subject,
-                        content: receivedMsg.content,
-                        occupiedNo: receivedMsg.occupiedNo, // 점유자의 account_no
-                        occupiedName: receivedMsg.occupiedName // 점유자의 account_name
-                  }
-                    this.$store.commit('SET_NOTE_CONTENT', info);
-
+                  const info = {
+                    accountNo: receivedMsg.accountNo,
+                    bandNo: receivedMsg.bandNo,
+                    noteNo: receivedMsg.noteNo,
+                    subject: receivedMsg.subject,
+                    content: receivedMsg.content,
+                    occupiedNo: receivedMsg.occupiedNo, // 점유자의 account_no
+                    occupiedName: receivedMsg.occupiedName // 점유자의 account_name
+                  };
+                  this.$store.commit("SET_NOTE_CONTENT", info);
                 }
               }
             }
-          )
-          
+          );
         }
       );
       document.getElementById("serverFileName").style.display = "none";
     },
 
-    changeNote(){
-      if(this.$store.state.savedTime != '')
-        this.$store.state.savedTime = '';
+    changeNote() {
+      if (this.$store.state.savedTime != "") this.$store.state.savedTime = "";
     },
     //   if(this.$store.state.shareNoteSocket.connected)
     //     this.$store.state.shareNoteSocket.disconnect();
@@ -437,19 +530,18 @@ export default {
     //   );
     // },
 
-
     deleteWorkspace() {
       this.$refs.bandMenu.close();
 
       const deleteWorkspace = {
         bandNo: this.bandInfo.no,
-        accountNo: this.$store.state.userInfo.no,
+        accountNo: this.$store.state.userInfo.no
       };
 
       this.$store.dispatch("deleteWorkspace", deleteWorkspace);
-      this.$store.commit('SELECTED_WORKSPACE', '')
+      this.$store.commit("SELECTED_WORKSPACE", "");
       this.bandInfo = this.$store.state.selectedBandInfo;
-      this.$store.dispatch('getNoteList', this.bandInfo)
+      this.$store.dispatch("getNoteList", this.bandInfo);
     },
 
     showRenameDialog() {
@@ -460,17 +552,16 @@ export default {
       const renameWorkspace = {
         bandNo: this.bandInfo.no,
         accountNo: this.$store.state.userInfo.no,
-        newBandName: this.bandInfo.name,
+        newBandName: this.bandInfo.name
       };
 
-      this.$store.dispatch("renameWorkspace", renameWorkspace)
+      this.$store.dispatch("renameWorkspace", renameWorkspace);
       this.workspaceRenameDialog = false;
     },
 
     showInviteModal() {
       // var workspaceNo = this.$store.state.userInfo.group.find(element => element.name == this.$store.state.workspace).no;
       // this.workspaceNo = workspaceNo;
-
 
       const showGroupMembers = {
         bandNo: this.bandInfo.no,
@@ -501,7 +592,7 @@ export default {
   padding: 0;
 }
 
- .v-list-item {
+.v-list-item {
   margin: 0.5em 2em 0;
   padding: 1em 0;
   height: 1em;
